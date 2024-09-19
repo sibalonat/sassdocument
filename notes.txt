@@ -1,0 +1,4 @@
+https://github.com/Uhliber/vue-swappable-widgets/blob/main/src/App.vue
+
+https://uhliber.github.io/vue-swappable-widgets/
+https://shopify.github.io/draggable/examples/grid-layout.html
