@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { useDynamicSheets } from '../Spreadsheet/DynamicSheets';
 import { storeToRefs } from 'pinia';
+import Group from './Partial/Group.vue';
 
 const store = useDynamicSheets();
 // const { sheets, addSheet, removeSheet } = store;
