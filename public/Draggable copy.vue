@@ -4,71 +4,69 @@
   </div>
 </template>
 
-<!-- <script>
-import { useSortableEvents } from '../../Composables/Main/SortableEvents';
-
-const { events } = useSortableEvents();
-
-export const emitsArray = [
-  'update:modelValue',
-  'change',
-  ...[...events.manageAndEmit, ...events.emit].map(evt => evt.toLowerCase())
-];
-</script> -->
-
 <script setup>
-import { ref, computed, onMounted, onUpdated, onBeforeUnmount, nextTick, h, getCurrentInstance, watch, onBeforeMount, useAttrs, useSlots } from 'vue';
+import { ref, computed, onMounted, onUpdated, onBeforeUnmount, nextTick, h } from 'vue';
 import Sortable from 'sortablejs';
-import { useHtmlHelper } from '../../Composables/Utils/HtmlHelper';
-import { useConsole } from '../../Composables/Utils/Console';
-import { useComponentBuilder } from '../../Composables/Main/ComponentBuilder';
-import { useRenderHelper } from '../../Composables/Main/RenderHelper';
-import { useSortableEvents } from '../../Composables/Main/SortableEvents';
-import { emitsArray } from '../../Composables/Main/SortableEvents';
+// import { insertNodeAt, removeNode } from './util/htmlHelper';
+// import { events } from './core/sortableEvents';
+// import {
+//   getComponentAttributes,
+//   createSortableOption,
+//   getValidSortableEntries
+// } from './core/componentBuilderHelper';
+// import { computeComponentStructure } from './core/renderHelper';
+import { useHtmlHelper } from '../src/Composables/Utils/Console';
+import { console } from '../src/Composables/Utils/Console';
+import { useComponentBuilder } from '../../Composables/Utils/ComponentBuilder';
+import { useRenderHelper } from '../src/Composables/Main/RenderHelper';
+import { useSortableEvents } from '../src/Composables/Main/SortableEvents';
+
 
 // composables
 const { insertNodeAt, removeNode } = useHtmlHelper();
+const { events } = useSortableEvents();
 const { getComponentAttributes, createSortableOption, getValidSortableEntries } = useComponentBuilder();
 const { computeComponentStructure } = useRenderHelper();
-// const { console } = useConsole();
 
 const props = defineProps({
   list: {
-      type: Array,
-      required: false,
-      default: null
-    },
-    modelValue: {
-      type: Array,
-      required: false,
-      default: null
-    },
-    itemKey: {
-      type: [String, Function],
-      required: true
-    },
-    clone: {
-      type: Function,
-      default: original => original
-    },
-    tag: {
-      type: String,
-      default: 'div'
-    },
-    move: {
-      type: Function,
-      default: null
-    },
-    componentData: {
-      type: Object,
-      required: false,
-      default: null
-    }
+    type: Array,
+    required: false,
+    default: null
+  },
+  modelValue: {
+    type: Array,
+    required: false,
+    default: null
+  },
+  itemKey: {
+    type: [String, Function],
+    required: true
+  },
+  clone: {
+    type: Function,
+    default: original => original
+  },
+  tag: {
+    type: String,
+    default: 'div'
+  },
+  move: {
+    type: Function,
+    default: null
+  },
+  componentData: {
+    type: Object,
+    required: false,
+    default: null
+  }
 });
 
-
-// const emit = defineEmits(['change', 'update:modelValue']);
-const emit = defineEmits(emitsArray);
+const emit = defineEmits([
+  'update:modelValue',
+  'change',
+  ...[...events.manageAndEmit, ...events.emit].map(evt => evt.toLowerCase())
+]);
 
 const error = ref(false);
 let draggingElement = null;
@@ -84,9 +82,6 @@ const getKey = computed(() => {
   }
   return element => element[props.itemKey];
 });
-
-const attrs = useAttrs();
-const slots = useSlots();
 
 function emitEvent(evtName, evtData) {
   nextTick(() => emit(evtName.toLowerCase(), evtData));
@@ -233,30 +228,23 @@ function onDragEnd() {
   draggingElement = null;
 }
 
-onBeforeMount(() => {
-//   if (props.list && props.modelValue) {
-//     console.error('Model value and list prop are mutually exclusive! Please set either list or modelValue, not both.');
-//     error.value = true;
-//   }
-});
-
 onMounted(() => {
   if (error.value) {
     return;
   }
 
-  const { $el } = getCurrentInstance().proxy;
+  const { $attrs, $el } = getCurrentInstance().proxy;
   componentStructure = computeComponentStructure({
-    slots,
+    $slots,
     tag: props.tag,
     realList: realList.value,
     getKey: getKey.value
   });
 
-  const attributes = getComponentAttributes({ $attrs: attrs, componentData: props.componentData });
+  const attributes = getComponentAttributes({ $attrs, componentData: props.componentData });
   targetDomElement = $el.nodeType === 1 ? $el : $el.parentElement;
   sortableInstance = new Sortable(targetDomElement, createSortableOption({
-    $attrs: attrs,
+    $attrs,
     callBackBuilder: {
       manageAndEmit: event => manageAndEmit(event),
       emit: event => emitEvent(event),
@@ -266,7 +254,7 @@ onMounted(() => {
   targetDomElement.__draggable_component__ = getCurrentInstance().proxy;
 });
 
-onUpdated(() => {    
+onUpdated(() => {
   componentStructure.updated();
 });
 
@@ -275,7 +263,7 @@ onBeforeUnmount(() => {
 });
 
 watch(
-  () => attrs,
+  () => $attrs,
   (newOptionValue) => {
     if (!sortableInstance) return;
     getValidSortableEntries(newOptionValue).forEach(([key, value]) => {
