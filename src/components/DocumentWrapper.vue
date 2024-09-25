@@ -5,7 +5,7 @@ import { storeToRefs } from 'pinia';
 import Group from './Partial/Group.vue';
 import Item from './Partial/Items/ItemElement.vue';
 import NestedDraggable from './Partial/Items/NestedDraggable.vue';
-import Draggable from './VueDraggable/Draggable.vue';
+import Draggable from './VueDraggable/Draggable';
 
 const store = useDynamicSheets();
 // const { sheets, addSheet, removeSheet } = store;
@@ -53,18 +53,37 @@ onMounted(() => {});
 <template>
   <div class="grid w-9/12 grid-cols-12">
     <!-- <nested-draggable :tasks="list" /> -->
-          <Draggable :list="list" :itemKey="item => item.name" tag="div" :disabled="!enabled" class="grid grid-cols-12 col-span-12 gap-4">
+    <!-- <Item class="transition color swappable-item">
+      <template #default="{ item }">
+        {{ item.name }}
+      </template>
+    </Item> -->
+          <!-- <Draggable :list="list" :itemKey="item => item.name" tag="div" :disabled="!enabled" class="grid grid-cols-12 col-span-12 gap-4">
             <template #default="{ item }">
               <div class="col-span-12 box">
                 {{ item }}
-                <!-- <Item class="transition color swappable-item">
-                  <template #default="{ item }">
-                    {{ item.name }}
-                  </template>
-                </Item> -->
               </div>
             </template>
-          </Draggable>
+          </Draggable> -->
+
+          <draggable
+          :list="list"
+          :disabled="!enabled"
+          item-key="name"
+          class="list-group"
+          ghost-class="ghost"
+          :move="checkMove"
+          @start="dragging = true"
+          @end="dragging = false"
+        >
+          <template #item="{ element }">
+            <div class="list-group-item" :class="{ 'not-draggable': !enabled }">
+              <div>
+                {{ element.name }}
+              </div>
+            </div>
+          </template>
+        </draggable>
 
 
   </div>

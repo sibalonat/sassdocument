@@ -1,43 +1,49 @@
-// useComponentStructure.js
-import { ref, h } from 'vue';
-
 const getHtmlElementFromNode = ({ el }) => el;
 const addContext = (domElement, context) =>
   (domElement.__draggable_context = context);
 const getContext = domElement => domElement.__draggable_context;
 
-export function useComponentStructure({ nodes, root, realList }) {
-  const defaultNodes = ref(nodes.default);
-  const children = ref([...nodes.header, ...nodes.default, ...nodes.footer]);
-  const externalComponent = ref(root.externalComponent);
-  const rootTransition = ref(root.transition);
-  const tag = ref(root.tag);
-  const realListRef = ref(realList);
-
-  const _isRootComponent = computed(() => externalComponent.value || rootTransition.value);
-
-  function render(attributes) {
-    console.log('attributes', attributes);
-    
-    const option = !_isRootComponent.value ? children.value : { default: () => children.value };
-    return h(tag.value, attributes, option);
+class ComponentStructure {
+  constructor({
+    nodes: { header, default: defaultNodes, footer },
+    root,
+    realList
+  }) {
+    this.defaultNodes = defaultNodes;
+    this.children = [...header, ...defaultNodes, ...footer];
+    this.externalComponent = root.externalComponent;
+    this.rootTransition = root.transition;
+    this.tag = root.tag;
+    this.realList = realList;
   }
 
-  function updated() {
-    defaultNodes.value.forEach((node, index) => {
+  get _isRootComponent() {
+    return this.externalComponent || this.rootTransition;
+  }
+
+  render(h, attributes) {
+    const { tag, children, _isRootComponent } = this;
+    const option = !_isRootComponent ? children : { default: () => children };
+    return h(tag, attributes, option);
+  }
+
+  updated() {
+    const { defaultNodes, realList } = this;
+    defaultNodes.forEach((node, index) => {
       addContext(getHtmlElementFromNode(node), {
-        element: realListRef.value[index],
+        element: realList[index],
         index
       });
     });
   }
 
-  function getUnderlyingVm(domElement) {
+  getUnderlyingVm(domElement) {
     return getContext(domElement);
   }
 
-  function getVmIndexFromDomIndex(domIndex, element) {
-    const { length } = defaultNodes.value;
+  getVmIndexFromDomIndex(domIndex, element) {
+    const { defaultNodes } = this;
+    const { length } = defaultNodes;
     const domChildren = element.children;
     const domElement = domChildren.item(domIndex);
 
@@ -52,17 +58,12 @@ export function useComponentStructure({ nodes, root, realList }) {
     if (length === 0) {
       return 0;
     }
-    const firstDomListElement = getHtmlElementFromNode(defaultNodes.value[0]);
+    const firstDomListElement = getHtmlElementFromNode(defaultNodes[0]);
     const indexFirstDomListElement = [...domChildren].findIndex(
       element => element === firstDomListElement
     );
     return domIndex < indexFirstDomListElement ? 0 : length;
   }
-
-  return {
-    render,
-    updated,
-    getUnderlyingVm,
-    getVmIndexFromDomIndex
-  };
 }
+
+export { ComponentStructure };

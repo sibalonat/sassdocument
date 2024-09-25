@@ -1,10 +1,10 @@
-// import { camelize } from "../util/string";
-// import { events, isReadOnly } from "./sortableEvents";
+// useComponentBuilder.js
+// import { useStringUtils } from "../util/string";
 // import { isHtmlAttribute } from "../util/tags";
-
-import { useStringUtils } from "../Utils/String";
+// import { events, isReadOnly } from "../Main/SortableEvents";
+import { useStringUtils } from "../../src/Composables/Utils/String";
 import { useSortableEvents } from "./SortableEvents";
-import { useHtmlUtils } from "../Utils/Tags";
+import { useHtmlUtils } from "../../src/Composables/Utils/Tags";
 // cache
 const { camelize } = useStringUtils();
 const { isHtmlAttribute } = useHtmlUtils();
@@ -20,7 +20,7 @@ function project(entries) {
 function getComponentAttributes({ $attrs, componentData = {} }) {
   const attributes = project(
     Object.entries($attrs).filter(([key, _]) => isHtmlAttribute(key))
-  );
+  );  
   return {
     ...attributes,
     ...componentData
@@ -48,8 +48,10 @@ function getValidSortableEntries(value) {
     .filter(([key, _]) => !isReadOnly(key));
 }
 
-export {
-  getComponentAttributes,
-  createSortableOption,
-  getValidSortableEntries
-};
+export function useComponentBuilder() {
+  return {
+    getComponentAttributes,
+    createSortableOption,
+    getValidSortableEntries
+  };
+}
