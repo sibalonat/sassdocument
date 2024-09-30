@@ -22,6 +22,8 @@ class ComponentStructure {
   }
 
   render(h, attributes) {
+    console.log('render attributes:', h);
+    
     const { tag, children, _isRootComponent } = this;
     const option = !_isRootComponent ? children : { default: () => children };
     return h(tag, attributes, option);
