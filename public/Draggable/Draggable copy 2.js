@@ -1,12 +1,12 @@
 import Sortable from "sortablejs";
-import { useHtmlHelper } from '../../Composables/Utils/HtmlHelper';
+import { useHtmlHelper } from '../../src/Composables/Utils/HtmlHelper';
 import {
   getComponentAttributes,
   createSortableOption,
   getValidSortableEntries
-} from "../../Composables/Main/ComponentBuilder";
-import { computeComponentStructure } from "../../Composables/Main/RenderHelper";
-import { emitsArray } from "../../Composables/Main/SortableEvents";
+} from "../../src/Composables/Main/ComponentBuilder";
+import { computeComponentStructure } from "../../src/Composables/Main/RenderHelper";
+import { emitsArray } from "../../src/Composables/Main/SortableEvents";
 import { h, defineComponent, nextTick, ref, computed, onMounted, onUpdated, onBeforeUnmount, watch, getCurrentInstance } from "vue";
 
 // composables

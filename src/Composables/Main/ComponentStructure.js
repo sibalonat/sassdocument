@@ -1,49 +1,45 @@
+import { reactive, toRefs } from 'vue';
+
 const getHtmlElementFromNode = ({ el }) => el;
 const addContext = (domElement, context) =>
   (domElement.__draggable_context = context);
 const getContext = domElement => domElement.__draggable_context;
 
-class ComponentStructure {
-  constructor({
-    nodes: { header, default: defaultNodes, footer },
-    root,
+function useComponentStructure({ nodes: { header, default: defaultNodes, footer }, root, realList }) {
+  const state = reactive({
+    defaultNodes,
+    children: [...header, ...defaultNodes, ...footer],
+    externalComponent: root.externalComponent,
+    rootTransition: root.transition,
+    tag: root.tag,
     realList
-  }) {
-    this.defaultNodes = defaultNodes;
-    this.children = [...header, ...defaultNodes, ...footer];
-    this.externalComponent = root.externalComponent;
-    this.rootTransition = root.transition;
-    this.tag = root.tag;
-    this.realList = realList;
-  }
+  });
 
-  get _isRootComponent() {
-    return this.externalComponent || this.rootTransition;
-  }
+  const _isRootComponent = () => state.externalComponent || state.rootTransition;
 
-  render(h, attributes) {
-    
-    const { tag, children, _isRootComponent } = this;
-    const option = !_isRootComponent ? children : { default: () => children };
+  const render = (h, attributes) => {
+    console.log('render attributes:', h);
+
+    const { tag, children } = state;
+    const option = !_isRootComponent() ? children : { default: () => children };
     return h(tag, attributes, option);
-  }
+  };
 
-  updated() {
-    const { defaultNodes, realList } = this;
-    defaultNodes.forEach((node, index) => {
+  const updated = () => {
+    state.defaultNodes.forEach((node, index) => {
       addContext(getHtmlElementFromNode(node), {
-        element: realList[index],
+        element: state.realList[index],
         index
       });
     });
-  }
+  };
 
-  getUnderlyingVm(domElement) {
+  const getUnderlyingVm = (domElement) => {
     return getContext(domElement);
-  }
+  };
 
-  getVmIndexFromDomIndex(domIndex, element) {
-    const { defaultNodes } = this;
+  const getVmIndexFromDomIndex = (domIndex, element) => {
+    const { defaultNodes } = state;
     const { length } = defaultNodes;
     const domChildren = element.children;
     const domElement = domChildren.item(domIndex);
@@ -64,7 +60,16 @@ class ComponentStructure {
       element => element === firstDomListElement
     );
     return domIndex < indexFirstDomListElement ? 0 : length;
-  }
+  };
+
+  return {
+    ...toRefs(state),
+    _isRootComponent,
+    render,
+    updated,
+    getUnderlyingVm,
+    getVmIndexFromDomIndex
+  };
 }
 
-export { ComponentStructure };
+export { useComponentStructure };
