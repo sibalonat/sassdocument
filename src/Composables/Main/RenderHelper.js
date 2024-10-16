@@ -1,9 +1,18 @@
-import { ComponentStructure } from "./ComponentStructure";
+// import { ComponentStructure } from "./ComponentStructure";
+import { useComponentStructure } from "./ComponentStructure";
 import { resolveComponent, TransitionGroup } from "vue";
 import { useHtmlUtils } from "../Utils/Tags";
 
 // composables
 const { isHtmlTag, isTransition } = useHtmlUtils();
+
+// const { useComponentStructure } = useComponentStructure();
+
+// _isRootComponent,
+// render,
+// updated,
+// getUnderlyingVm,
+// getVmIndexFromDomIndex
 
 function getSlot(slots, key) {
   const slotValue = slots[key];
@@ -55,7 +64,7 @@ function computeComponentStructure({ $slots, tag, realList, getKey }) {
   console.log(realList);
   const nodes = computeNodes({ $slots, realList, getKey });
   const root = getRootInformation(tag);
-  return new ComponentStructure({ nodes, root, realList });
+  return useComponentStructure({ nodes, root, realList });
 }
 
 export { computeComponentStructure };
