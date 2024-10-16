@@ -220,31 +220,6 @@ export default defineComponent({
       return draggedInList || !evt.willInsertAfter ? currentIndex : currentIndex + 1;
     }
 
-    function render() {
-      try {
-        error.value = false;
-        const { $slots, $attrs, tag, componentData } = getCurrentInstance().proxy;
-        const key = getKey.value;
-        const list = realList.value;
-
-        const structure = computeComponentStructure({
-          $slots,
-          tag,
-          list,
-          key
-        });
-        componentStructure.value = structure;
-
-        const attributes = getComponentAttributes({ $attrs, componentData });
-        console.log('attributes:', attributes);
-        
-        return componentStructure.value.render(h, attributes);
-      } catch (err) {
-        error.value = true;
-        return h("pre", { style: { color: "red" } }, err.stack);
-      }
-    }
-
     onMounted(() => {
       if (error.value) {
         return;
@@ -258,7 +233,7 @@ export default defineComponent({
         $attrs,
         callBackBuilder: {
           manageAndEmit: event => manageAndEmit(event),
-          emit: event => emitEvent.bind(event),
+          emit: event => emitEvent(event),
           manage: event => manage(event)
         }
       });
@@ -287,6 +262,27 @@ export default defineComponent({
       { deep: true }
     );
 
-    return () => render();
+    return () => {
+      try {
+        error.value = false;
+        const { $slots, $attrs, tag, componentData } = getCurrentInstance().proxy;
+        const key = getKey.value;
+        const list = realList.value;        
+
+        const structure = computeComponentStructure({
+          $slots,
+          tag,
+          realList: list,
+          getKey: key
+        });
+        componentStructure.value = structure;        
+
+        const attributes = getComponentAttributes({ $attrs, componentData });
+        return componentStructure.value.render(h, attributes);
+      } catch (err) {
+        error.value = true;
+        return h("pre", { style: { color: "red" } }, err.stack);
+      }
+    };
   }
 });
