@@ -18,8 +18,6 @@ function useComponentStructure({ nodes: { header, default: defaultNodes, footer 
   const _isRootComponent = () => state.externalComponent || state.rootTransition;
 
   const render = (h, attributes) => {
-    console.log('render attributes:', h);
-
     const { tag, children } = state;
     const option = !_isRootComponent() ? children : { default: () => children };
     return h(tag, attributes, option);
