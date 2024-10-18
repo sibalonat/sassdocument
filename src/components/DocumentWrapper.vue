@@ -51,26 +51,12 @@ onMounted(() => {});
 </script>
 
 <template>
-  <div class="grid w-9/12 grid-cols-12">
-    <!-- <nested-draggable :tasks="list" /> -->
-    <!-- <Item class="transition color swappable-item">
-      <template #default="{ item }">
-        {{ item.name }}
-      </template>
-    </Item> -->
-          <!-- <Draggable :list="list" :itemKey="item => item.name" tag="div" :disabled="!enabled" class="grid grid-cols-12 col-span-12 gap-4">
-            <template #default="{ item }">
-              <div class="col-span-12 box">
-                {{ item }}
-              </div>
-            </template>
-          </Draggable> -->
-
+  <div class="w-full">
           <draggable
           :list="list"
           :disabled="!enabled"
           item-key="name"
-          class="list-group"
+          class="grid grid-cols-16 list-group"
           ghost-class="ghost"
           :move="checkMove"
           @start="dragging = true"
@@ -78,68 +64,15 @@ onMounted(() => {});
         >
           <template #item="{ element }">
             <div class="list-group-item" :class="{ 'not-draggable': !enabled }">
-              <div>
+              <div class="border ">
                 {{ element.name }}
               </div>
             </div>
           </template>
         </draggable>
-
-
   </div>
-  <!-- <div class="grid w-9/12 grid-cols-12">
-    <nested-draggable :tasks="list" />
-
-  </div> -->
-  <!-- <div class="grid w-9/12 h-full grid-cols-12 gap-4 swappable-wrapper">
-    <div class="grid col-span-9 grid-rows-6 gap-4">
-      <div class="row-span-4 box">
-
-        <Item class="transition-colors swappable-item">
-          <template #default>
-            5
-          </template>
-</Item>
-</div>
-<div class="grid grid-cols-12 row-span-2 gap-4">
-  <div class="col-span-5 box ">
-    <Item class="transition-colors swappable-item">
-      <template #default>
-              1
-            </template>
-    </Item>
-  </div>
-  <div class="col-span-7 box">
-    <Item class="transition-colors swappable-item">
-      <template #default>
-              2
-            </template>
-    </Item>
-  </div>
-</div>
-</div>
-<div class="grid col-span-3 grid-rows-6 gap-4">
-  <div class="row-span-2 box ">
-    <Item class="transition-colors swappable-item">
-      <template #default>
-            3
-          </template>
-    </Item>
-  </div>
-  <div class="row-span-4 box">
-    <Item class="transition-colors swappable-item">
-      <template #default>
-            4
-          </template>
-    </Item>
-  </div>
-</div>
-</div> -->
 </template>
 <style>
-.resizing {
-  border: 2px dashed red;
-}
 .ghost {
   opacity: 0.5;
   background: #c8ebfb;
