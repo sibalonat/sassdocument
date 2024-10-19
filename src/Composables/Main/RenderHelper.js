@@ -6,14 +6,6 @@ import { useHtmlUtils } from "../Utils/Tags";
 // composables
 const { isHtmlTag, isTransition } = useHtmlUtils();
 
-// const { useComponentStructure } = useComponentStructure();
-
-// _isRootComponent,
-// render,
-// updated,
-// getUnderlyingVm,
-// getVmIndexFromDomIndex
-
 function getSlot(slots, key) {
   const slotValue = slots[key];
   return slotValue ? slotValue() : [];
