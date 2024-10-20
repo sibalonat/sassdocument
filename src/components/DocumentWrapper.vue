@@ -2,9 +2,6 @@
 import { onMounted, reactive, ref } from 'vue';
 import { useDynamicSheets } from '../Spreadsheet/DynamicSheets';
 import { storeToRefs } from 'pinia';
-import Group from './Partial/Group.vue';
-import Item from './Partial/Items/ItemElement.vue';
-import NestedDraggable from './Partial/Items/NestedDraggable.vue';
 import Draggable from './VueDraggable/Draggable';
 
 const store = useDynamicSheets();
@@ -12,15 +9,14 @@ const { data, base } = storeToRefs(store);
 const order = ref(15);
 const enabled = ref(true);
 const list = reactive([
-  { name: "John", id: 0, col: 1, row: 1 },
-  { name: "Joao", id: 1, col: 2, row: 1 },
-  { name: "Jean", id: 2, col: 3, row: 1 }
+  { name: "John", id: 0, col: 1, row: 1, colSpan: 2 },
+  { name: "Joao", id: 1, col: 3, row: 1, colSpan: 2 },
+  { name: "Jean", id: 2, col: 5, row: 1, colSpan: 2 }
 ]);
 
 // methods
 function checkMove(e) {
   console.log(e);
-  
   window.console.log("Future index: " + e.draggedContext.futureIndex);
 }
 
@@ -43,11 +39,16 @@ function addItemAtPosition(event) {
     name: `New Item ${list.length + 1}`,
     id: list.length,
     col: adjustedCol,
-    row: adjustedRow
+    row: adjustedRow,
+    colSpan: 2 // Default colSpan
   };
 
   // Add the new item to the list
   list.push(newItem);
+}
+
+function getTailwindGridClasses(element) {
+  return `col-start-${element.col} row-start-${element.row} col-span-${element.colSpan}`;
 }
 
 onMounted(() => {});
@@ -67,11 +68,9 @@ onMounted(() => {});
     >
       <template #item="{ element }">
         <div
-          class="col-span-2 list-group-item"
-          :class="{ 'not-draggable': !enabled }"
-          :style="{ gridColumnStart: element.col, gridRowStart: element.row }"
+          :class="['list-group-item', getTailwindGridClasses(element), { 'not-draggable': !enabled }]"
         >
-          <div class="col-span-2 border">
+          <div class="border">
             {{ element.name }}
           </div>
         </div>
@@ -84,8 +83,5 @@ onMounted(() => {});
 .ghost {
   opacity: 0.5;
   background: #c8ebfb;
-}
-.list-group-item {
-  grid-column: span 2;
 }
 </style>

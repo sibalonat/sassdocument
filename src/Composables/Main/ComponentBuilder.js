@@ -35,6 +35,7 @@ function createSortableOption({ $attrs, callBackBuilder }) {
     });
   });
   const draggable = `[data-draggable]${options.draggable || ""}`;
+  
   return {
     ...options,
     draggable

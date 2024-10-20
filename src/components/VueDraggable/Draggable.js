@@ -235,7 +235,7 @@ export default defineComponent({
           manageAndEmit: event => manageAndEmit(event),
           emit: event => emitEvent(event),
           manage: event => manage(event)
-        }
+        },
       });
 
       targetDomElement.value = $el.nodeType === 1 ? $el : $el.parentElement;
