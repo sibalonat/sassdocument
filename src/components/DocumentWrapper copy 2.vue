@@ -2,9 +2,6 @@
 import { onMounted, reactive, ref } from 'vue';
 import { useDynamicSheets } from '../Spreadsheet/DynamicSheets';
 import { storeToRefs } from 'pinia';
-import Group from './Partial/Group.vue';
-import Item from './Partial/Items/ItemElement.vue';
-import NestedDraggable from './Partial/Items/NestedDraggable.vue';
 import Draggable from './VueDraggable/Draggable';
 
 const store = useDynamicSheets();
@@ -35,50 +32,8 @@ function addItemAtPosition(event) {
   const row = Math.floor(y / rowHeight) + 1; // +1 to start from 1 instead of 0
 
   // Ensure the column index iterates until 16 and then restarts from the beginning on the next row
-  let adjustedCol = col;
-  let adjustedRow = row;
-
-  // Adjust the column and row based on existing items
-  list.forEach(item => {
-    if (item.row === row && item.col <= col && col < item.col + item.colSpan) {
-      adjustedCol = item.col + item.colSpan;
-    }
-  });
-
-  // Calculate the total occupied columns in the current row
-  const occupiedCols = list
-    .filter(item => item.row === adjustedRow)
-    .reduce((acc, item) => acc + item.colSpan, 0);
-
-  // Adjust the column to account for the occupied columns
-  adjustedCol += occupiedCols;
-
-  // If the adjusted column exceeds 16, move to the next row
-  while (adjustedCol > 16) {
-    adjustedCol -= 16;
-    adjustedRow += 1;
-  }
-
-  // Add empty items to fill the grid until the new item position
-  for (let r = 1; r <= adjustedRow; r++) {
-    let currentCol = 1;
-    while (currentCol <= 16) {
-      if (!list.some(item => item.row === r && item.col === currentCol)) {
-        list.push({ name: ' ', id: `empty-${r}-${currentCol}`, col: currentCol, row: r, colSpan: 1 });
-      }
-      currentCol++;
-    }
-  }
-
-  // Adjust the column to the correct position based on the click
-  adjustedCol = col;
-  adjustedRow = row;
-
-  // Ensure the column index iterates until 16 and then restarts from the beginning on the next row
-  while (adjustedCol > 16) {
-    adjustedCol -= 16;
-    adjustedRow += 1;
-  }
+  const adjustedCol = col % 16 === 0 ? 16 : col % 16;
+  const adjustedRow = col % 16 === 0 ? row + Math.floor(col / 16) - 1 : row + Math.floor(col / 16);
 
   const newItem = {
     name: `New Item ${list.length + 1}`,
