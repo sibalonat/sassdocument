@@ -52,8 +52,6 @@ function getRootInformation(tag) {
 }
 
 function computeComponentStructure({ $slots, tag, realList, getKey }) {
-  
-  console.log(realList);
   const nodes = computeNodes({ $slots, realList, getKey });
   const root = getRootInformation(tag);
   return useComponentStructure({ nodes, root, realList });

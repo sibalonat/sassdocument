@@ -5,6 +5,7 @@ import { storeToRefs } from 'pinia';
 import Draggable from './VueDraggable/Draggable';
 
 const store = useDynamicSheets();
+const { createRow, getTailwindGridClasses } = store;
 const { data, base } = storeToRefs(store);
 const order = ref(15);
 const enabled = ref(true);
@@ -89,9 +90,6 @@ function addItemAtPosition(event) {
   list.push(newItem);
 }
 
-function getTailwindGridClasses(element) {
-  return `col-start-${element.col} row-start-${element.row} col-span-${element.colSpan}`;
-}
 
 onMounted(() => {});
 </script>
