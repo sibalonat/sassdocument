@@ -2,9 +2,6 @@
 import { onMounted, reactive, ref } from 'vue';
 import { useDynamicSheets } from '../Spreadsheet/DynamicSheets';
 import { storeToRefs } from 'pinia';
-import Group from './Partial/Group.vue';
-import Item from './Partial/Items/ItemElement.vue';
-import NestedDraggable from './Partial/Items/NestedDraggable.vue';
 import Draggable from './VueDraggable/Draggable';
 
 const store = useDynamicSheets();
