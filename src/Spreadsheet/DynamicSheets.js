@@ -3,12 +3,32 @@ import { computed, reactive, ref } from 'vue'
 
 export const useDynamicSheets = defineStore('sheets', () => {
     // state
-    const base = reactive({
-        name: '',
-        rows: null,
-        columns: null,
-        data: [],
-    })
+    // const base = reactive({
+    //     name: '',
+    //     rows: null,
+    //     columns: null,
+    //     data: [],
+    // })
+    const base = ref([])
+
+    // const row = ref([
+    //     { name: "\u00A0", id: 0, col: 1, row: 1, colSpan: 1 },
+    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+    //     { name: "\u00A0", id: 2, col: 5, row: 1, colSpan: 1 }
+    //   ])
 
     // computed
     // const alphabetArray = ref();
@@ -26,13 +46,13 @@ export const useDynamicSheets = defineStore('sheets', () => {
         for (let i = 0; i < 16; i++) {
             newRow.push({
                 id: generateUniqueId(),
-                value: '',
+                name: "\u00A0",
                 col: 1,
                 row: 1,
                 colSpan: 1,
             });
         }
-        base.data.push(newRow);
+        base.value.push(newRow);
     }
 
     createRow();
@@ -40,11 +60,12 @@ export const useDynamicSheets = defineStore('sheets', () => {
     // Function to add a new column to the right of the last column
     // Function to get the Tailwind CSS grid classes for each cell
     function getTailwindGridClasses(element) {
-        return `
-        col-start-${String(element.col)} 
-        row-start-${String(element.row)} 
-        col-span-${String(element.colSpan)}
-        `;
+        // const first = `col-start-${String(element.col)}`;
+        // const second = `row-start-${String(element.row)}`;
+        const third = `col-span-${String(element.colSpan)}`;
+        // const string = `${first} ${second} ${third}`;
+        const string = `${third}`;
+        return string;
     }
     
 
@@ -64,5 +85,6 @@ export const useDynamicSheets = defineStore('sheets', () => {
         createRow,
         getTailwindGridClasses,
         data,
+        // row,
     };
 })

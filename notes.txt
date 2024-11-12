@@ -5,3 +5,7 @@ https://shopify.github.io/draggable/examples/grid-layout.html
 
 type of 
 D:\Laragon Rujtme\brenneroserver\2\resources\js\Pages\Admin\ProcessTemplates
+
+
+
+https://github.com/SortableJS/Vue.Draggable
