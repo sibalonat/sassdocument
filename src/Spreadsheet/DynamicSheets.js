@@ -42,20 +42,27 @@ export const useDynamicSheets = defineStore('sheets', () => {
 
     // Example function to create a new row with 16 columns, each having a unique ID
     const createRow = () => {
-        const newRow = [];
+        // Determine the row number for the new row
+        let newRowNumber = 1;
+        if (base.value.length > 0) {
+            const lastElement = base.value[base.value.length - 1];
+            newRowNumber = lastElement.row + 1;
+        }
+
+        // Create a new row with 16 columns
         for (let i = 0; i < 16; i++) {
-            newRow.push({
+            const data = {
                 id: generateUniqueId(),
                 name: "\u00A0",
-                col: 1,
-                row: 1,
+                col: i + 1, // Set the column number
+                row: newRowNumber,
                 colSpan: 1,
-            });
+            };
+            base.value.push(data);
         }
-        base.value.push(newRow);
     }
 
-    createRow();
+    // createRow();
 
     // Function to add a new column to the right of the last column
     // Function to get the Tailwind CSS grid classes for each cell

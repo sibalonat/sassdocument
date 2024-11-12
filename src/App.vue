@@ -1,5 +1,9 @@
 <script setup>
 import DocumentWrapper from './components/DocumentWrapper.vue';
+import { useDynamicSheets } from './Spreadsheet/DynamicSheets';
+
+const store = useDynamicSheets();
+const { createRow } = store;
 </script>
 
 <template>
@@ -11,7 +15,7 @@ import DocumentWrapper from './components/DocumentWrapper.vue';
         </p>
       </div>
       <div class="col-span-3 my-auto">
-        <button type="button" class="px-4 text-sm border rounded-md">
+        <button type="button" class="px-4 text-sm border rounded-md" @click="createRow">
           Add Group
         </button>
       </div>

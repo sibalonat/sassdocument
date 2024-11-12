@@ -4,54 +4,37 @@ import { useDynamicSheets } from '../Spreadsheet/DynamicSheets';
 import { storeToRefs } from 'pinia';
 import Draggable from './VueDraggable/Draggable';
 import AlphabetHeader from './Header/AlphabetHeader.vue';
-import { watch } from 'vue';
 
 const store = useDynamicSheets();
 const { createRow, getTailwindGridClasses } = store;
 const { data, base, alphabet } = storeToRefs(store);
 const order = ref(15);
 const enabled = ref(true);
-
-const list = base.value
+// const list = reactive([
+//   { name: "\u00A0", id: 0, col: 1, row: 1, colSpan: 1 },
+//   { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+//   { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+//   { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+//   { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+//   { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+//   { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+//   { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+//   { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+//   { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+//   { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+//   { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+//   { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+//   { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+//   { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
+//   { name: "\u00A0", id: 2, col: 5, row: 1, colSpan: 1 }
+// ]);
+const list = ref([...base.value])
 
 // methods
 function checkMove(e) {
   console.log(e);
   window.console.log("Future index: " + e.draggedContext.futureIndex);
 }
-
-
-function cleanUpRows() {
-  const rows = {};
-
-  // Group columns by row
-  list.forEach(item => {
-    if (!rows[item.row]) {
-      rows[item.row] = [];
-    }
-    rows[item.row].push(item);
-  });
-
-  // Process each row
-  Object.keys(rows).forEach(rowKey => {
-    const row = rows[rowKey];
-    const totalColSpan = row.reduce((acc, item) => acc + item.colSpan, 0);
-
-    if (totalColSpan === 16) {
-      // Filter out columns that don't have a name property or have a name property equal to "\u00A0"
-      rows[rowKey] = row.filter(item => item.name && item.name !== "\u00A0");
-    }
-  });
-
-  // Flatten the rows back into the list
-  list.value = Object.values(rows).flat();
-}
-
-// Watcher to observe changes to the list array
-watch(list, (newList, oldList) => {
-  cleanUpRows();
-}, { deep: true });
-
 
 
 onMounted(() => {
@@ -66,7 +49,7 @@ onMounted(() => {
   <div class="w-full h-full">
     <AlphabetHeader :header="alphabet" />
     <draggable
-      :list="list"
+      :list="base"
       :disabled="!enabled"
       item-key="id"
       class="grid w-full gap-0 grid-cols-16"
