@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 
 export const useDynamicSheets = defineStore('sheets', () => {
     // state
@@ -9,6 +9,10 @@ export const useDynamicSheets = defineStore('sheets', () => {
         columns: null,
         data: [],
     })
+
+    // computed
+    // const alphabetArray = ref();
+    const alphabet = computed(() => Array.from({ length: 16 }, (_, i) => String.fromCharCode(65 + i)));
 
     // TODO: Create a function to generate a new id for each cell
     // Function to generate a unique and complex ID
@@ -36,7 +40,11 @@ export const useDynamicSheets = defineStore('sheets', () => {
     // Function to add a new column to the right of the last column
     // Function to get the Tailwind CSS grid classes for each cell
     function getTailwindGridClasses(element) {
-        return `col-start-${String(element.col)} row-start-${String(element.row)} col-span-${String(element.colSpan)}`;
+        return `
+        col-start-${String(element.col)} 
+        row-start-${String(element.row)} 
+        col-span-${String(element.colSpan)}
+        `;
     }
     
 
@@ -51,6 +59,7 @@ export const useDynamicSheets = defineStore('sheets', () => {
 
     const data = ref([]);
     return {
+        alphabet,
         base,
         createRow,
         getTailwindGridClasses,
