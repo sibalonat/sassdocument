@@ -83,8 +83,9 @@ onMounted(() => {
         <div
           :class="['list-group-item', getTailwindGridClasses(element), { 'not-draggable': !enabled }]"
         >
+            <DynamicHeroIcon name="equals" :size="3" />
+            <!-- classes="w-3 h-3 handle my-auto" -->
         <div class="border">
-            <DynamicHeroIcon name="equals" classes="w-3 h-3 handle my-auto" />
             {{ element.name }}
           </div>
         </div>

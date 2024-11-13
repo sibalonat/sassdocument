@@ -1,5 +1,5 @@
 <template>
-    <component :class="classes" :is="icon" />
+    <component :class="sizeClasses" :is="icon" />
 </template>
 
 <script setup>
@@ -7,7 +7,7 @@ import * as solid from '@heroicons/vue/24/solid';
 import * as outline from '@heroicons/vue/24/outline';
 import { computed, onMounted } from 'vue';
 
-const props = defineProps({
+const prop = defineProps({
       name: {
         type: String,
         required: true,
@@ -37,18 +37,12 @@ const icons = computed(() => {
 });
 
 const icon = computed(() => {
-  return icons.value[props.outline ? 'outline' : 'solid'][buildIconComponentName(props.name)];
+  return icons.value[prop.outline ? 'outline' : 'solid'][buildIconComponentName(prop.name)];
 });
 
 const sizeClasses = computed(() => {
-    let finalClasses = {};
-    // default and/or min button size is 6
-    const size = props.size && props.size >= 3 ? props.size : 6;
-    console.log(typeof size);
-    
-    finalClasses['h-' + size.toString()] = true;
-    finalClasses['w-' + size.toString()] = true;
-    return finalClasses
+  const size = prop.size && prop.size >= 3 ? prop.size : 6;
+  return [`h-${size} w-${size}`];
 });
 
 // const colorClasses = computed(() => {
@@ -73,3 +67,5 @@ onMounted(() => {
   // console.log(typeof props.size);
 });
 </script>
+
+
