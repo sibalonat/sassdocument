@@ -62,6 +62,13 @@ export const useDynamicSheets = defineStore('sheets', () => {
         }
     }
 
+    function updateColSpan(id, newColSpan) {
+        const item = base.value.find(item => item.id === id);
+        if (item) {
+            item.colSpan = newColSpan;
+        }
+    }
+
     // createRow();
 
     // Function to add a new column to the right of the last column
@@ -97,10 +104,11 @@ export const useDynamicSheets = defineStore('sheets', () => {
     return {
         alphabet,
         base,
+        data,
         createRow,
+        updateColSpan,
         getTailwindGridClasses,
         initialIfListEmpty,
-        data,
         // row,
     };
 })
