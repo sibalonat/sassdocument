@@ -5,9 +5,11 @@ import { storeToRefs } from 'pinia';
 import Draggable from './VueDraggable/Draggable';
 import AlphabetHeader from './Header/AlphabetHeader.vue';
 import { watch } from 'vue';
+import DynamicHeroIcon from './General/HeroIcon/DynamicHeroIcon.vue';
+
 
 const store = useDynamicSheets();
-const { createRow, getTailwindGridClasses } = store;
+const { createRow, getTailwindGridClasses, initialIfListEmpty } = store;
 const { data, base, alphabet } = storeToRefs(store);
 const order = ref(15);
 const enabled = ref(true);
@@ -57,6 +59,7 @@ watch(list, (newList, oldList) => {
 onMounted(() => {
   console.log(alphabet.value);
   console.log(base.value);
+  initialIfListEmpty()
   
   
 });
@@ -71,6 +74,7 @@ onMounted(() => {
       item-key="id"
       class="grid w-full gap-0 grid-cols-16"
       ghost-class="ghost"
+      handler=".handle"
       :move="checkMove"
       @start="dragging = true"
       @end="dragging = false"
@@ -79,7 +83,8 @@ onMounted(() => {
         <div
           :class="['list-group-item', getTailwindGridClasses(element), { 'not-draggable': !enabled }]"
         >
-          <div class="border">
+        <div class="border">
+            <DynamicHeroIcon name="equals" classes="w-3 h-3 handle my-auto" />
             {{ element.name }}
           </div>
         </div>

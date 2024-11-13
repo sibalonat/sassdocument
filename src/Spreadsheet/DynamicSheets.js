@@ -74,6 +74,14 @@ export const useDynamicSheets = defineStore('sheets', () => {
         const string = `${third}`;
         return string;
     }
+
+    function initialIfListEmpty() {
+        if (base.value.length === 0) {
+            for (let index = 0; index < 16; index++) {
+                createRow();
+            }
+        }
+    }
     
 
     // const createSheet = (name, rows, columns) => {
@@ -91,6 +99,7 @@ export const useDynamicSheets = defineStore('sheets', () => {
         base,
         createRow,
         getTailwindGridClasses,
+        initialIfListEmpty,
         data,
         // row,
     };
