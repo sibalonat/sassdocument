@@ -1,40 +1,48 @@
 import { defineStore } from 'pinia'
 import { computed, reactive, ref } from 'vue'
 
-export const useDynamicResizeCell = defineStore('cell-resize', () => {
+export function useDynamicResizeCell(list) {
     // state
     let resizingElementId = ref(null);
     let initialMouseX = ref(null);
     let initialColSpan = ref(null);
 
-    function handleMouseDown(event, id) {
-        resizingElementId = id;
-        initialMouseX = event.clientX;
-        const element = list.find(item => item.id === id);
-        initialColSpan = element.colSpan;
-        document.addEventListener('mousemove', handleMouseMove);
-        document.addEventListener('mouseup', handleMouseUp);
+    function handleDragStart(event, id) {
+        resizingElementId.value = id;
+        initialMouseX.value = event.clientX;
+        const element = list.value.find(item => item.id === id);
+        initialColSpan.value = element.colSpan;
     }
     
-    function handleMouseMove(event) {
-        if (resizingElementId !== null) {
+    function handleDrag(event) {
+        if (resizingElementId.value !== null) {
             const container = document.querySelector('.grid');
             const rect = container.getBoundingClientRect();
             const colWidth = rect.width / 16;
-            const deltaX = event.clientX - initialMouseX;
-            const newColSpan = initialColSpan + Math.floor(deltaX / colWidth);
-            store.updateColSpan(resizingElementId, newColSpan);
+            console.log('colWidth', colWidth);
+            
+            const deltaX = event.clientX - initialMouseX.value;
+            const newColSpan = initialColSpan.value + Math.floor(deltaX / colWidth);
+            updateColSpan(resizingElementId.value, newColSpan);
         }
     }
     
-    function handleMouseUp() {
-        resizingElementId = null;
-        initialMouseX = null;
-        initialColSpan = null;
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
+    function handleDragEnd() {
+        resizingElementId.value = null;
+        initialMouseX.value = null;
+        initialColSpan.value = null;
     }
+
+    function updateColSpan(id, newColSpan) {
+        const item = list.value.find(item => item.id === id);
+        if (item) {
+            item.colSpan = newColSpan;
+        }
+    }
+
     return {
-        handleMouseDown,
+        handleDragStart,
+        handleDrag,
+        handleDragEnd
     };
-})
+}

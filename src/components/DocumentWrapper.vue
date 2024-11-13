@@ -12,7 +12,12 @@ import { useDynamicResizeCell } from '../Spreadsheet/DynamicSizeForCell';
 const store = useDynamicSheets();
 const { createRow, getTailwindGridClasses, initialIfListEmpty, updateColSpan } = store;
 const { data, base, alphabet } = storeToRefs(store);
-const cell = useDynamicResizeCell();
+const cell = useDynamicResizeCell(base);
+const { 
+  handleDragStart,
+  handleDrag,
+  handleDragEnd
+} = cell;
 const order = ref(15);
 const enabled = ref(true);
 
@@ -51,14 +56,14 @@ function cleanUpRows() {
   list.value = Object.values(rows).flat();
 }
 
-function handleResize(event, id) {
-  const container = event.currentTarget;
-  const rect = container.getBoundingClientRect();
-  const colWidth = rect.width / 16;
-  const newColSpan = Math.floor(event.clientX / colWidth) + 1;
+// function handleResize(event, id) {
+//   const container = event.currentTarget;
+//   const rect = container.getBoundingClientRect();
+//   const colWidth = rect.width / 16;
+//   const newColSpan = Math.floor(event.clientX / colWidth) + 1;
 
-  updateColSpan(id, newColSpan);
-}
+//   updateColSpan(id, newColSpan);
+// }
 
 // Watcher to observe changes to the list array
 watch(list, (newList, oldList) => {
@@ -83,7 +88,7 @@ onMounted(() => {
       :list="list"
       :disabled="!enabled"
       item-key="id"
-      class="grid w-full gap-0 grid-cols-16"
+      class="grid w-full gap-0 grid-cols-16 columns"
       ghost-class="ghost"
       handle=".handle"
       :move="checkMove"
@@ -99,7 +104,10 @@ onMounted(() => {
           <DynamicHeroIcon name="equals" :size="3" class="absolute cursor-pointer top-1/3 handle"  />
           {{ element.name }}
           <DynamicHeroIcon
-          @mousemove="handleResize($event, element.id)" 
+          @dragstart="handleDragStart(event, element.id)"
+          @drag="handleDrag(event)"
+          @dragend="handleDragEnd" 
+          draggable
           name="chevron-right" 
           :size="3" 
           class="absolute bottom-0 right-0 rotate-45 cursor-pointer"  />
