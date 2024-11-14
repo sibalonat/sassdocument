@@ -9,15 +9,18 @@ import DynamicHeroIcon from './General/HeroIcon/DynamicHeroIcon.vue';
 import { useDynamicResizeCell } from '../Spreadsheet/DynamicSizeForCell';
 
 
+//vueuse
+import { vResizeObserver } from '@vueuse/components'
+
 const store = useDynamicSheets();
 const { createRow, getTailwindGridClasses, initialIfListEmpty, updateColSpan } = store;
 const { data, base, alphabet } = storeToRefs(store);
 const cell = useDynamicResizeCell(base);
 const { 
-  handleDragStart,
+  // handleDragStart,
   // handleDrag,
   handleResize,
-  handleDragEnd
+  // handleDragEnd
 } = cell;
 const order = ref(15);
 const enabled = ref(true);
@@ -66,8 +69,16 @@ function cleanUpRows() {
 //   updateColSpan(id, newColSpan);
 // }
 
+function onResizeObserver(entries) {
+  for (const entry of entries) {
+    const id = entry.target.id;
+    handleResize(entry.contentRect, id);
+  }
+}
+
 // Watcher to observe changes to the list array
 watch(list, (newList, oldList) => {
+  console.log('list changed');
   cleanUpRows();
 }, { deep: true });
 
@@ -101,7 +112,7 @@ onMounted(() => {
         <div
           :id="element.id"
           :class="['list-group-item', getTailwindGridClasses(element), { 'not-draggable': !enabled }]"
-          @resize="(event) => handleResize(event, element.id)"
+          v-resize-observer="onResizeObserver"
         >
         <div class="relative border">
           <DynamicHeroIcon name="equals" :size="3" class="absolute cursor-pointer top-1/3 handle"  />
