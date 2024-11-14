@@ -15,7 +15,8 @@ const { data, base, alphabet } = storeToRefs(store);
 const cell = useDynamicResizeCell(base);
 const { 
   handleDragStart,
-  handleDrag,
+  // handleDrag,
+  handleResize,
   handleDragEnd
 } = cell;
 const order = ref(15);
@@ -98,19 +99,21 @@ onMounted(() => {
     >
       <template #item="{ element }">
         <div
+          :id="element.id"
           :class="['list-group-item', getTailwindGridClasses(element), { 'not-draggable': !enabled }]"
+          @resize="(event) => handleResize(event, element.id)"
         >
         <div class="relative border">
           <DynamicHeroIcon name="equals" :size="3" class="absolute cursor-pointer top-1/3 handle"  />
           {{ element.name }}
-          <DynamicHeroIcon
-          @dragstart="handleDragStart(event, element.id)"
-          @drag="handleDrag(event)"
+          <!-- @dragstart="(event) => handleDragStart(event, element.id)"
+          @drag="(event) => handleDrag(event, element.id)"
           @dragend="handleDragEnd" 
-          draggable
+          draggable="true" -->
+          <DynamicHeroIcon
           name="chevron-right" 
           :size="3" 
-          class="absolute bottom-0 right-0 rotate-45 cursor-pointer"  />
+          class="absolute bottom-0 right-0 rotate-45 cursor-ew-resize"  />
           </div>
         </div>
       </template>
