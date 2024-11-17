@@ -23,6 +23,7 @@ const {
   // handleDragEnd
 } = cell;
 const order = ref(15);
+const div = ref([]);
 const enabled = ref(true);
 
 const list = base.value
@@ -90,6 +91,8 @@ onMounted(() => {
   console.log(alphabet.value);
   console.log(base.value);
   initialIfListEmpty()
+  console.log(div.value);
+  
   
   
 });
@@ -115,8 +118,9 @@ onMounted(() => {
         <div
           :id="element.id"
           :class="['list-group-item', getTailwindGridClasses(element), { 'not-draggable': !enabled }]"
-          v-resize-observer="(event) => onResizeObserver"
-        >
+          :ref="(el) => {div[element.id] = el}"
+          >
+          <!-- v-resize-observer="onResizeObserver" -->
         <div class="relative border">
           <DynamicHeroIcon name="equals" :size="3" class="absolute cursor-pointer top-1/3 handle"  />
           {{ element.name }}
@@ -127,6 +131,9 @@ onMounted(() => {
           <DynamicHeroIcon
           name="chevron-right" 
           :size="3" 
+          @mousedown="(event) => handleResize(event, element.id)"
+          @mousemove="(event) => handleResize(event, element.id)"
+          @mouseup="(event) => handleResize(event, element.id)"
           class="absolute bottom-0 right-0 rotate-45 cursor-ew-resize"  />
           </div>
         </div>
