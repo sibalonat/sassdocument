@@ -1,8 +1,11 @@
 import { defineStore } from 'pinia'
 import { computed, reactive, ref } from 'vue'
+import { useDynamicSheets } from './DynamicSheets';
 
 
 export function useDynamicResizeCell(list, gridColumns = 16) {
+    const store = useDynamicSheets();
+    const { updateColSpan } = store;
     // state
     let resizingElementId = ref(null);
     let initialWidth = ref(null);
@@ -21,29 +24,31 @@ export function useDynamicResizeCell(list, gridColumns = 16) {
     
     function handleResize(contentRect, id) {
         
-        calculateInitialStart(id);
+        console.log('handleResize', contentRect.width, id);
         
-        const colWidth = contentRect.width / initialColSpan.value;
+        // calculateInitialStart(id);
+        
+        // const colWidth = contentRect.width / initialColSpan.value;
 
-        // log
+        // // log
 
-        // Optional validation:
-        const newColSpan = Math.max(1, Math.min(initialColSpan.value + colWidth, gridColumns));
-        console.log('newColSpan', newColSpan);
+        // // Optional validation:
+        // const newColSpan = Math.max(1, Math.min(initialColSpan.value + colWidth, gridColumns));
+        // console.log('newColSpan', newColSpan);
         
     
-        updateColSpan(resizingElementId.value, newColSpan);
+        // updateColSpan(resizingElementId.value, newColSpan);
     }
 
 
-    function updateColSpan(id, newColSpan) {
-        const item = list.value.find(item => item.id === id);
-        console.log('item', item);
+    // function updateColSpan(id, newColSpan) {
+    //     const item = list.value.find(item => item.id === id);
+    //     console.log('item', item);
         
-        if (item) {
-            item.colSpan = newColSpan;
-        }
-    }
+    //     if (item) {
+    //         item.colSpan = newColSpan;
+    //     }
+    // }
 
     return {
         handleResize,

@@ -70,6 +70,8 @@ function cleanUpRows() {
 // }
 
 function onResizeObserver(entries) {
+  console.log('resize observer');
+  
   for (const entry of entries) {
     const id = entry.target.id;
     handleResize(entry.contentRect, id);
@@ -96,6 +98,7 @@ onMounted(() => {
 <template>
   <div class="w-full h-full">
     <AlphabetHeader :header="alphabet" />
+    <!-- {{ list }} -->
     <draggable
       :list="list"
       :disabled="!enabled"
@@ -112,7 +115,7 @@ onMounted(() => {
         <div
           :id="element.id"
           :class="['list-group-item', getTailwindGridClasses(element), { 'not-draggable': !enabled }]"
-          v-resize-observer="onResizeObserver"
+          v-resize-observer="(event) => onResizeObserver"
         >
         <div class="relative border">
           <DynamicHeroIcon name="equals" :size="3" class="absolute cursor-pointer top-1/3 handle"  />

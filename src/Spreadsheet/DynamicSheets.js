@@ -60,6 +60,8 @@ export const useDynamicSheets = defineStore('sheets', () => {
             };
             base.value.push(data);
         }
+        console.log(base.value);
+        
     }
 
     function updateColSpan(id, newColSpan) {
@@ -74,6 +76,8 @@ export const useDynamicSheets = defineStore('sheets', () => {
     // Function to add a new column to the right of the last column
     // Function to get the Tailwind CSS grid classes for each cell
     function getTailwindGridClasses(element) {
+        // console.log(element);
+        
         // const first = `col-start-${String(element.col)}`;
         // const second = `row-start-${String(element.row)}`;
         const third = `col-span-${String(element.colSpan)}`;
