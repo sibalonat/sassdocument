@@ -6,56 +6,101 @@ import { useResizeObserver } from '@vueuse/core'
 export function useDynamicResizeCell(list, gridColumns = 16) {
     const store = useDynamicSheets();
     const { updateColSpan } = store;
+    const div = ref([]);
     // state
-    let resizingElementId = ref(null);
-    let initialWidth = ref(null);
-    let initialColSpan = ref(null);
+    let resizingElement = ref(null);
+    let proxyElement = ref(null);
+    let baseWidth = ref(null);
+    // let initialWidth = ref(null);
+    // let initialColSpan = ref(null);
 
-    function calculateInitialStart(id) {
-        console.log('handleDragStart', id);
-        resizingElementId.value = id;
-        const container = document.querySelector(`#${id}`);
+    // function calculateInitialStart(id) {
+    //     console.log('handleDragStart', id);
+    //     resizingElement.value = div.value[id];
+    //     const container = document.querySelector(`#${id}`);
         
-        console.log(container.getBoundingClientRect().width);
-        initialWidth.value = container.getBoundingClientRect().width;
-        const element = list.value.find(item => item.id === id);
-        initialColSpan.value = element.colSpan;
-    }
+    //     console.log(container.getBoundingClientRect().width);
+    //     initialWidth.value = container.getBoundingClientRect().width;
+    //     const element = list.value.find(item => item.id === id);
+    //     initialColSpan.value = element.colSpan;
+    // }
     
     function handleResize(contentRect, id) {
-        
         console.log('handleResize', contentRect.width, id);
-        useResizeObserver(el, (entries) => {
+
+        useResizeObserver(contentRect, (entries) => {
             const entry = entries[0]
             const { width, height } = entry.contentRect
-            text.value = `width: ${width}, height: ${height}`
+            console.log(width, height);
+            
         })
         
-        // calculateInitialStart(id);
-        
-        // const colWidth = contentRect.width / initialColSpan.value;
-
-        // // log
-
-        // // Optional validation:
-        // const newColSpan = Math.max(1, Math.min(initialColSpan.value + colWidth, gridColumns));
-        // console.log('newColSpan', newColSpan);
-        
-    
-        // updateColSpan(resizingElementId.value, newColSpan);
+        // const element = div.value[id];
+        // if (element) {
+        //     const newWidth = contentRect.width;
+        //     element.style.width = newWidth + 'px';
+        //     // Optionally, update colSpan based on new width
+        //     // const newColSpan = Math.floor(newWidth / colWidth);
+        //     // updateColSpan(id, newColSpan);
+        // }
     }
 
-
-    // function updateColSpan(id, newColSpan) {
-    //     const item = list.value.find(item => item.id === id);
-    //     console.log('item', item);
+    function handleMouseDown(event, element, list) {
+        // console.log('handleMouseDown', element);
+        // console.log('handleMouseDown', event);
         
-    //     if (item) {
-    //         item.colSpan = newColSpan;
-    //     }
-    // }
+        // event.preventDefault();
+        // if (element) {
+        //     resizingElement.value = element;
+        //     proxyElement.value = list.find(item => item.id === element.id);
+        //     console.log(proxyElement.value);
+        
+            
+        //     window.addEventListener('mousemove', handleMouseMove);
+        //     window.addEventListener('mouseup', handleMouseUp);
+        // }
+        event.preventDefault();
+        if (element) {
+            // resizingElementId.value = id;
+            resizingElement.value = element;
+            // initialMouseX.value = event.clientX;
+            proxyElement.value = list.value.find(item => item.id === element.id);
+            // initialColSpan.value = element.colSpan;
+            const container = document.querySelector('.grid');
+            const rect = container.getBoundingClientRect();
+            baseWidth.value = rect.width / 16; // Calculate base width per column
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mouseup', handleMouseUp);
+        }
+    }
+
+    function handleMouseMove(event) {
+        console.log('handleMouseMove', resizingElement.value);
+        
+        const element = resizingElement.value;
+        // handleResize(event, element);
+        console.log(element);
+        
+        if (element) {
+            const newWidth = event.clientX - element.offsetLeft;
+            console.log('newWidth', newWidth);
+            
+            element.style.width = newWidth + 'px';
+            // Optionally, update colSpan based on new width
+            // const newColSpan = Math.floor(newWidth / colWidth);
+            // updateColSpan(id, newColSpan);
+        }
+    }
+
+    function handleMouseUp() {
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+        resizingElement.value = null;
+    }
 
     return {
+        div,
         handleResize,
+        handleMouseDown,
     };
 }

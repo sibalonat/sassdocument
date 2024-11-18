@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, reactive, ref } from 'vue';
+import { nextTick, onMounted, reactive, ref } from 'vue';
 import { useDynamicSheets } from '../Spreadsheet/DynamicSheets';
 import { storeToRefs } from 'pinia';
 import Draggable from './VueDraggable/Draggable';
@@ -7,9 +7,6 @@ import AlphabetHeader from './Header/AlphabetHeader.vue';
 import { watch } from 'vue';
 import DynamicHeroIcon from './General/HeroIcon/DynamicHeroIcon.vue';
 import { useDynamicResizeCell } from '../Spreadsheet/DynamicSizeForCell';
-
-
-//vueuse
 import { vResizeObserver } from '@vueuse/components'
 
 const store = useDynamicSheets();
@@ -17,13 +14,11 @@ const { createRow, getTailwindGridClasses, initialIfListEmpty, updateColSpan } =
 const { data, base, alphabet } = storeToRefs(store);
 const cell = useDynamicResizeCell(base);
 const { 
-  // handleDragStart,
-  // handleDrag,
+  div,
   handleResize,
-  // handleDragEnd
+  handleMouseDown
 } = cell;
 const order = ref(15);
-const div = ref([]);
 const enabled = ref(true);
 
 const list = base.value
@@ -33,7 +28,6 @@ function checkMove(e) {
   console.log(e);
   window.console.log("Future index: " + e.draggedContext.futureIndex);
 }
-
 
 function cleanUpRows() {
   const rows = {};
@@ -61,23 +55,14 @@ function cleanUpRows() {
   list.value = Object.values(rows).flat();
 }
 
-// function handleResize(event, id) {
-//   const container = event.currentTarget;
-//   const rect = container.getBoundingClientRect();
-//   const colWidth = rect.width / 16;
-//   const newColSpan = Math.floor(event.clientX / colWidth) + 1;
-
-//   updateColSpan(id, newColSpan);
-// }
-
-function onResizeObserver(entries) {
-  console.log('resize observer');
+// function onResizeObserver(entries) {
+//   console.log('resize observer');
   
-  for (const entry of entries) {
-    const id = entry.target.id;
-    handleResize(entry.contentRect, id);
-  }
-}
+//   for (const entry of entries) {
+//     const id = entry.target.id;
+//     handleResize(entry.contentRect, id);
+//   }
+// }
 
 // Watcher to observe changes to the list array
 watch(list, (newList, oldList) => {
@@ -85,23 +70,19 @@ watch(list, (newList, oldList) => {
   cleanUpRows();
 }, { deep: true });
 
-
-
 onMounted(() => {
   console.log(alphabet.value);
   console.log(base.value);
   initialIfListEmpty()
-  console.log(div.value);
-  
-  
-  
+  // nextTick(() => {
+  //   console.log(typeof div.value);
+  // }); 
 });
 </script>
 
 <template>
   <div class="w-full h-full">
     <AlphabetHeader :header="alphabet" />
-    <!-- {{ list }} -->
     <draggable
       :list="list"
       :disabled="!enabled"
@@ -114,26 +95,20 @@ onMounted(() => {
       @start="dragging = true"
       @end="dragging = false"
     >
-      <template #item="{ element }">
-        <div
+    <!-- v-resize-observer="onResizeObserver" -->
+    <template #item="{ element }">
+      <div
           :id="element.id"
           :class="['list-group-item', getTailwindGridClasses(element), { 'not-draggable': !enabled }]"
-          :ref="(el) => { div[element.id] = el }" >
-          <!-- v-resize-observer="onResizeObserver" -->
-        <div class="relative border">
-          <DynamicHeroIcon name="equals" :size="3" class="absolute cursor-pointer top-1/3 handle"  />
-          {{ element.name }}
-          <!-- @dragstart="(event) => handleDragStart(event, element.id)"
-          @drag="(event) => handleDrag(event, element.id)"
-          @dragend="handleDragEnd" 
-          draggable="true" -->
-          <DynamicHeroIcon
-          name="chevron-right" 
-          :size="3" 
-          @mousedown="(event) => handleResize(event, element.id)"
-          @mousemove="(event) => handleResize(event, element.id)"
-          @mouseup="(event) => handleResize(event, element.id)"
-          class="absolute bottom-0 right-0 rotate-45 cursor-ew-resize"  />
+          :ref="(el) => { div[element.id] = el }">
+          <div class="relative border">
+            <DynamicHeroIcon name="equals" :size="3" class="absolute cursor-pointer top-1/3 handle"  />
+            {{ element.name }}
+            <DynamicHeroIcon
+              name="chevron-right" 
+              :size="3" 
+              @mousedown="(event) => handleMouseDown(event, div[element.id], list)"
+              class="absolute bottom-0 right-0 rotate-45 cursor-ew-resize"  />
           </div>
         </div>
       </template>
