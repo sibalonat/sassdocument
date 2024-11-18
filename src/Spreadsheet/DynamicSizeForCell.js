@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, reactive, ref } from 'vue'
 import { useDynamicSheets } from './DynamicSheets';
-
+import { useResizeObserver } from '@vueuse/core'
 
 export function useDynamicResizeCell(list, gridColumns = 16) {
     const store = useDynamicSheets();
@@ -25,6 +25,11 @@ export function useDynamicResizeCell(list, gridColumns = 16) {
     function handleResize(contentRect, id) {
         
         console.log('handleResize', contentRect.width, id);
+        useResizeObserver(el, (entries) => {
+            const entry = entries[0]
+            const { width, height } = entry.contentRect
+            text.value = `width: ${width}, height: ${height}`
+        })
         
         // calculateInitialStart(id);
         

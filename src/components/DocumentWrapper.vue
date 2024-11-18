@@ -118,8 +118,7 @@ onMounted(() => {
         <div
           :id="element.id"
           :class="['list-group-item', getTailwindGridClasses(element), { 'not-draggable': !enabled }]"
-          :ref="(el) => {div[element.id] = el}"
-          >
+          :ref="(el) => { div[element.id] = el }" >
           <!-- v-resize-observer="onResizeObserver" -->
         <div class="relative border">
           <DynamicHeroIcon name="equals" :size="3" class="absolute cursor-pointer top-1/3 handle"  />
