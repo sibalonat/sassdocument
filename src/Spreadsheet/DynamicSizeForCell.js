@@ -82,10 +82,14 @@ export function useDynamicResizeCell(list, gridColumns = 16) {
         console.log(element);
         
         if (element) {
+            // const newWidth = event.clientX - element.offsetLeft;
             const newWidth = event.clientX - element.offsetLeft;
+            const newColSpan = Math.min(16, Math.max(1, Math.round(newWidth / baseWidth.value)));
+            element.style.width = newColSpan * baseWidth.value + 'px';
             console.log('newWidth', newWidth);
             
-            element.style.width = newWidth + 'px';
+            // element.style.width = newWidth + 'px';
+            updateColSpan(resizingElement.value.id, newColSpan);
             // Optionally, update colSpan based on new width
             // const newColSpan = Math.floor(newWidth / colWidth);
             // updateColSpan(id, newColSpan);
