@@ -68,6 +68,8 @@ export const useDynamicSheets = defineStore('sheets', () => {
         const item = base.value.find(item => item.id === id);
         if (item) {
             item.colSpan = newColSpan;
+            // Trigger reactivity update
+            base.value = [...base.value];
         }
     }
 
@@ -76,14 +78,7 @@ export const useDynamicSheets = defineStore('sheets', () => {
     // Function to add a new column to the right of the last column
     // Function to get the Tailwind CSS grid classes for each cell
     function getTailwindGridClasses(element) {
-        // console.log(element);
-        
-        // const first = `col-start-${String(element.col)}`;
-        // const second = `row-start-${String(element.row)}`;
-        const third = `col-span-${String(element.colSpan)}`;
-        // const string = `${first} ${second} ${third}`;
-        const string = `${third}`;
-        return string;
+        return `col-span-${String(element.colSpan)}`;
     }
 
     function initialIfListEmpty() {

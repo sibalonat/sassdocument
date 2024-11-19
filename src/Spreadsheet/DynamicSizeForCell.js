@@ -46,19 +46,6 @@ export function useDynamicResizeCell(list, gridColumns = 16) {
     }
 
     function handleMouseDown(event, element, list) {
-        // console.log('handleMouseDown', element);
-        // console.log('handleMouseDown', event);
-        
-        // event.preventDefault();
-        // if (element) {
-        //     resizingElement.value = element;
-        //     proxyElement.value = list.find(item => item.id === element.id);
-        //     console.log(proxyElement.value);
-        
-            
-        //     window.addEventListener('mousemove', handleMouseMove);
-        //     window.addEventListener('mouseup', handleMouseUp);
-        // }
         event.preventDefault();
         if (element) {
             // resizingElementId.value = id;
@@ -75,24 +62,18 @@ export function useDynamicResizeCell(list, gridColumns = 16) {
     }
 
     function handleMouseMove(event) {
-        console.log('handleMouseMove', resizingElement.value);
-        
         const element = resizingElement.value;
-        // handleResize(event, element);
         console.log(element);
-        
         if (element) {
-            // const newWidth = event.clientX - element.offsetLeft;
             const newWidth = event.clientX - element.offsetLeft;
             const newColSpan = Math.min(16, Math.max(1, Math.round(newWidth / baseWidth.value)));
             element.style.width = newColSpan * baseWidth.value + 'px';
-            console.log('newWidth', newWidth);
             
-            // element.style.width = newWidth + 'px';
             updateColSpan(resizingElement.value.id, newColSpan);
-            // Optionally, update colSpan based on new width
-            // const newColSpan = Math.floor(newWidth / colWidth);
-            // updateColSpan(id, newColSpan);
+            // Ensure proxyElement exists before updating colSpan
+            if (proxyElement.value) {
+                proxyElement.value.colSpan = newColSpan;
+            }
         }
     }
 
