@@ -1,7 +1,5 @@
-import { defineStore } from 'pinia'
 import { computed, reactive, ref } from 'vue'
 import { useDynamicSheets } from './DynamicSheets';
-import { useResizeObserver } from '@vueuse/core'
 
 export function useDynamicResizeCell(list, gridColumns = 16) {
     const store = useDynamicSheets();
@@ -11,39 +9,6 @@ export function useDynamicResizeCell(list, gridColumns = 16) {
     let resizingElement = ref(null);
     let proxyElement = ref(null);
     let baseWidth = ref(null);
-    // let initialWidth = ref(null);
-    // let initialColSpan = ref(null);
-
-    // function calculateInitialStart(id) {
-    //     console.log('handleDragStart', id);
-    //     resizingElement.value = div.value[id];
-    //     const container = document.querySelector(`#${id}`);
-        
-    //     console.log(container.getBoundingClientRect().width);
-    //     initialWidth.value = container.getBoundingClientRect().width;
-    //     const element = list.value.find(item => item.id === id);
-    //     initialColSpan.value = element.colSpan;
-    // }
-    
-    function handleResize(contentRect, id) {
-        console.log('handleResize', contentRect.width, id);
-
-        useResizeObserver(contentRect, (entries) => {
-            const entry = entries[0]
-            const { width, height } = entry.contentRect
-            console.log(width, height);
-            
-        })
-        
-        // const element = div.value[id];
-        // if (element) {
-        //     const newWidth = contentRect.width;
-        //     element.style.width = newWidth + 'px';
-        //     // Optionally, update colSpan based on new width
-        //     // const newColSpan = Math.floor(newWidth / colWidth);
-        //     // updateColSpan(id, newColSpan);
-        // }
-    }
 
     function handleMouseDown(event, element, list) {
         event.preventDefault();
@@ -63,7 +28,7 @@ export function useDynamicResizeCell(list, gridColumns = 16) {
 
     function handleMouseMove(event) {
         const element = resizingElement.value;
-        console.log(element);
+
         if (element) {
             const newWidth = event.clientX - element.offsetLeft;
             const newColSpan = Math.min(16, Math.max(1, Math.round(newWidth / baseWidth.value)));

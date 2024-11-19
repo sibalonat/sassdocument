@@ -10,25 +10,7 @@ export const useDynamicSheets = defineStore('sheets', () => {
     //     data: [],
     // })
     const base = ref([])
-
-    // const row = ref([
-    //     { name: "\u00A0", id: 0, col: 1, row: 1, colSpan: 1 },
-    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
-    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
-    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
-    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
-    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
-    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
-    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
-    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
-    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
-    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
-    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
-    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
-    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
-    //     { name: "\u00A0", id: 1, col: 3, row: 1, colSpan: 1 },
-    //     { name: "\u00A0", id: 2, col: 5, row: 1, colSpan: 1 }
-    //   ])
+    const data = ref([]);
 
     // computed
     // const alphabetArray = ref();
@@ -59,9 +41,7 @@ export const useDynamicSheets = defineStore('sheets', () => {
                 colSpan: 1,
             };
             base.value.push(data);
-        }
-        console.log(base.value);
-        
+        }        
     }
 
     function updateColSpan(id, newColSpan) {
@@ -72,8 +52,6 @@ export const useDynamicSheets = defineStore('sheets', () => {
             base.value = [...base.value];
         }
     }
-
-    // createRow();
 
     // Function to add a new column to the right of the last column
     // Function to get the Tailwind CSS grid classes for each cell
@@ -88,26 +66,14 @@ export const useDynamicSheets = defineStore('sheets', () => {
             }
         }
     }
-    
 
-    // const createSheet = (name, rows, columns) => {
-
-
-
-    // { name: "John", id: 0, col: 1, row: 1, colSpan: 1 },
-    // { name: "Joao", id: 1, col: 3, row: 1, colSpan:  },
-    // { name: "Jean", id: 2, col: 5, row: 1, colSpan: 1 }
-
-
-    const data = ref([]);
     return {
         alphabet,
         base,
         data,
         createRow,
         updateColSpan,
-        getTailwindGridClasses,
+        getTailwindGridClasses, 
         initialIfListEmpty,
-        // row,
     };
 })

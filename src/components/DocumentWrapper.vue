@@ -7,7 +7,7 @@ import AlphabetHeader from './Header/AlphabetHeader.vue';
 import { watch } from 'vue';
 import DynamicHeroIcon from './General/HeroIcon/DynamicHeroIcon.vue';
 import { useDynamicResizeCell } from '../Spreadsheet/DynamicSizeForCell';
-import { vResizeObserver } from '@vueuse/components'
+// import { vResizeObserver } from '@vueuse/components'
 
 const store = useDynamicSheets();
 const { createRow, getTailwindGridClasses, initialIfListEmpty, updateColSpan } = store;
@@ -15,7 +15,6 @@ const { data, base, alphabet } = storeToRefs(store);
 const cell = useDynamicResizeCell(base);
 const { 
   div,
-  handleResize,
   handleMouseDown
 } = cell;
 const order = ref(15);
@@ -54,15 +53,6 @@ function cleanUpRows() {
   // Flatten the rows back into the list
   list.value = Object.values(rows).flat();
 }
-
-// function onResizeObserver(entries) {
-//   console.log('resize observer');
-  
-//   for (const entry of entries) {
-//     const id = entry.target.id;
-//     handleResize(entry.contentRect, id);
-//   }
-// }
 
 // Watcher to observe changes to the list array
 watch(list, (newList, oldList) => {
