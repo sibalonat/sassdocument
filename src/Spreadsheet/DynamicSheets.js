@@ -51,28 +51,38 @@ export const useDynamicSheets = defineStore('sheets', () => {
 
       // Group columns by row
       list.value.forEach(item => {
+        console.log(item.row);
+        
         if (!rows[item.row]) {
           rows[item.row] = [];
         }
         rows[item.row].push(item);
+        console.log(rows);
+        
       });
 
-      // console.log(rows);
+      console.log(rows);
     
       // Process each row
       Object.keys(rows).forEach(rowKey => {
         
         const row = rows[rowKey];
-        console.log(row);
         const totalColSpan = row.reduce((acc, item) => acc + item.colSpan, 0);
+        console.log(totalColSpan);
 
         if (totalColSpan === 16) {
+            console.log('Row is full');
+            
           // Filter out columns that don't have a name property or have a name property equal to "\u00A0"
-          rows[rowKey] = row.filter(item => item.name && item.name !== "\u00A0");
+          rows[rowKey] = row.filter(item => {
+            const keep = item.name && item.name !== "\u00A0";
+            console.log(`Item ${item.id} (${item.name}): ${keep ? 'kept' : 'removed'}`);
+            return keep;
+          });
         }
       });
 
-      console.log(Object.values(rows).flat());
+      console.log('Processed rows:', rows);
       
 
       // Flatten the rows back into the list
