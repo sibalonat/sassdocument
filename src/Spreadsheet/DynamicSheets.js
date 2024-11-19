@@ -3,13 +3,13 @@ import { computed, reactive, ref } from 'vue'
 
 export const useDynamicSheets = defineStore('sheets', () => {
     // state
-    // const base = reactive({
+    // const list = reactive({
     //     name: '',
     //     rows: null,
     //     columns: null,
     //     data: [],
     // })
-    const base = ref([])
+    const list = ref([])
     const data = ref([]);
 
     // computed
@@ -26,8 +26,8 @@ export const useDynamicSheets = defineStore('sheets', () => {
     const createRow = () => {
         // Determine the row number for the new row
         let newRowNumber = 1;
-        if (base.value.length > 0) {
-            const lastElement = base.value[base.value.length - 1];
+        if (list.value.length > 0) {
+            const lastElement = list.value[list.value.length - 1];
             newRowNumber = lastElement.row + 1;
         }
 
@@ -40,16 +40,51 @@ export const useDynamicSheets = defineStore('sheets', () => {
                 row: newRowNumber,
                 colSpan: 1,
             };
-            base.value.push(data);
+            list.value.push(data);
         }        
     }
 
+    function cleanUpRows() {
+      const rows = {};
+      console.log(list);
+    
+
+      // Group columns by row
+      list.value.forEach(item => {
+        if (!rows[item.row]) {
+          rows[item.row] = [];
+        }
+        rows[item.row].push(item);
+      });
+
+      // console.log(rows);
+    
+      // Process each row
+      Object.keys(rows).forEach(rowKey => {
+        
+        const row = rows[rowKey];
+        console.log(row);
+        const totalColSpan = row.reduce((acc, item) => acc + item.colSpan, 0);
+
+        if (totalColSpan === 16) {
+          // Filter out columns that don't have a name property or have a name property equal to "\u00A0"
+          rows[rowKey] = row.filter(item => item.name && item.name !== "\u00A0");
+        }
+      });
+
+      console.log(Object.values(rows).flat());
+      
+
+      // Flatten the rows back into the list
+    //   list.value = Object.values(rows).flat();
+    }
+
     function updateColSpan(id, newColSpan) {
-        const item = base.value.find(item => item.id === id);
+        const item = list.value.find(item => item.id === id);
         if (item) {
             item.colSpan = newColSpan;
             // Trigger reactivity update
-            base.value = [...base.value];
+            list.value = [...list.value];
         }
     }
 
@@ -60,7 +95,7 @@ export const useDynamicSheets = defineStore('sheets', () => {
     }
 
     function initialIfListEmpty() {
-        if (base.value.length === 0) {
+        if (list.value.length === 0) {
             for (let index = 0; index < 16; index++) {
                 createRow();
             }
@@ -69,9 +104,10 @@ export const useDynamicSheets = defineStore('sheets', () => {
 
     return {
         alphabet,
-        base,
+        list,
         data,
         createRow,
+        cleanUpRows,
         updateColSpan,
         getTailwindGridClasses, 
         initialIfListEmpty,

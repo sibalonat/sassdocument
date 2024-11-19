@@ -1,7 +1,7 @@
 import { computed, reactive, ref } from 'vue'
 import { useDynamicSheets } from './DynamicSheets';
 
-export function useDynamicResizeCell(list, gridColumns = 16) {
+export function useDynamicResizeCell() {
     const store = useDynamicSheets();
     const { updateColSpan } = store;
     const div = ref([]);
@@ -16,7 +16,7 @@ export function useDynamicResizeCell(list, gridColumns = 16) {
             // resizingElementId.value = id;
             resizingElement.value = element;
             // initialMouseX.value = event.clientX;
-            proxyElement.value = list.value.find(item => item.id === element.id);
+            proxyElement.value = list.find(item => item.id === element.id);
             // initialColSpan.value = element.colSpan;
             const container = document.querySelector('.grid');
             const rect = container.getBoundingClientRect();
@@ -50,7 +50,6 @@ export function useDynamicResizeCell(list, gridColumns = 16) {
 
     return {
         div,
-        handleResize,
         handleMouseDown,
     };
 }

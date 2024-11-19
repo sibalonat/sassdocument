@@ -97,7 +97,7 @@ export default defineComponent({
       return componentStructure.value.getUnderlyingVm(domElement) || null;
     }
 
-    function getUnderlyingPotencialDraggableComponent(htmElement) {
+    function getUnderlyingPotentialDraggableComponent(htmElement) {
       return htmElement.__draggable_component__;
     }
 
@@ -126,7 +126,7 @@ export default defineComponent({
     }
 
     function getRelatedContextFromMoveEvent({ to, related }) {
-      const component = getUnderlyingPotencialDraggableComponent(to);
+      const component = getUnderlyingPotentialDraggableComponent(to);
       if (!component) {
         return { component };
       }
