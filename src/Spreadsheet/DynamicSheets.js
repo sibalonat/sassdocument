@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import { computed, reactive, ref } from 'vue'
 
+import { groupBy } from 'lodash';
+
 export const useDynamicSheets = defineStore('sheets', () => {
     // state
     // const list = reactive({
@@ -11,6 +13,7 @@ export const useDynamicSheets = defineStore('sheets', () => {
     // })
     const list = ref([])
     const data = ref([]);
+    
 
     // computed
     // const alphabetArray = ref();
@@ -45,48 +48,38 @@ export const useDynamicSheets = defineStore('sheets', () => {
     }
 
     function cleanUpRows() {
-      const rows = {};
+    //   const rows = {};
       console.log(list);
-    
-
-      // Group columns by row
-      list.value.forEach(item => {
-        console.log(item.row);
-        
-        if (!rows[item.row]) {
-          rows[item.row] = [];
-        }
-        rows[item.row].push(item);
-        console.log(rows);
-        
-      });
-
+      const rows = groupBy(list.value, 'row');
       console.log(rows);
-    
-      // Process each row
-      Object.keys(rows).forEach(rowKey => {
-        
-        const row = rows[rowKey];
-        const totalColSpan = row.reduce((acc, item) => acc + item.colSpan, 0);
-        console.log(totalColSpan);
-
-        if (totalColSpan === 16) {
-            console.log('Row is full');
-            
-          // Filter out columns that don't have a name property or have a name property equal to "\u00A0"
-          rows[rowKey] = row.filter(item => {
-            const keep = item.name && item.name !== "\u00A0";
-            console.log(`Item ${item.id} (${item.name}): ${keep ? 'kept' : 'removed'}`);
-            return keep;
-          });
-        }
-      });
-
-      console.log('Processed rows:', rows);
       
 
-      // Flatten the rows back into the list
-    //   list.value = Object.values(rows).flat();
+    // Process each row
+    Object.keys(rows).forEach(rowKey => {
+        const row = rows[rowKey];
+        let totalColSpan = row.reduce((acc, item) => acc + item.colSpan, 0);
+
+        // If the total colSpan exceeds 16, remove items with no name
+        if (totalColSpan > 16) {
+        const itemsToRemove = totalColSpan - 16;
+        let removed = 0;
+        for (let i = row.length - 1; i >= 0 && removed < itemsToRemove; i--) {
+            if (!row[i].name || row[i].name.trim() === "") {
+            row.splice(i, 1);
+            removed++;
+            }
+        }
+        }
+
+        // If the total colSpan is exactly 16, remove items with no name
+        if (totalColSpan === 16) {
+        for (let i = row.length - 1; i >= 0; i--) {
+            if (!row[i].name || row[i].name.trim() === "") {
+            row.splice(i, 1);
+            }
+        }
+        }
+    });
     }
 
     function updateColSpan(id, newColSpan) {
@@ -94,6 +87,8 @@ export const useDynamicSheets = defineStore('sheets', () => {
         if (item) {
             item.colSpan = newColSpan;
             // Trigger reactivity update
+           
+            // list.value = cleanUpRows();
             list.value = [...list.value];
         }
     }

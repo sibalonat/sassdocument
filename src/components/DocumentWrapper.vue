@@ -28,7 +28,10 @@ function checkMove(e) {
 // Watcher to observe changes to the list array
 watch(list, (newList, oldList) => {
   console.log('list changed');
-  cleanUpRows();
+  if(newList !== oldList) {
+    cleanUpRows()
+    console.log('newList === newList');
+  }
 }, { deep: true });
 
 onMounted(() => {
@@ -36,7 +39,7 @@ onMounted(() => {
   console.log(list.value);
   initialIfListEmpty()
   // nextTick(() => {
-  //   console.log(typeof div.value);
+  //   cleanUpRows();
   // }); 
 });
 </script>

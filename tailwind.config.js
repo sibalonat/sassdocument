@@ -18,7 +18,12 @@ export default {
   safelist: [
     {
       pattern: /col-span-\d+/,
-      variants: ['sm', 'md', 'lg', 'xl', '2xl'],
+    },
+    {
+      pattern: /h-\d+/,
+    },
+    {
+      pattern: /w-\d+/,
     },
   ],
   plugins: [],
