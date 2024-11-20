@@ -29,7 +29,7 @@ function checkMove(e) {
 watch(list, (newList, oldList) => {
   console.log('list changed');
   if(newList !== oldList) {
-    cleanUpRows()
+    // cleanUpRows()
     console.log('newList === newList');
   }
 }, { deep: true });

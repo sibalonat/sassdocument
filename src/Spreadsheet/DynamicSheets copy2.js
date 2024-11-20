@@ -47,44 +47,6 @@ export const useDynamicSheets = defineStore('sheets', () => {
         }        
     }
 
-    // function cleanUpRows() {
-    //     // Group columns by row using Lodash's groupBy
-    //     const rows = groupBy(list.value, 'row');
-      
-    //     // Process each row
-    //     Object.keys(rows).forEach(rowKey => {
-    //       const row = rows[rowKey];
-    //       let totalColSpan = row.reduce((acc, item) => acc + item.colSpan, 0);
-      
-    //       // If the total colSpan exceeds 16, remove items with no name
-    //       if (totalColSpan > 16) {
-    //         const itemsToRemove = totalColSpan - 16;
-    //         let removed = 0;
-    //         for (let i = row.length - 1; i >= 0 && removed < itemsToRemove; i--) {
-    //           if (!row[i].name || row[i].name.trim() === "") {
-    //             const index = list.value.findIndex(item => item.id === row[i].id && item.row === rowKey);
-    //             if (index !== -1) {
-    //               list.value.splice(index, 1);
-    //               removed++;
-    //             }
-    //           }
-    //         }
-    //       }
-      
-    //       // If the total colSpan is exactly 16, remove items with no name
-    //       if (totalColSpan === 16) {
-    //         for (let i = row.length - 1; i >= 0; i--) {
-    //           if (!row[i].name || row[i].name.trim() === "") {
-    //             const index = list.value.findIndex(item => item.id === row[i].id && item.row === rowKey);
-    //             if (index !== -1) {
-    //               list.value.splice(index, 1);
-    //             }
-    //           }
-    //         }
-    //       }
-    //     });
-    //   }
-
     function cleanUpRows() {
         // Group columns by row using Lodash's groupBy
         const rows = groupBy(list.value, 'row');
@@ -100,8 +62,11 @@ export const useDynamicSheets = defineStore('sheets', () => {
             let removed = 0;
             for (let i = row.length - 1; i >= 0 && removed < itemsToRemove; i--) {
               if (!row[i].name || row[i].name.trim() === "") {
-                row.splice(i, 1);
-                removed++;
+                const index = list.value.findIndex(item => item.id === row[i].id && item.row === rowKey);
+                if (index !== -1) {
+                  list.value.splice(index, 1);
+                  removed++;
+                }
               }
             }
           }
@@ -110,28 +75,15 @@ export const useDynamicSheets = defineStore('sheets', () => {
           if (totalColSpan === 16) {
             for (let i = row.length - 1; i >= 0; i--) {
               if (!row[i].name || row[i].name.trim() === "") {
-                row.splice(i, 1);
+                const index = list.value.findIndex(item => item.id === row[i].id && item.row === rowKey);
+                if (index !== -1) {
+                  list.value.splice(index, 1);
+                }
               }
             }
           }
-      
-          // Replace the original items in the list with the cleaned row
-          const rowIndices = list.value.reduce((indices, item, index) => {
-            if (item.row === rowKey) {
-              indices.push(index);
-            }
-            return indices;
-          }, []);
-      
-          rowIndices.forEach((index, i) => {
-            if (i < row.length) {
-              list.value[index] = row[i];
-            } else {
-              list.value.splice(index, 1);
-            }
-          });
         });
-    }
+      }
 
     function updateColSpan(id, newColSpan) {
         const item = list.value.find(item => item.id === id);

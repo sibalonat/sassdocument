@@ -3,7 +3,7 @@ import { useDynamicSheets } from './DynamicSheets';
 
 export function useDynamicResizeCell() {
     const store = useDynamicSheets();
-    const { updateColSpan } = store;
+    const { updateColSpan, cleanUpRows } = store;
     const div = ref([]);
     // state
     let resizingElement = ref(null);
@@ -43,9 +43,12 @@ export function useDynamicResizeCell() {
     }
 
     function handleMouseUp() {
+        cleanUpRows();
         window.removeEventListener('mousemove', handleMouseMove);
         window.removeEventListener('mouseup', handleMouseUp);
         resizingElement.value = null;
+        baseWidth.value = null;
+        proxyElement.value = null;
     }
 
     return {
