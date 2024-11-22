@@ -99,11 +99,7 @@ export const useDynamicSheets = defineStore('sheets', () => {
             const itemsToRemove = totalColSpan - 16;
             let removed = 0;
             for (let i = row.length - 1; i >= 0 && removed < itemsToRemove; i--) {
-              const index = list.value.findIndex(item => item.id === row[i].id && item.row === rowKey);
-              console.log(row[i].id);
-              // if (!row[i].name || row[i].name.trim() === "") {
-              if (index !== -1) {
-                list.value.splice(index, 1);
+              if (!row[i].name || row[i].name.trim() === "") {
                 row.splice(i, 1);
                 removed++;
               }
@@ -113,13 +109,32 @@ export const useDynamicSheets = defineStore('sheets', () => {
           // If the total colSpan is exactly 16, remove items with no name
           if (totalColSpan === 16) {
             for (let i = row.length - 1; i >= 0; i--) {
-              const index = list.value.findIndex(item => item.id === row[i].id && item.row === rowKey);
-              console.log(index);
-              // if (!row[i].name || row[i].name.trim() === "") {
-              if (index !== -1) {
-                list.value.splice(index, 1);
+              if (!row[i].name || row[i].name.trim() === "") {
                 row.splice(i, 1);
               }
+            }
+          }
+
+
+          // Filter items from the list with the same id as the row collection
+          const rowItems = list.value.filter(item => item.row == rowKey);
+
+          
+          
+
+          // Iterate over them to update the values of their properties from the row
+          rowItems.forEach((item, index) => {
+            if (index < row.length) {              
+              Object.assign(item, row[index]);
+            }
+          });
+
+          // Remove items with no name from the list
+          // Remove items with no name from the list
+          const rowItemIds = row.map(item => item.id);
+          for (let i = list.value.length - 1; i >= 0; i--) {
+            if (list.value[i].row == rowKey && !rowItemIds.includes(list.value[i].id) && (!list.value[i].name || list.value[i].name.trim() === "")) {
+              list.value.splice(i, 1);
             }
           }
       
