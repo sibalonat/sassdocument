@@ -99,7 +99,11 @@ export const useDynamicSheets = defineStore('sheets', () => {
             const itemsToRemove = totalColSpan - 16;
             let removed = 0;
             for (let i = row.length - 1; i >= 0 && removed < itemsToRemove; i--) {
-              if (!row[i].name || row[i].name.trim() === "") {
+              const index = list.value.findIndex(item => item.id === row[i].id && item.row === rowKey);
+              console.log(row[i].id);
+              // if (!row[i].name || row[i].name.trim() === "") {
+              if (index !== -1) {
+                list.value.splice(index, 1);
                 row.splice(i, 1);
                 removed++;
               }
@@ -109,27 +113,45 @@ export const useDynamicSheets = defineStore('sheets', () => {
           // If the total colSpan is exactly 16, remove items with no name
           if (totalColSpan === 16) {
             for (let i = row.length - 1; i >= 0; i--) {
-              if (!row[i].name || row[i].name.trim() === "") {
+              const index = list.value.findIndex(item => item.id === row[i].id && item.row === rowKey);
+              console.log(index);
+              // if (!row[i].name || row[i].name.trim() === "") {
+              if (index !== -1) {
+                list.value.splice(index, 1);
                 row.splice(i, 1);
               }
             }
           }
       
-          // Replace the original items in the list with the cleaned row
-          const rowIndices = list.value.reduce((indices, item, index) => {
-            if (item.row === rowKey) {
-              indices.push(index);
-            }
-            return indices;
-          }, []);
+          // // Replace the original items in the list with the cleaned row
+          // const rowIndices = list.value.reduce((indices, item, index) => {
+          //   if (item.row == rowKey) {
+          //     console.log(item);
+          //     indices.push(index);
+          //   }
+            
+          //   return indices;
+          // }, []);
+
+          // // Remove excess items first to avoid index shifting issues
+          // for (let i = rowIndices.length - 1; i >= row.length; i--) {
+          //   list.value.splice(rowIndices[i], 1);
+          // }
+          
       
-          rowIndices.forEach((index, i) => {
-            if (i < row.length) {
-              list.value[index] = row[i];
-            } else {
-              list.value.splice(index, 1);
-            }
-          });
+          // // rowIndices.forEach((index, i) => {
+          // //   if (i < row.length) {
+          // //     list.value[index] = row[i];
+          // //   } else {
+          // //     list.value.splice(index, 1);
+          // //   }
+          // // });
+          // // Update the remaining items
+          // rowIndices.forEach((index, i) => {
+          //   if (i < row.length) {
+          //     list.value[index] = row[i];
+          //   }
+          // });
         });
     }
 
