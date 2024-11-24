@@ -194,13 +194,17 @@ export const useDynamicSheets = defineStore('sheets', () => {
           }
         }
       }
+     
 
       // Remove items with no name from the list for this row
       for (let i = list.length - 1; i >= 0; i--) {
-        if (itemsToRemove.has(list[i].id) && list[i].row === rowNumber) {
+        if (itemsToRemove.has(list[i].id) && list[i].row == rowNumber) {
           list.splice(i, 1);
         }
       }
+
+      console.log(list);
+      
 
       // If the total colSpan is less than 16, add the necessary items
       if (totalColSpan < 16) {
