@@ -9,7 +9,12 @@ import DynamicHeroIcon from './General/HeroIcon/DynamicHeroIcon.vue';
 import { useDynamicResizeCell } from '../Spreadsheet/DynamicSizeForCell';
 
 const store = useDynamicSheets();
-const { createRow, getTailwindGridClasses, initialIfListEmpty, updateColSpan, cleanUpOnDragEnd } = store;
+const {  
+  getTailwindGridClasses, 
+  initialIfListEmpty,  
+  cleanUpOnDragEnd,
+  getRowIndexPlusOne,
+} = store;
 const { data, list, alphabet } = storeToRefs(store);
 const cell = useDynamicResizeCell(list);
 const { 
@@ -79,7 +84,7 @@ onMounted(() => {
     <div v-for="(row, rowIndex) in list" :key="rowIndex">
       <draggable
         :list="row"
-        :data-parent-row="rowIndex+1"
+        :data-parent-row="getRowIndexPlusOne(rowIndex)"
         :disabled="!enabled"
         item-key="id"
         group="rows"
@@ -94,7 +99,7 @@ onMounted(() => {
         <template #item="{ element }">
           <div
             :id="element.id"
-            :data-row="rowIndex+1"
+            :data-row="getRowIndexPlusOne(rowIndex)"
             :class="['list-group-item', getTailwindGridClasses(element), { 'not-draggable': !enabled }]"
             :ref="(el) => { div[element.id] = el }">
             <div class="relative border">
@@ -105,7 +110,6 @@ onMounted(() => {
                 :size="3"
                 @mousedown="(event) => handleMouseDown(event, div[element.id], row)"
                 class="absolute bottom-0 right-0 rotate-45 cursor-ew-resize" />
-              {{ rowIndex+1 }}
             </div>
           </div>
         </template>

@@ -25,6 +25,8 @@ export const useDynamicSheets = defineStore('sheets', () => {
     // Example function to create a new row with 16 columns, each having a unique ID
 
     function createRow(numRows) {
+      console.log('createRow');
+      
       const rows = [];
       let newRowNumber = 1;
   
@@ -176,6 +178,15 @@ export const useDynamicSheets = defineStore('sheets', () => {
         }
     }
 
+    function createRowOnClick(number) {
+        const rows = createRow(number);
+        list.value.push(...rows);
+    }
+
+    function getRowIndexPlusOne(index) {
+      return index + 1;
+    }
+
     return {
         alphabet,
         list,
@@ -184,6 +195,8 @@ export const useDynamicSheets = defineStore('sheets', () => {
         cleanUpRow,
         updateColSpan,
         cleanUpOnDragEnd,
+        createRowOnClick,
+        getRowIndexPlusOne,
         getTailwindGridClasses, 
         initialIfListEmpty,
         generateUniqueId,

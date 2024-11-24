@@ -3,7 +3,7 @@ import DocumentWrapper from './components/DocumentWrapper.vue';
 import { useDynamicSheets } from './Spreadsheet/DynamicSheets';
 
 const store = useDynamicSheets();
-const { createRow } = store;
+const { createRowOnClick } = store;
 </script>
 
 <template>
@@ -15,7 +15,7 @@ const { createRow } = store;
         </p>
       </div>
       <div class="col-span-3 my-auto">
-        <button type="button" class="px-4 text-sm border rounded-md" @click="createRow">
+        <button type="button" class="px-4 text-sm border rounded-md" @click="createRowOnClick(1)">
           Add Group
         </button>
       </div>
