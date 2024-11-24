@@ -47,127 +47,49 @@ export const useDynamicSheets = defineStore('sheets', () => {
         }        
     }
 
-    // function cleanUpRows() {
-    //     // Group columns by row using Lodash's groupBy
-    //     const rows = groupBy(list.value, 'row');
-      
-    //     // Process each row
-    //     Object.keys(rows).forEach(rowKey => {
-    //       const row = rows[rowKey];
-    //       let totalColSpan = row.reduce((acc, item) => acc + item.colSpan, 0);
-      
-    //       // If the total colSpan exceeds 16, remove items with no name
-    //       if (totalColSpan > 16) {
-    //         const itemsToRemove = totalColSpan - 16;
-    //         let removed = 0;
-    //         for (let i = row.length - 1; i >= 0 && removed < itemsToRemove; i--) {
-    //           if (!row[i].name || row[i].name.trim() === "") {
-    //             const index = list.value.findIndex(item => item.id === row[i].id && item.row === rowKey);
-    //             if (index !== -1) {
-    //               list.value.splice(index, 1);
-    //               removed++;
-    //             }
-    //           }
-    //         }
-    //       }
-      
-    //       // If the total colSpan is exactly 16, remove items with no name
-    //       if (totalColSpan === 16) {
-    //         for (let i = row.length - 1; i >= 0; i--) {
-    //           if (!row[i].name || row[i].name.trim() === "") {
-    //             const index = list.value.findIndex(item => item.id === row[i].id && item.row === rowKey);
-    //             if (index !== -1) {
-    //               list.value.splice(index, 1);
-    //             }
-    //           }
-    //         }
-    //       }
-    //     });
-    //   }
-
-    function cleanUpRows() {
-        // Group columns by row using Lodash's groupBy
-        const rows = groupBy(list.value, 'row');
-      
-        // Process each row
-        Object.keys(rows).forEach(rowKey => {
-          const row = rows[rowKey];
-          let totalColSpan = row.reduce((acc, item) => acc + item.colSpan, 0);
-      
-          // If the total colSpan exceeds 16, remove items with no name
-          if (totalColSpan > 16) {
-            const itemsToRemove = totalColSpan - 16;
-            let removed = 0;
-            for (let i = row.length - 1; i >= 0 && removed < itemsToRemove; i--) {
-              if (!row[i].name || row[i].name.trim() === "") {
-                row.splice(i, 1);
-                removed++;
-              }
-            }
+    function cleanUpRow(element) {
+      // Find the row items in the list
+      const rowItems = list.value.filter(item => item.row === element.row);
+    
+      if (rowItems.length === 0) return; // Skip if the row is empty
+    
+      let totalColSpan = rowItems.reduce((acc, item) => acc + item.colSpan, 0);
+    
+      // Track IDs of items to be removed for this row
+      const itemsToRemove = new Set();
+    
+      // If the total colSpan exceeds 16, remove items with no name
+      if (totalColSpan > 16) {
+        const excessColSpan = totalColSpan - 16;
+        let removedColSpan = 0;
+        for (let i = rowItems.length - 1; i >= 0 && removedColSpan < excessColSpan; i--) {
+          if (!rowItems[i].name || rowItems[i].name.trim() === "") {
+            itemsToRemove.add(rowItems[i].id);
+            removedColSpan += rowItems[i].colSpan;
+            rowItems.splice(i, 1);
           }
-      
-          // If the total colSpan is exactly 16, remove items with no name
-          if (totalColSpan === 16) {
-            for (let i = row.length - 1; i >= 0; i--) {
-              if (!row[i].name || row[i].name.trim() === "") {
-                row.splice(i, 1);
-              }
-            }
+        }
+      }
+    
+      // If the total colSpan is exactly 16, remove items with no name
+      if (totalColSpan === 16) {
+        for (let i = rowItems.length - 1; i >= 0; i--) {
+          if (!rowItems[i].name || rowItems[i].name.trim() === "") {
+            itemsToRemove.add(rowItems[i].id);
+            rowItems.splice(i, 1);
           }
+        }
+      }
 
-
-          // Filter items from the list with the same id as the row collection
-          const rowItems = list.value.filter(item => item.row == rowKey);
-
-          
-          
-
-          // Iterate over them to update the values of their properties from the row
-          rowItems.forEach((item, index) => {
-            if (index < row.length) {              
-              Object.assign(item, row[index]);
-            }
-          });
-
-          // Remove items with no name from the list
-          // Remove items with no name from the list
-          const rowItemIds = row.map(item => item.id);
-          for (let i = list.value.length - 1; i >= 0; i--) {
-            if (list.value[i].row == rowKey && !rowItemIds.includes(list.value[i].id) && (!list.value[i].name || list.value[i].name.trim() === "")) {
-              list.value.splice(i, 1);
-            }
-          }
+      console.log(itemsToRemove);
       
-          // // Replace the original items in the list with the cleaned row
-          // const rowIndices = list.value.reduce((indices, item, index) => {
-          //   if (item.row == rowKey) {
-          //     console.log(item);
-          //     indices.push(index);
-          //   }
-            
-          //   return indices;
-          // }, []);
-
-          // // Remove excess items first to avoid index shifting issues
-          // for (let i = rowIndices.length - 1; i >= row.length; i--) {
-          //   list.value.splice(rowIndices[i], 1);
-          // }
-          
-      
-          // // rowIndices.forEach((index, i) => {
-          // //   if (i < row.length) {
-          // //     list.value[index] = row[i];
-          // //   } else {
-          // //     list.value.splice(index, 1);
-          // //   }
-          // // });
-          // // Update the remaining items
-          // rowIndices.forEach((index, i) => {
-          //   if (i < row.length) {
-          //     list.value[index] = row[i];
-          //   }
-          // });
-        });
+    
+      // Remove items with no name from the list for this row
+      for (let i = list.value.length - 1; i >= 0; i--) {
+        if (itemsToRemove.has(list.value[i].id) && list.value[i].row === element.row) {
+          list.value.splice(i, 1);
+        }
+      }
     }
 
     function updateColSpan(id, newColSpan) {
@@ -200,7 +122,7 @@ export const useDynamicSheets = defineStore('sheets', () => {
         list,
         data,
         createRow,
-        cleanUpRows,
+        cleanUpRow,
         updateColSpan,
         getTailwindGridClasses, 
         initialIfListEmpty,
