@@ -38,7 +38,8 @@ function createSortableOption({ $attrs, callBackBuilder }) {
   
   return {
     ...options,
-    draggable
+    draggable,
+    group: 'shared' // Add this line to enable dragging between lists
   };
 }
 

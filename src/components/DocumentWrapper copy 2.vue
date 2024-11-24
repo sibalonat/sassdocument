@@ -9,7 +9,7 @@ import DynamicHeroIcon from './General/HeroIcon/DynamicHeroIcon.vue';
 import { useDynamicResizeCell } from '../Spreadsheet/DynamicSizeForCell';
 
 const store = useDynamicSheets();
-const { createRow, getTailwindGridClasses, initialIfListEmpty, updateColSpan, cleanUpOnDragEnd } = store;
+const { createRow, getTailwindGridClasses, initialIfListEmpty, updateColSpan, cleanUpRows } = store;
 const { data, list, alphabet } = storeToRefs(store);
 const cell = useDynamicResizeCell(list);
 const { 
@@ -26,6 +26,12 @@ function checkMove(e) {
   // futureIndex
 }
 
+function getRowId(row) {
+  if (row.children.lenth !== 0) {
+    row.children[0].getAttribute('data-row');
+  } 
+  return;
+}
 
 function handleDragStart(evt) {
   const element = evt.item;
@@ -34,35 +40,31 @@ function handleDragStart(evt) {
 
 function handleDragEnd(evt) {
   const element = evt.item;
-  const elementId = element.getAttribute('id');
   const fromRow = element.getAttribute('data-from-row');
-  const toRow = evt.to.getAttribute('data-parent-row');
-  const rowStart = list.value.find(row => row.some(item => item.row == fromRow));
-  const rowEnd = list.value.find(row => row.some(item => item.row == toRow));
-  console.log(rowStart);
-  console.log(rowEnd);
-  
+  console.log(evt.to);
+  const toRow = evt.to.closest('[data-row]').getAttribute('data-row');
+
+
+  console.log(`Moved from row ${fromRow} to row ${toRow}`);
   element.removeAttribute('data-from-row');
 
   // Update data-row for all elements in the target container
   Array.from(evt.to.children).forEach((child) => {
     child.setAttribute('data-row', toRow);
   });
-  
-  const item = list.value.flatMap(row => row).find(el => el.id == elementId);
-  
-  if (item) {
-    item.row = Number(toRow);
-  }
-  
-  // console.log(list.value);
-  cleanUpOnDragEnd(fromRow, rowStart);
-  cleanUpOnDragEnd(toRow, rowEnd);
-  
 
   // Update data-row for the dragged element
   element.setAttribute('data-row', toRow);
 }
+
+// Watcher to observe changes to the list array
+// watch(list, (newList, oldList) => {
+//   console.log('list changed');
+//   if(newList !== oldList) {
+//     // cleanUpRows()
+//     console.log('newList === newList');
+//   }
+// }, { deep: true });
 
 onBeforeMount(() => {
   initialIfListEmpty()

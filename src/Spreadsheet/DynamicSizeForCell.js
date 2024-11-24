@@ -9,14 +9,18 @@ export function useDynamicResizeCell() {
     let resizingElement = ref(null);
     let proxyElement = ref(null);
     let baseWidth = ref(null);
+    let activeRow = ref(null);
 
     function handleMouseDown(event, element, list) {
+        activeRow.value = list;
+        // console.log('activeRow', activeRow.value);
+        
         event.preventDefault();
         if (element) {
             // resizingElementId.value = id;
             resizingElement.value = element;
             // initialMouseX.value = event.clientX;
-            proxyElement.value = list.find(item => item.id === element.id);
+            proxyElement.value = activeRow.value.find(item => item.id === element.id);
             // initialColSpan.value = element.colSpan;
             const container = document.querySelector('.grid');
             const rect = container.getBoundingClientRect();
@@ -43,12 +47,13 @@ export function useDynamicResizeCell() {
     }
 
     function handleMouseUp() {
-        cleanUpRow(proxyElement.value);
+        cleanUpRow(proxyElement.value, activeRow.value);
         window.removeEventListener('mousemove', handleMouseMove);
         window.removeEventListener('mouseup', handleMouseUp);
         resizingElement.value = null;
         baseWidth.value = null;
         proxyElement.value = null;
+        activeRow.value = null;
     }
 
     return {

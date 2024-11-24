@@ -9,7 +9,7 @@ import DynamicHeroIcon from './General/HeroIcon/DynamicHeroIcon.vue';
 import { useDynamicResizeCell } from '../Spreadsheet/DynamicSizeForCell';
 
 const store = useDynamicSheets();
-const { createRow, getTailwindGridClasses, initialIfListEmpty, updateColSpan, cleanUpOnDragEnd } = store;
+const { createRow, getTailwindGridClasses, initialIfListEmpty, updateColSpan, cleanUpRows } = store;
 const { data, list, alphabet } = storeToRefs(store);
 const cell = useDynamicResizeCell(list);
 const { 
@@ -22,10 +22,9 @@ const enabled = ref(true);
 // methods
 function checkMove(e) {
   // console.log(e);
-  // window.console.log("Future index: " + e.draggedContext);
+  window.console.log("Future index: " + e.draggedContext);
   // futureIndex
 }
-
 
 function handleDragStart(evt) {
   const element = evt.item;
@@ -34,35 +33,34 @@ function handleDragStart(evt) {
 
 function handleDragEnd(evt) {
   const element = evt.item;
-  const elementId = element.getAttribute('id');
   const fromRow = element.getAttribute('data-from-row');
-  const toRow = evt.to.getAttribute('data-parent-row');
-  const rowStart = list.value.find(row => row.some(item => item.row == fromRow));
-  const rowEnd = list.value.find(row => row.some(item => item.row == toRow));
-  console.log(rowStart);
-  console.log(rowEnd);
-  
+  const toRow = element.getAttribute('data-row');
+
+  // Update the data-row attribute based on the closest item's row
+  const closestItem = evt.to.querySelector(`[data-row="${toRow}"]`);
+  if (closestItem) {
+    const closestRow = closestItem.getAttribute('data-row');
+    element.setAttribute('data-row', closestRow);
+  }
+
+  console.log(`Moved from row ${fromRow} to row ${toRow}`);
   element.removeAttribute('data-from-row');
 
-  // Update data-row for all elements in the target container
-  Array.from(evt.to.children).forEach((child) => {
-    child.setAttribute('data-row', toRow);
+  // Update data-row for all elements in the same row
+  const rowIndex = Array.from(evt.to.children).indexOf(element);
+  Array.from(evt.to.children).forEach((child, index) => {
+    child.setAttribute('data-row', rowIndex);
   });
-  
-  const item = list.value.flatMap(row => row).find(el => el.id == elementId);
-  
-  if (item) {
-    item.row = Number(toRow);
-  }
-  
-  // console.log(list.value);
-  cleanUpOnDragEnd(fromRow, rowStart);
-  cleanUpOnDragEnd(toRow, rowEnd);
-  
-
-  // Update data-row for the dragged element
-  element.setAttribute('data-row', toRow);
 }
+
+// Watcher to observe changes to the list array
+// watch(list, (newList, oldList) => {
+//   console.log('list changed');
+//   if(newList !== oldList) {
+//     // cleanUpRows()
+//     console.log('newList === newList');
+//   }
+// }, { deep: true });
 
 onBeforeMount(() => {
   initialIfListEmpty()
@@ -84,7 +82,6 @@ onMounted(() => {
     <div v-for="(row, rowIndex) in list" :key="rowIndex">
       <draggable
         :list="row"
-        :data-parent-row="rowIndex+1"
         :disabled="!enabled"
         item-key="id"
         group="rows"
@@ -99,7 +96,7 @@ onMounted(() => {
         <template #item="{ element }">
           <div
             :id="element.id"
-            :data-row="rowIndex+1"
+            :data-row="rowIndex"
             :class="['list-group-item', getTailwindGridClasses(element), { 'not-draggable': !enabled }]"
             :ref="(el) => { div[element.id] = el }">
             <div class="relative border">
@@ -110,7 +107,7 @@ onMounted(() => {
                 :size="3"
                 @mousedown="(event) => handleMouseDown(event, div[element.id], row)"
                 class="absolute bottom-0 right-0 rotate-45 cursor-ew-resize" />
-              {{ rowIndex+1 }}
+              {{ rowIndex }}
             </div>
           </div>
         </template>

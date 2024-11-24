@@ -26,30 +26,96 @@ export const useDynamicSheets = defineStore('sheets', () => {
     }
 
     // Example function to create a new row with 16 columns, each having a unique ID
-    const createRow = () => {
-        // Determine the row number for the new row
-        let newRowNumber = 1;
-        if (list.value.length > 0) {
-            const lastElement = list.value[list.value.length - 1];
-            newRowNumber = lastElement.row + 1;
-        }
+    // const createRow = () => {
+    //     // Determine the row number for the new row
+    //     let newRowNumber = 1;
+    //     if (list.value.length > 0) {
+    //         const lastElement = list.value[list.value.length - 1];
+    //         newRowNumber = lastElement.row + 1;
+    //     }
 
-        // Create a new row with 16 columns
-        for (let i = 0; i < 16; i++) {
-            const data = {
-                id: generateUniqueId(),
-                name: "\u00A0",
-                col: i + 1, // Set the column number
-                row: newRowNumber,
-                colSpan: 1,
-            };
-            list.value.push(data);
-        }        
+    //     // Create a new row with 16 columns
+    //     for (let i = 0; i < 16; i++) {
+    //         const data = {
+    //             id: generateUniqueId(),
+    //             name: "\u00A0",
+    //             col: i + 1, // Set the column number
+    //             row: newRowNumber,
+    //             colSpan: 1,
+    //         };
+    //         list.value.push(data);
+    //     }        
+    // }
+    // const createRow = (10) => {
+    //   const rows = [];
+  
+    //   for (let rowIndex = 0; rowIndex < numRows; rowIndex++) {
+    //       // Determine the row number for the new row
+    //       let newRowNumber = 1;
+    //       if (list.value.length > 0) {
+    //           const lastElement = list.value[list.value.length - 1];
+    //           newRowNumber = lastElement.row + 1;
+    //       }
+  
+    //       // Create a new row with 16 columns
+    //       const newRow = [];
+    //       for (let i = 0; i < 16; i++) {
+    //           const data = {
+    //               id: generateUniqueId(),
+    //               name: "\u00A0",
+    //               col: i + 1, // Set the column number
+    //               row: newRowNumber,
+    //               colSpan: 1,
+    //           };
+    //           newRow.push(data);
+    //       }
+    //       rows.push(newRow);
+
+    //       console.log(rows);
+          
+  
+    //       // // Update the list with the new row
+    //       // list.value.push(...newRow);
+    //   }
+  
+    //   return rows;
+    // }
+
+    function createRow(numRows) {
+      const rows = [];
+      let newRowNumber = 1;
+  
+      for (let rowIndex = 0; rowIndex < numRows; rowIndex++) {
+          // Determine the row number for the new row
+          if (list.value.length > 0) {
+              const lastElement = list.value[list.value.length - 1];
+              newRowNumber = lastElement.row + 1;
+          } else if (rows.length > 0) {
+            const lastElement = rows[rows.length - 1][0]; // Get the first element of the last row
+            newRowNumber = lastElement.row + 1;
+          }          
+  
+          // Create a new row with 16 columns
+          const newRow = [];
+          for (let i = 0; i < 16; i++) {
+              const data = {
+                  id: generateUniqueId(),
+                  name: "\u00A0",
+                  col: i + 1, // Set the column number
+                  row: newRowNumber,
+                  colSpan: 1,
+              };
+              newRow.push(data);
+          }
+          rows.push(newRow);
+      }
+  
+      return rows;
     }
 
-    function cleanUpRow(element) {
+    function cleanUpRow(element, row) {
       // Find the row items in the list
-      const rowItems = list.value.filter(item => item.row === element.row);
+      const rowItems = row.filter(item => item.row === element.row);
     
       if (rowItems.length === 0) return; // Skip if the row is empty
     
@@ -79,15 +145,75 @@ export const useDynamicSheets = defineStore('sheets', () => {
             rowItems.splice(i, 1);
           }
         }
-      }
-
-      console.log(itemsToRemove);
-      
+      }      
     
       // Remove items with no name from the list for this row
-      for (let i = list.value.length - 1; i >= 0; i--) {
-        if (itemsToRemove.has(list.value[i].id) && list.value[i].row === element.row) {
-          list.value.splice(i, 1);
+      for (let i = row.length - 1; i >= 0; i--) {
+        if (itemsToRemove.has(row[i].id) && row[i].row === element.row) {
+          row.splice(i, 1);
+        }
+      }
+    }
+
+    function cleanUpOnDragEnd(rowNumber, list) {
+      // Find the row items in the list
+      const rowItems = list.filter(item => item.row == rowNumber);
+      // console.log(rowItems);
+      
+
+      if (rowItems.length === 0) return; // Skip if the row is empty
+
+      let totalColSpan = rowItems.reduce((acc, item) => acc + item.colSpan, 0);
+      console.log(totalColSpan);
+      
+
+      // Track IDs of items to be removed for this row
+      const itemsToRemove = new Set();
+
+      // If the total colSpan exceeds 16, remove items with no name
+      if (totalColSpan > 16) {
+        const excessColSpan = totalColSpan - 16;
+        console.log(excessColSpan);
+        
+        let removedColSpan = 0;
+        for (let i = rowItems.length - 1; i >= 0 && removedColSpan < excessColSpan; i--) {
+          if (!rowItems[i].name || rowItems[i].name.trim() === "") {
+            itemsToRemove.add(rowItems[i].id);
+            removedColSpan += rowItems[i].colSpan;
+            rowItems.splice(i, 1);
+          }
+        }
+      }
+
+      // If the total colSpan is exactly 16, remove items with no name
+      if (totalColSpan === 16) {
+        for (let i = rowItems.length - 1; i >= 0; i--) {
+          if (!rowItems[i].name || rowItems[i].name.trim() === "") {
+            itemsToRemove.add(rowItems[i].id);
+            rowItems.splice(i, 1);
+          }
+        }
+      }
+
+      // Remove items with no name from the list for this row
+      for (let i = list.length - 1; i >= 0; i--) {
+        if (itemsToRemove.has(list[i].id) && list[i].row === rowNumber) {
+          list.splice(i, 1);
+        }
+      }
+
+      // If the total colSpan is less than 16, add the necessary items
+      if (totalColSpan < 16) {
+        const itemsToAdd = 16 - totalColSpan;
+        for (let i = 0; i < itemsToAdd; i++) {
+          const data = {
+            id: generateUniqueId(),
+            name: "\u00A0",
+            col: rowItems.length + i + 1, // Set the column number
+            row: rowNumber,
+            colSpan: 1,
+          };
+          list.push(data);
         }
       }
     }
@@ -97,8 +223,6 @@ export const useDynamicSheets = defineStore('sheets', () => {
         if (item) {
             item.colSpan = newColSpan;
             // Trigger reactivity update
-           
-            // list.value = cleanUpRows();
             list.value = [...list.value];
         }
     }
@@ -111,9 +235,8 @@ export const useDynamicSheets = defineStore('sheets', () => {
 
     function initialIfListEmpty() {
         if (list.value.length === 0) {
-            for (let index = 0; index < 16; index++) {
-                createRow();
-            }
+          const rows = createRow(10);
+          list.value.push(...rows);
         }
     }
 
@@ -124,7 +247,9 @@ export const useDynamicSheets = defineStore('sheets', () => {
         createRow,
         cleanUpRow,
         updateColSpan,
+        cleanUpOnDragEnd,
         getTailwindGridClasses, 
         initialIfListEmpty,
+        generateUniqueId,
     };
 })

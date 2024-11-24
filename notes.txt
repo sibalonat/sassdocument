@@ -8,4 +8,4 @@ D:\Laragon Rujtme\brenneroserver\2\resources\js\Pages\Admin\ProcessTemplates
 
 
 
-https://github.com/SortableJS/Vue.Draggable
+https://github.com/SortableJS/vue.draggable.next

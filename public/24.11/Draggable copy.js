@@ -1,13 +1,14 @@
 import Sortable from "sortablejs";
-import { useHtmlHelper } from '../../Composables/Utils/HtmlHelper';
+import { useHtmlHelper } from '../../src/Composables/Utils/HtmlHelper';
 import {
   getComponentAttributes,
   createSortableOption,
   getValidSortableEntries
-} from "../../Composables/Main/ComponentBuilder";
-import { computeComponentStructure } from "../../Composables/Main/RenderHelper";
-import { emitsArray } from "../../Composables/Main/SortableEvents";
+} from "../../src/Composables/Main/ComponentBuilder";
+import { computeComponentStructure } from "../../src/Composables/Main/RenderHelper";
+import { emitsArray } from "../../src/Composables/Main/SortableEvents";
 import { h, defineComponent, nextTick, ref, computed, onMounted, onUpdated, onBeforeUnmount, watch, getCurrentInstance } from "vue";
+import { useDynamicSheets } from '../../src/Spreadsheet/DynamicSheets';
 
 // composables
 const { insertNodeAt, removeNode } = useHtmlHelper();
@@ -143,6 +144,9 @@ export default defineComponent({
       return componentStructure.value.getVmIndexFromDomIndex(domIndex, targetDomElement.value);
     }
 
+    const store = useDynamicSheets();
+    const { updateRow } = store;
+
     const onDrag = {
       Start(evt) {
         context.value = getUnderlyingVm(evt.item);
@@ -179,9 +183,11 @@ export default defineComponent({
         insertNodeAt(evt.from, evt.item, evt.oldIndex);
         const oldIndex = context.value.index;
         const newIndex = getVmIndexFromDomIndex(evt.newIndex);
-        const element = newIndex.element;
-        console.log(evt);
-        
+        const oldRow = context.value.element.row;
+        const newRow = getUnderlyingVm(evt.item).element.row;
+        if (oldRow !== newRow) {
+          updateRow(context.value.element.id, newRow);
+        }
         updatePosition(oldIndex, newIndex);
         const moved = { element: context.value.element, oldIndex, newIndex };
         emitChanges({ moved });
