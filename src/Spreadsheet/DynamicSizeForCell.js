@@ -13,7 +13,6 @@ export function useDynamicResizeCell() {
 
     function handleMouseDown(event, element, list) {
         activeRow.value = list;
-        // console.log('activeRow', activeRow.value);
         
         event.preventDefault();
         if (element) {

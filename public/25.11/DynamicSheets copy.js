@@ -13,7 +13,10 @@ export const useDynamicSheets = defineStore('sheets', () => {
     // })
     const list = ref([])
     const data = ref([]);
+    
 
+    // computed
+    // const alphabetArray = ref();
     const alphabet = computed(() => Array.from({ length: 16 }, (_, i) => String.fromCharCode(65 + i)));
 
     // TODO: Create a function to generate a new id for each cell
@@ -23,6 +26,60 @@ export const useDynamicSheets = defineStore('sheets', () => {
     }
 
     // Example function to create a new row with 16 columns, each having a unique ID
+    // const createRow = () => {
+    //     // Determine the row number for the new row
+    //     let newRowNumber = 1;
+    //     if (list.value.length > 0) {
+    //         const lastElement = list.value[list.value.length - 1];
+    //         newRowNumber = lastElement.row + 1;
+    //     }
+
+    //     // Create a new row with 16 columns
+    //     for (let i = 0; i < 16; i++) {
+    //         const data = {
+    //             id: generateUniqueId(),
+    //             name: "\u00A0",
+    //             col: i + 1, // Set the column number
+    //             row: newRowNumber,
+    //             colSpan: 1,
+    //         };
+    //         list.value.push(data);
+    //     }        
+    // }
+    // const createRow = (10) => {
+    //   const rows = [];
+  
+    //   for (let rowIndex = 0; rowIndex < numRows; rowIndex++) {
+    //       // Determine the row number for the new row
+    //       let newRowNumber = 1;
+    //       if (list.value.length > 0) {
+    //           const lastElement = list.value[list.value.length - 1];
+    //           newRowNumber = lastElement.row + 1;
+    //       }
+  
+    //       // Create a new row with 16 columns
+    //       const newRow = [];
+    //       for (let i = 0; i < 16; i++) {
+    //           const data = {
+    //               id: generateUniqueId(),
+    //               name: "\u00A0",
+    //               col: i + 1, // Set the column number
+    //               row: newRowNumber,
+    //               colSpan: 1,
+    //           };
+    //           newRow.push(data);
+    //       }
+    //       rows.push(newRow);
+
+    //       console.log(rows);
+          
+  
+    //       // // Update the list with the new row
+    //       // list.value.push(...newRow);
+    //   }
+  
+    //   return rows;
+    // }
 
     function createRow(numRows) {
       const rows = [];
@@ -137,7 +194,10 @@ export const useDynamicSheets = defineStore('sheets', () => {
         if (itemsToRemove.has(list[i].id) && list[i].row == rowNumber) {
           list.splice(i, 1);
         }
-      }     
+      }
+
+      console.log(list);
+      
 
       // If the total colSpan is less than 16, add the necessary items
       if (totalColSpan < 16) {
@@ -164,6 +224,7 @@ export const useDynamicSheets = defineStore('sheets', () => {
         }
     }
 
+    // Function to add a new column to the right of the last column
     // Function to get the Tailwind CSS grid classes for each cell
     function getTailwindGridClasses(element) {
         return `col-span-${String(element.colSpan)}`;

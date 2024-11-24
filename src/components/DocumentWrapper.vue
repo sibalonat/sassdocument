@@ -22,8 +22,6 @@ const enabled = ref(true);
 // methods
 function checkMove(e) {
   // console.log(e);
-  // window.console.log("Future index: " + e.draggedContext);
-  // futureIndex
 }
 
 
@@ -39,8 +37,6 @@ function handleDragEnd(evt) {
   const toRow = evt.to.getAttribute('data-parent-row');
   const rowStart = list.value.find(row => row.some(item => item.row == fromRow));
   const rowEnd = list.value.find(row => row.some(item => item.row == toRow));
-  console.log(rowStart);
-  console.log(rowEnd);
   
   element.removeAttribute('data-from-row');
 
@@ -54,8 +50,7 @@ function handleDragEnd(evt) {
   if (item) {
     item.row = Number(toRow);
   }
-  
-  // console.log(list.value);
+
   cleanUpOnDragEnd(fromRow, rowStart);
   cleanUpOnDragEnd(toRow, rowEnd);
   

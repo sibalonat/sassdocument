@@ -4,11 +4,6 @@ const prop = defineProps({
   header: Array
 });
 
-onMounted(() => {
-  console.log(prop.header);
-  
-});
-
 </script>
 <template>
     <div class="grid mb-2 gap-x-0" 

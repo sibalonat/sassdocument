@@ -1,12 +1,12 @@
 <script setup>
 import { nextTick, onBeforeMount, onMounted, reactive, ref } from 'vue';
-import { useDynamicSheets } from '../Spreadsheet/DynamicSheets';
+import { useDynamicSheets } from '../../src/Spreadsheet/DynamicSheets';
 import { storeToRefs } from 'pinia';
-import Draggable from './VueDraggable/Draggable';
+import Draggable from '../../src/components/VueDraggable/Draggable';
 import AlphabetHeader from './Header/AlphabetHeader.vue';
 import { watch } from 'vue';
 import DynamicHeroIcon from './General/HeroIcon/DynamicHeroIcon.vue';
-import { useDynamicResizeCell } from '../Spreadsheet/DynamicSizeForCell';
+import { useDynamicResizeCell } from '../../src/Spreadsheet/DynamicSizeForCell';
 
 const store = useDynamicSheets();
 const { createRow, getTailwindGridClasses, initialIfListEmpty, updateColSpan, cleanUpRows } = store;
@@ -22,8 +22,6 @@ const enabled = ref(true);
 // methods
 function checkMove(e) {
   // console.log(e);
-  // window.console.log("Future index: " + e.draggedContext);
-  // futureIndex
 }
 
 function getRowId(row) {
@@ -41,11 +39,7 @@ function handleDragStart(evt) {
 function handleDragEnd(evt) {
   const element = evt.item;
   const fromRow = element.getAttribute('data-from-row');
-  console.log(evt.to);
   const toRow = evt.to.closest('[data-row]').getAttribute('data-row');
-
-
-  console.log(`Moved from row ${fromRow} to row ${toRow}`);
   element.removeAttribute('data-from-row');
 
   // Update data-row for all elements in the target container

@@ -1,12 +1,12 @@
 <script setup>
 import { nextTick, onBeforeMount, onMounted, reactive, ref } from 'vue';
-import { useDynamicSheets } from '../Spreadsheet/DynamicSheets';
+import { useDynamicSheets } from '../../src/Spreadsheet/DynamicSheets';
 import { storeToRefs } from 'pinia';
-import Draggable from './VueDraggable/Draggable';
+import Draggable from '../../src/components/VueDraggable/Draggable';
 import AlphabetHeader from './Header/AlphabetHeader.vue';
 import { watch } from 'vue';
 import DynamicHeroIcon from './General/HeroIcon/DynamicHeroIcon.vue';
-import { useDynamicResizeCell } from '../Spreadsheet/DynamicSizeForCell';
+import { useDynamicResizeCell } from '../../src/Spreadsheet/DynamicSizeForCell';
 
 const store = useDynamicSheets();
 const { createRow, getTailwindGridClasses, initialIfListEmpty, updateColSpan, cleanUpRows } = store;

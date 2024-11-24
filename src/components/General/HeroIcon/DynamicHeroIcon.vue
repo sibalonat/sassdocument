@@ -62,10 +62,6 @@ function buildIconComponentName(iconName) {
     return text.replace(/-/, "").toUpperCase();
   }
 }
-
-onMounted(() => {
-  // console.log(typeof props.size);
-});
 </script>
 
 
