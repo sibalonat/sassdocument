@@ -90,7 +90,10 @@ export const useDynamicSheets = defineStore('sheets', () => {
             rowItems.splice(i, 1);
           }
         }
-      }      
+      }    
+      
+      console.log('itemsToRemove', itemsToRemove);
+      
     
       // Remove items with no name from the list for this row
       for (let i = row.length - 1; i >= 0; i--) {
@@ -101,6 +104,8 @@ export const useDynamicSheets = defineStore('sheets', () => {
     }
 
     function cleanUpOnDragEnd(rowNumber, list) {
+      console.log('cleanUpOnDragEnd');
+      
       // Find the row items in the list
       const rowItems = list.filter(item => item.row == rowNumber);
       if (rowItems.length === 0) return; // Skip if the row is empty
