@@ -22,12 +22,6 @@ export default {
     },
   },
   safelist: [
-    // {
-    //   pattern: /grid-cols-(1[3-6]|[1-9])/,
-    // },
-    // {
-    //   pattern: /col-span-(1[3-6]|[1-9])/,
-    // },
     {
       pattern: /col-span-\d+/,
     },
