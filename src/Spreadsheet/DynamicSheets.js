@@ -166,8 +166,6 @@ export const useDynamicSheets = defineStore('sheets', () => {
         const item = list.value.find(item => item.id === id);
         if (item) {
             item.colSpan = newColSpan;
-            // Trigger reactivity update
-            list.value = [...list.value];
         }
     }
 
