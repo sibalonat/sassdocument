@@ -56,8 +56,13 @@ function handleDragEnd(evt) {
     item.row = Number(toRow);
   }
 
-  cleanUpOnDragEnd(fromRow, rowStart);
-  cleanUpOnDragEnd(toRow, rowEnd);
+  if (fromRow === toRow) {
+    return;
+  } else {
+    cleanUpOnDragEnd(toRow, rowEnd);
+    cleanUpOnDragEnd(toRow, rowEnd);
+  }
+
   
 
   // Update data-row for the dragged element
