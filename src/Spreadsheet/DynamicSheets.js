@@ -91,9 +91,6 @@ export const useDynamicSheets = defineStore('sheets', () => {
           }
         }
       }    
-      
-      console.log('itemsToRemove', itemsToRemove);
-      console.log('row', row);
 
       // Remove items with no name from the list for this row
       for (let i = row.length - 1; i >= 0; i--) {
@@ -101,14 +98,6 @@ export const useDynamicSheets = defineStore('sheets', () => {
           row.splice(i, 1);
         }
       }
-      // for (let i = list.length - 1; i >= 0; i--) {
-      //   if (itemsToRemove.has(list[i].id) && list[i].row === rowNumber) {
-      //     list.splice(i, 1);
-      //   }
-      // }
-      // if(type === 'span') {
-
-      // }
     }
 
     function cleanUpOnDragEnd(rowNumber, list) {
