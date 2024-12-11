@@ -63,8 +63,6 @@ function handleDragEnd(evt) {
     cleanUpOnDragEnd(toRow, rowEnd);
   }
 
-  
-
   // Update data-row for the dragged element
   element.setAttribute('data-row', toRow);
 }
