@@ -48,7 +48,7 @@ export function useDynamicResizeCell() {
     }
 
     function handleMouseUp() {
-        cleanUpRow(proxyElement.value, activeRow.value);
+        cleanUpRow(proxyElement.value, activeRow.value, 'move');
         window.removeEventListener('mousemove', handleMouseMove);
         window.removeEventListener('mouseup', handleMouseUp);
         resizingElement.value = null;
