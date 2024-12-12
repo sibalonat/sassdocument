@@ -59,7 +59,7 @@ function handleDragEnd(evt) {
   if (fromRow === toRow) {
     return;
   } else {
-    cleanUpOnDragEnd(toRow, rowEnd);
+    cleanUpOnDragEnd(fromRow, rowStart);
     cleanUpOnDragEnd(toRow, rowEnd);
   }
 
