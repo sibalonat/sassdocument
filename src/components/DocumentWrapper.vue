@@ -64,13 +64,13 @@ function handleDragEnd(evt) {
   } else {
     console.log('fromRow', fromRow);
     console.log('rowStart', rowStart);
-    setTimeout(() => {
-      cleanUpOnDragStart(fromRow, rowStart);
-      // cleanUpOnDragEnd(toRow, rowEnd);
-    }, 200);
-    setTimeout(() => {
-      cleanUpOnDragEnd(toRow, rowEnd);
-    }, 200);
+    // setTimeout(() => {
+    //   cleanUpOnDragStart(fromRow, rowStart);
+    //   // cleanUpOnDragEnd(toRow, rowEnd);
+    // }, 200);
+    // setTimeout(() => {
+    // }, 200);
+    cleanUpOnDragEnd(fromRow, toRow, list);
     // cleanUpOnDragEnd(toRow, rowEnd);
   }
 
