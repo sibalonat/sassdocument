@@ -13,6 +13,7 @@ const {
   getTailwindGridClasses, 
   initialIfListEmpty,  
   cleanUpOnDragEnd,
+  cleanUpOnDragStart,
   getRowIndexPlusOne,
 } = store;
 const { data, list, alphabet } = storeToRefs(store);
@@ -32,6 +33,8 @@ function checkMove(e) {
 
 function handleDragStart(evt) {
   const element = evt.item;
+  console.log('handleDragStart', element);
+  
   element.setAttribute('data-from-row', element.getAttribute('data-row'));
 }
 
@@ -59,8 +62,16 @@ function handleDragEnd(evt) {
   if (fromRow === toRow) {
     return;
   } else {
-    cleanUpOnDragEnd(fromRow, rowStart);
-    cleanUpOnDragEnd(toRow, rowEnd);
+    console.log('fromRow', fromRow);
+    console.log('rowStart', rowStart);
+    setTimeout(() => {
+      cleanUpOnDragStart(fromRow, rowStart);
+      // cleanUpOnDragEnd(toRow, rowEnd);
+    }, 200);
+    setTimeout(() => {
+      cleanUpOnDragEnd(toRow, rowEnd);
+    }, 200);
+    // cleanUpOnDragEnd(toRow, rowEnd);
   }
 
   // Update data-row for the dragged element
