@@ -43,9 +43,9 @@ function handleDragEnd(evt) {
   const elementId = element.getAttribute('id');
   const fromRow = element.getAttribute('data-from-row');
   const toRow = evt.to.getAttribute('data-parent-row');
-  const rowStart = list.value.find(row => row.some(item => item.row == fromRow));
-  const rowEnd = list.value.find(row => row.some(item => item.row == toRow));
-  
+  // const rowStart = list.value.find(row => row.some(item => item.row == fromRow));
+  // const rowEnd = list.value.find(row => row.some(item => item.row == toRow));
+ 
   element.removeAttribute('data-from-row');
 
   // Update data-row for all elements in the target container
@@ -59,6 +59,14 @@ function handleDragEnd(evt) {
     item.row = Number(toRow);
   }
 
+  const rowStart = list.value.find(row => row.some(item => item.row == fromRow));
+  const rowEnd = list.value.find(row => row.some(item => item.row == toRow));
+
+  console.log(rowStart);
+  console.log(rowEnd);
+  console.log(fromRow);
+  console.log(toRow);
+
   if (fromRow === toRow) {
     return;
   } else {
@@ -70,7 +78,7 @@ function handleDragEnd(evt) {
     // }, 200);
     // setTimeout(() => {
     // }, 200);
-    cleanUpOnDragEnd(fromRow, toRow, list);
+    cleanUpOnDragEnd(fromRow, toRow, rowStart, rowEnd);
     // cleanUpOnDragEnd(toRow, rowEnd);
   }
 
