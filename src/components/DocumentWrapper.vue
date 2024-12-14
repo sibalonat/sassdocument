@@ -45,6 +45,9 @@ function handleDragEnd(evt) {
   const toRow = evt.to.getAttribute('data-parent-row');
   // const rowStart = list.value.find(row => row.some(item => item.row == fromRow));
   // const rowEnd = list.value.find(row => row.some(item => item.row == toRow));
+
+  console.log(fromRow);
+  console.log(toRow);
  
   element.removeAttribute('data-from-row');
 
@@ -71,6 +74,7 @@ function handleDragEnd(evt) {
     return;
   } else {
     console.log('fromRow', fromRow);
+    console.log('to', toRow);
     console.log('rowStart', rowStart);
     // setTimeout(() => {
     //   cleanUpOnDragStart(fromRow, rowStart);
