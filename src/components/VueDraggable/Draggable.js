@@ -158,7 +158,7 @@ export default defineComponent({
         removeNode(evt.item);
         const newIndex = getVmIndexFromDomIndex(evt.newIndex);
         spliceList(newIndex, 0, element);
-        const added = { element, newIndex, targetElement: evt.to };
+        const added = { element, newIndex };
         emitChanges({ added });
       },
 
@@ -181,7 +181,7 @@ export default defineComponent({
         const newIndex = getVmIndexFromDomIndex(evt.newIndex);
         const element = context.value.element;
         updatePosition(oldIndex, newIndex);
-        const moved = { element, oldIndex, newIndex, targetElement: evt.to };
+        const moved = { element, oldIndex, newIndex };
         emitChanges({ moved });
       },
 

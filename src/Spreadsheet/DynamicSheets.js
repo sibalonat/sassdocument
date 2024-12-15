@@ -22,24 +22,19 @@ export const useDynamicSheets = defineStore('sheets', () => {
         return 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).substr(2, 9);
     }
 
-    // Example function to create a new row with 16 columns, each having a unique ID
-
-    function createRow(numRows) {
-      console.log('createRow');
-      
+    function initialRows(numRows) {
       const rows = [];
-      let newRowNumber = 1;
-  
-      for (let rowIndex = 0; rowIndex < numRows; rowIndex++) {
+      var newRowNumber = 1;
+      for (let rowIndex = 0; rowIndex < numRows; rowIndex++) {         
           // Determine the row number for the new row
-          if (list.value.length > 0) {
+          if (list.value.length > 0 && rows.length === 0) {
               const lastElement = list.value[list.value.length - 1];
               newRowNumber = lastElement.row + 1;
           } else if (rows.length > 0) {
             const lastElement = rows[rows.length - 1][0]; // Get the first element of the last row
             newRowNumber = lastElement.row + 1;
-          }          
-  
+          }
+
           // Create a new row with 16 columns
           const newRow = [];
           for (let i = 0; i < 16; i++) {
@@ -54,8 +49,36 @@ export const useDynamicSheets = defineStore('sheets', () => {
           }
           rows.push(newRow);
       }
-  
       return rows;
+    }
+
+    function normalizeRows() {
+      // Create a new row with 16 columns
+      const rows = [];
+      const newRow = [];
+      console.log(list.value.length);
+      
+      for (let i = 0; i < 16; i++) {
+          const data = {
+              id: generateUniqueId(),
+              name: "\u00A0",
+              col: i + 1, // Set the column number
+              row: list.value.length + 1,
+              colSpan: 1,
+          };
+          newRow.push(data);
+      }
+      rows.push(newRow);
+      return rows;
+    }
+
+    // Example function to create a new row with 16 columns, each having a unique ID
+    function createRow(numRows) {
+      if (numRows > 0) {     
+        return initialRows(numRows)
+      } else {
+        return normalizeRows()
+      }
     }
 
     function cleanUpRow(element, row) {
@@ -141,7 +164,12 @@ export const useDynamicSheets = defineStore('sheets', () => {
     }
 
     function updateColSpan(id, newColSpan) {
+      console.log(id);
+      console.log(list.value);
+      
         const item = list.value.find(item => item.id === id);
+        console.log(item);
+        
         if (item) {
             item.colSpan = newColSpan;
         }
@@ -159,8 +187,8 @@ export const useDynamicSheets = defineStore('sheets', () => {
         }
     }
 
-    function createRowOnClick(number) {
-        const rows = createRow(number);
+    function createRowOnClick() {
+        const rows = createRow();       
         list.value.push(...rows);
     }
 

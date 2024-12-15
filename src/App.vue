@@ -15,7 +15,7 @@ const { createRowOnClick } = store;
         </p>
       </div>
       <div class="col-span-3 my-auto">
-        <button type="button" class="px-4 text-sm border rounded-md" @click="createRowOnClick(1)">
+        <button type="button" class="px-4 text-sm border rounded-md" @click="createRowOnClick()">
           Add Group
         </button>
       </div>
