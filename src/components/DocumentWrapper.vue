@@ -82,7 +82,6 @@ onMounted(() => {});
         @move="checkMove"
         @start="handleDragStart"
         @end="handleDragEnd"
-        @add="checkOther"
       >
         <template #item="{ element }">
           <div
