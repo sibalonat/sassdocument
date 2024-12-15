@@ -16,11 +16,8 @@ export function useDynamicResizeCell() {
         
         event.preventDefault();
         if (element) {
-            // resizingElementId.value = id;
             resizingElement.value = element;
-            // initialMouseX.value = event.clientX;
             proxyElement.value = activeRow.value.find(item => item.id === element.id);
-            // initialColSpan.value = element.colSpan;
             const container = document.querySelector('.grid');
             const rect = container.getBoundingClientRect();
             baseWidth.value = rect.width / 16; // Calculate base width per column
@@ -37,10 +34,7 @@ export function useDynamicResizeCell() {
             const newColSpan = Math.min(16, Math.max(1, Math.round(newWidth / baseWidth.value))); // Ensure newColSpan does not exceed 16
             console.log(newColSpan);
             
-            // element.style.width = newColSpan * baseWidth.value + 'px';
-            
             updateColSpan(resizingElement.value.id, newColSpan);
-            // Ensure proxyElement exists before updating colSpan
             if (proxyElement.value) {
                 proxyElement.value.colSpan = newColSpan;
             }

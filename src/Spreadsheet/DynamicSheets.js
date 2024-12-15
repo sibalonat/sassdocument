@@ -59,236 +59,80 @@ export const useDynamicSheets = defineStore('sheets', () => {
     }
 
     function cleanUpRow(element, row) {
-      // Find the row items in the list
-      const rowItems = row.filter(item => item.row === element.row);
-    
-      if (rowItems.length === 0) return; // Skip if the row is empty
-    
-      let totalColSpan = rowItems.reduce((acc, item) => acc + item.colSpan, 0);
-    
-      // Track IDs of items to be removed for this row
-      const itemsToRemove = new Set();
-    
-      // If the total colSpan exceeds 16, remove items with no name
-      if (totalColSpan > 16) {
-        const excessColSpan = totalColSpan - 16;
-        let removedColSpan = 0;
-        for (let i = rowItems.length - 1; i >= 0 && removedColSpan < excessColSpan; i--) {
-          if (!rowItems[i].name || rowItems[i].name.trim() === "") {
-            itemsToRemove.add(rowItems[i].id);
-            removedColSpan += rowItems[i].colSpan;
-            rowItems.splice(i, 1);
-          }
+        const rowItems = row.filter(item => item.row === element.row);
+        if (rowItems.length === 0) return;
+        let totalColSpan = rowItems.reduce((acc, item) => acc + item.colSpan, 0);
+        const itemsToRemove = new Set();
+        if (totalColSpan > 16) {
+            const excessColSpan = totalColSpan - 16;
+            let removedColSpan = 0;
+            for (let i = rowItems.length - 1; i >= 0 && removedColSpan < excessColSpan; i--) {
+                if (!rowItems[i].name || rowItems[i].name.trim() === "") {
+                    itemsToRemove.add(rowItems[i].id);
+                    removedColSpan += rowItems[i].colSpan;
+                    rowItems.splice(i, 1);
+                }
+            }
         }
-      }
-    
-      // If the total colSpan is exactly 16, remove items with no name
-      if (totalColSpan === 16) {
-        for (let i = rowItems.length - 1; i >= 0; i--) {
-          if (!rowItems[i].name || rowItems[i].name.trim() === "") {
-            itemsToRemove.add(rowItems[i].id);
-            rowItems.splice(i, 1);
-          }
+        if (totalColSpan === 16) {
+            for (let i = rowItems.length - 1; i >= 0; i--) {
+                if (!rowItems[i].name || rowItems[i].name.trim() === "") {
+                    itemsToRemove.add(rowItems[i].id);
+                    rowItems.splice(i, 1);
+                }
+            }
         }
-      }    
-
-      // Remove items with no name from the list for this row
-      for (let i = row.length - 1; i >= 0; i--) {
-        if (itemsToRemove.has(row[i].id) && row[i].row === element.row) {
-          row.splice(i, 1);
+        for (let i = row.length - 1; i >= 0; i--) {
+            if (itemsToRemove.has(row[i].id) && row[i].row === element.row) {
+                row.splice(i, 1);
+            }
         }
-      }
     }
 
     function cleanUpOnDragStart(rowNumber, list) {
-      // Find the row items in the list
-      const rowItems = list.filter(item => item.row == rowNumber);
-      if (rowItems.length === 0) return; // Skip if the row is empty
-
-      let totalColSpan = rowItems.reduce((acc, item) => acc + item.colSpan, 0);
-      console.log('totalColSpan', totalColSpan);
-      
-      // Track IDs of items to be removed for this row
-      const itemsToRemove = new Set();
-
-      // If the total colSpan exceeds 16, remove items with no name
-      if (totalColSpan > 16) {
-        const excessColSpan = totalColSpan - 16;
-        
-        let removedColSpan = 0;
-        for (let i = rowItems.length - 1; i >= 0 && removedColSpan < excessColSpan; i--) {
-          if (!rowItems[i].name || rowItems[i].name.trim() === "") {
-            itemsToRemove.add(rowItems[i].id);
-            removedColSpan += rowItems[i].colSpan;
-            rowItems.splice(i, 1);
-          }
+        const rowItems = list.filter(item => item.row == rowNumber);
+        if (rowItems.length === 0) return;
+        let totalColSpan = rowItems.reduce((acc, item) => acc + item.colSpan, 0);
+        const itemsToRemove = new Set();
+        if (totalColSpan > 16) {
+            const excessColSpan = totalColSpan - 16;
+            let removedColSpan = 0;
+            for (let i = rowItems.length - 1; i >= 0 && removedColSpan < excessColSpan; i--) {
+                if (!rowItems[i].name || rowItems[i].name.trim() === "") {
+                    itemsToRemove.add(rowItems[i].id);
+                    removedColSpan += rowItems[i].colSpan;
+                    rowItems.splice(i, 1);
+                }
+            }
         }
-      }
-
-      // If the total colSpan is exactly 16, remove items with no name
-      if (totalColSpan === 16) {
-        for (let i = rowItems.length - 1; i >= 0; i--) {
-          if (!rowItems[i].name || rowItems[i].name.trim() === "") {
-            itemsToRemove.add(rowItems[i].id);
-            rowItems.splice(i, 1);
-          }
+        if (totalColSpan === 16) {
+            for (let i = rowItems.length - 1; i >= 0; i--) {
+                if (!rowItems[i].name || rowItems[i].name.trim() === "") {
+                    itemsToRemove.add(rowItems[i].id);
+                    rowItems.splice(i, 1);
+                }
+            }
         }
-      }
-
-      // Remove items with no name from the list for this row
-      for (let i = list.length - 1; i >= 0; i--) {
-        if (itemsToRemove.has(list[i].id) && list[i].row == rowNumber) {
-          list.splice(i, 1);
+        for (let i = list.length - 1; i >= 0; i--) {
+            if (itemsToRemove.has(list[i].id) && list[i].row == rowNumber) {
+                list.splice(i, 1);
+            }
         }
-      }       
-
-      // If the total colSpan is less than 16, add the necessary items
-      if (totalColSpan < 16) {
-        const itemsToAdd = 16 - totalColSpan;
-        for (let i = 0; i < itemsToAdd; i++) {
-          const data = {
-            id: generateUniqueId(),
-            name: "\u00A0",
-            col: rowItems.length + i + 1, // Set the column number
-            row: rowNumber,
-            colSpan: 1,
-          };
-          list.push(data);
+        if (totalColSpan < 16) {
+            const itemsToAdd = 16 - totalColSpan;
+            for (let i = 0; i < itemsToAdd; i++) {
+                const data = {
+                    id: generateUniqueId(),
+                    name: "\u00A0",
+                    col: rowItems.length + i + 1,
+                    row: rowNumber,
+                    colSpan: 1,
+                };
+                list.push(data);
+            }
         }
-      }
     }
-    // function cleanUpOnDragStart(rowNumber, list) {
-    //   console.log(`cleanUpRow for row ${rowNumber}`);
-  
-    //   // Find the row items in the list
-    //   const rowItems = list.filter(item => item.row == rowNumber);
-    //   if (rowItems.length === 0) return; // Skip if the row is empty
-    
-    //   let totalColSpan = rowItems.reduce((acc, item) => acc + item.colSpan, 0);
-    //   console.log('totalColSpan', totalColSpan);
-      
-    //   // Track IDs of items to be removed for this row
-    //   const itemsToRemove = new Set();
-    
-    //   // If the total colSpan exceeds 16, remove items with no name
-    //   if (totalColSpan > 16) {
-    //     const excessColSpan = totalColSpan - 16;
-        
-    //     let removedColSpan = 0;
-    //     for (let i = rowItems.length - 1; i >= 0 && removedColSpan < excessColSpan; i--) {
-    //       if (!rowItems[i].name || rowItems[i].name.trim() === "") {
-    //         itemsToRemove.add(rowItems[i].id);
-    //         removedColSpan += rowItems[i].colSpan;
-    //         rowItems.splice(i, 1);
-    //       }
-    //     }
-    //     totalColSpan -= removedColSpan;
-    //   }
-    
-    //   // If the total colSpan is exactly 16, remove items with no name
-    //   if (totalColSpan === 16) {
-    //     for (let i = rowItems.length - 1; i >= 0; i--) {
-    //       if (!rowItems[i].name || rowItems[i].name.trim() === "") {
-    //         itemsToRemove.add(rowItems[i].id);
-    //         rowItems.splice(i, 1);
-    //       }
-    //     }
-    //     totalColSpan = rowItems.reduce((acc, item) => acc + item.colSpan, 0);
-    //   }
-    
-    //   console.log('itemsToRemove', itemsToRemove);
-    
-    //   // Remove items with no name from the list for this row
-    //   for (let i = list.length - 1; i >= 0; i--) {
-    //     if (itemsToRemove.has(list[i].id) && list[i].row == rowNumber) {
-    //       list.splice(i, 1);
-    //     }
-    //   }
-    
-    //   // If the total colSpan is less than 16, add the necessary items
-    //   if (totalColSpan < 16) {
-    //     const itemsToAdd = 16 - totalColSpan;
-    //     for (let i = 0; i < itemsToAdd; i++) {
-    //       const data = {
-    //         id: generateUniqueId(),
-    //         name: "\u00A0",
-    //         col: rowItems.length + i + 1, // Set the column number
-    //         row: rowNumber,
-    //         colSpan: 1,
-    //       };
-    //       list.push(data);
-    //     }
-    //   }
-    // }
 
-    // function cleanUpOnDragEnd(rowStart, rowEnd, listStart, listEnd) {
-    //   cleanUpOnDragStart(rowStart, listStart);
-    //   cleanUpOnDragStart(rowEnd, listEnd);
-    //   // console.log('cleanUpOnDragEnd');
-      
-    //   // // Find the row items in the list
-    //   // const rowItems = list.filter(item => item.row == rowNumber);
-    //   // if (rowItems.length === 0) return; // Skip if the row is empty
-
-    //   // let totalColSpan = rowItems.reduce((acc, item) => acc + item.colSpan, 0);
-    //   // console.log('totalColSpan', totalColSpan);
-      
-    //   // // Track IDs of items to be removed for this row
-    //   // const itemsToRemove = new Set();
-
-    //   // // If the total colSpan exceeds 16, remove items with no name
-    //   // if (totalColSpan > 16) {
-    //   //   const excessColSpan = totalColSpan - 16;
-        
-    //   //   let removedColSpan = 0;
-    //   //   for (let i = rowItems.length - 1; i >= 0 && removedColSpan < excessColSpan; i--) {
-    //   //     if (!rowItems[i].name || rowItems[i].name.trim() === "") {
-    //   //       itemsToRemove.add(rowItems[i].id);
-    //   //       removedColSpan += rowItems[i].colSpan;
-    //   //       rowItems.splice(i, 1);
-    //   //     }
-    //   //   }
-    //   // }
-
-    //   // // If the total colSpan is exactly 16, remove items with no name
-    //   // if (totalColSpan === 16) {
-    //   //   for (let i = rowItems.length - 1; i >= 0; i--) {
-    //   //     if (!rowItems[i].name || rowItems[i].name.trim() === "") {
-    //   //       itemsToRemove.add(rowItems[i].id);
-    //   //       rowItems.splice(i, 1);
-    //   //     }
-    //   //   }
-    //   // }
-
-    //   // console.log('itemsToRemove', itemsToRemove);
-      
-     
-
-    //   // // Remove items with no name from the list for this row
-    //   // for (let i = list.length - 1; i >= 0; i--) {
-    //   //   if (itemsToRemove.has(list[i].id) && list[i].row == rowNumber) {
-    //   //     list.splice(i, 1);
-    //   //   }
-    //   // } 
-      
-    //   // console.log(totalColSpan);
-      
-
-    //   // // If the total colSpan is less than 16, add the necessary items
-    //   // if (totalColSpan < 16) {
-    //   //   const itemsToAdd = 16 - totalColSpan;
-    //   //   for (let i = 0; i < itemsToAdd; i++) {
-    //   //     const data = {
-    //   //       id: generateUniqueId(),
-    //   //       name: "\u00A0",
-    //   //       col: rowItems.length + i + 1, // Set the column number
-    //   //       row: rowNumber,
-    //   //       colSpan: 1,
-    //   //     };
-    //   //     list.push(data);
-    //   //   }
-    //   // }
-    // }
     function cleanUpOnDragEnd(rowStart, rowEnd, listStart, listEnd) {
       cleanUpOnDragStart(rowStart, listStart);
       cleanUpOnDragStart(rowEnd, listEnd);

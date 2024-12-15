@@ -27,7 +27,11 @@ const enabled = ref(true);
 // computed
 // methods
 function checkMove(e) {
-  // console.log(e);
+  console.log(e);
+}
+
+function checkOther(e) {
+  console.log(e);
 }
 
 
@@ -43,21 +47,16 @@ function handleDragEnd(evt) {
   const elementId = element.getAttribute('id');
   const fromRow = element.getAttribute('data-from-row');
   const toRow = evt.to.getAttribute('data-parent-row');
-  // const rowStart = list.value.find(row => row.some(item => item.row == fromRow));
-  // const rowEnd = list.value.find(row => row.some(item => item.row == toRow));
+  const targetElement = evt.to;
 
-  console.log(fromRow);
-  console.log(toRow);
- 
   element.removeAttribute('data-from-row');
 
-  // Update data-row for all elements in the target container
   Array.from(evt.to.children).forEach((child) => {
     child.setAttribute('data-row', toRow);
   });
-  
+
   const item = list.value.flatMap(row => row).find(el => el.id == elementId);
-  
+
   if (item) {
     item.row = Number(toRow);
   }
@@ -65,29 +64,16 @@ function handleDragEnd(evt) {
   const rowStart = list.value.find(row => row.some(item => item.row == fromRow));
   const rowEnd = list.value.find(row => row.some(item => item.row == toRow));
 
-  console.log(rowStart);
-  console.log(rowEnd);
-  console.log(fromRow);
-  console.log(toRow);
-
-  if (fromRow === toRow) {
-    return;
-  } else {
-    console.log('fromRow', fromRow);
-    console.log('to', toRow);
-    console.log('rowStart', rowStart);
-    // setTimeout(() => {
-    //   cleanUpOnDragStart(fromRow, rowStart);
-    //   // cleanUpOnDragEnd(toRow, rowEnd);
-    // }, 200);
-    // setTimeout(() => {
-    // }, 200);
+  if (fromRow !== toRow) {
     cleanUpOnDragEnd(fromRow, toRow, rowStart, rowEnd);
-    // cleanUpOnDragEnd(toRow, rowEnd);
   }
 
-  // Update data-row for the dragged element
   element.setAttribute('data-row', toRow);
+
+  console.log('Moved element:', element);
+  console.log('Target element:', targetElement);
+  console.log('From row:', fromRow);
+  console.log('To row:', toRow);
 }
 
 onBeforeMount(() => {
@@ -121,6 +107,7 @@ onMounted(() => {
         @move="checkMove"
         @start="handleDragStart"
         @end="handleDragEnd"
+        @add="checkOther"
       >
         <template #item="{ element }">
           <div

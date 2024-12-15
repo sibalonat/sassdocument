@@ -39,7 +39,7 @@ function createSortableOption({ $attrs, callBackBuilder }) {
   return {
     ...options,
     draggable,
-    group: 'shared' // Add this line to enable dragging between lists
+    group: { name: 'shared', pull: true, put: true } // Ensure group option is correctly set
   };
 }
 
