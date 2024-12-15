@@ -14,8 +14,6 @@ const {
   getTailwindGridClasses, 
   initialIfListEmpty,  
   cleanUpOnDragEnd,
-  cleanUpOnDragStart,
-  getRowIndexPlusOne,
 } = store;
 const { data, list, alphabet } = storeToRefs(store);
 const cell = useDynamicResizeCell(list);

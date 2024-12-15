@@ -62,6 +62,8 @@ export const useDynamicSheets = defineStore('sheets', () => {
         const rowItems = row.filter(item => item.row === element.row);
         if (rowItems.length === 0) return;
         let totalColSpan = rowItems.reduce((acc, item) => acc + item.colSpan, 0);
+        console.log(element);
+        
         const itemsToRemove = new Set();
         if (totalColSpan > 16) {
             const excessColSpan = totalColSpan - 16;
@@ -162,10 +164,6 @@ export const useDynamicSheets = defineStore('sheets', () => {
         list.value.push(...rows);
     }
 
-    function getRowIndexPlusOne(index) {
-      return index + 1;
-    }
-
     return {
         alphabet,
         list,
@@ -176,7 +174,6 @@ export const useDynamicSheets = defineStore('sheets', () => {
         cleanUpOnDragStart,
         cleanUpOnDragEnd,
         createRowOnClick,
-        getRowIndexPlusOne,
         getTailwindGridClasses, 
         initialIfListEmpty,
         generateUniqueId,
