@@ -189,9 +189,7 @@ export const useDynamicSheets = defineStore('sheets', () => {
 
     function createRowOnClick() {
         const rows = createRow();       
-        list.value.push(...rows);
-        console.log(list.value);
-        
+        list.value.push(...rows);       
     }
 
     return {
