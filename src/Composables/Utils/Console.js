@@ -1,4 +1,3 @@
-// useConsole.js
 export function useConsole() {
   function getConsole() {
     if (typeof window !== "undefined") {

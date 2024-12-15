@@ -1,4 +1,3 @@
-// useStringUtils.js
 function cached(fn) {
   const cache = Object.create(null);
   return function cachedFn(str) {

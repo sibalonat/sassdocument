@@ -1,4 +1,3 @@
-// useHtmlHelper.js
 export function useHtmlHelper() {
   function removeNode(node) {
     if (node.parentElement !== null) {
