@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, reactive, ref } from 'vue'
 
-import { groupBy } from 'lodash';
+import { groupBy, head } from 'lodash';
 
 export const useDynamicSheets = defineStore('sheets', () => {
     // state
@@ -24,17 +24,18 @@ export const useDynamicSheets = defineStore('sheets', () => {
 
     function initialRows(numRows) {
       const rows = [];
-      var newRowNumber = 1;
+      let newRowNumber = 1;
+      let existingRows = list.value.length; 
+      
       for (let rowIndex = 0; rowIndex < numRows; rowIndex++) {         
           // Determine the row number for the new row
-          if (list.value.length > 0 && rows.length === 0) {
-              const lastElement = list.value[list.value.length - 1];
-              newRowNumber = lastElement.row + 1;
-          } else if (rows.length > 0) {
+          if (existingRows > 0) {
+            newRowNumber = existingRows + 1;
+            existingRows = existingRows + 1;
+          } else if (rows.length > 0 && list.value.length <= 0) {
             const lastElement = rows[rows.length - 1][0]; // Get the first element of the last row
             newRowNumber = lastElement.row + 1;
           }
-
           // Create a new row with 16 columns
           const newRow = [];
           for (let i = 0; i < 16; i++) {
@@ -56,7 +57,6 @@ export const useDynamicSheets = defineStore('sheets', () => {
       // Create a new row with 16 columns
       const rows = [];
       const newRow = [];
-      console.log(list.value.length);
       
       for (let i = 0; i < 16; i++) {
           const data = {
@@ -190,6 +190,8 @@ export const useDynamicSheets = defineStore('sheets', () => {
     function createRowOnClick() {
         const rows = createRow();       
         list.value.push(...rows);
+        console.log(list.value);
+        
     }
 
     return {
