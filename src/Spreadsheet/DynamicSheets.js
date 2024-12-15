@@ -4,7 +4,6 @@ import { computed, reactive, ref } from 'vue'
 // import { groupBy, head } from 'lodash';
 
 export const useDynamicSheets = defineStore('sheets', () => {
-    // state
     // const list = reactive({
     //     name: '',
     //     rows: null,
