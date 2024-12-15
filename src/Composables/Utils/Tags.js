@@ -1,4 +1,3 @@
-// useHtmlUtils.js
 const tags = [
   "a",
   "abbr",
