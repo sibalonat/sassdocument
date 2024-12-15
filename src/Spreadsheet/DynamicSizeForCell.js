@@ -1,5 +1,6 @@
 import { computed, reactive, ref } from 'vue'
 import { useDynamicSheets } from './DynamicSheets';
+import { head } from 'lodash';
 
 export function useDynamicResizeCell() {
     const store = useDynamicSheets();
@@ -51,8 +52,19 @@ export function useDynamicResizeCell() {
         activeRow.value = null;
     }
 
+    function getRowFromDraggableElement(evt) {
+        const draggableComponent = evt.__draggable_component__;
+        const list = draggableComponent.list;
+        
+        if (list.length > 0) {
+            return list[0].row; // Directly access the first element's row
+        }
+        return null;
+    }
+
     return {
         div,
         handleMouseDown,
+        getRowFromDraggableElement,
     };
 }

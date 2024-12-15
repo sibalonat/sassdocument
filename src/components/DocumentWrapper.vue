@@ -7,6 +7,7 @@ import AlphabetHeader from './Header/AlphabetHeader.vue';
 import { watch } from 'vue';
 import DynamicHeroIcon from './General/HeroIcon/DynamicHeroIcon.vue';
 import { useDynamicResizeCell } from '../Spreadsheet/DynamicSizeForCell';
+import { get } from 'lodash';
 
 const store = useDynamicSheets();
 const {  
@@ -20,7 +21,8 @@ const { data, list, alphabet } = storeToRefs(store);
 const cell = useDynamicResizeCell(list);
 const { 
   div,
-  handleMouseDown
+  handleMouseDown,
+  // getRowFromDraggableElement,
 } = cell;
 const enabled = ref(true);
 
@@ -42,6 +44,19 @@ function handleDragStart(evt) {
   element.setAttribute('data-from-row', element.getAttribute('data-row'));
 }
 
+function getRowFromDraggableElement(evt) {
+    const draggableComponent = evt.__draggable_component__;
+    const list = draggableComponent.list;
+
+    console.log('list', list);
+    
+    
+    if (list.length > 0) {
+        return list[0].row; // Directly access the first element's row
+    }
+    return null;
+}
+
 function handleDragEnd(evt) {
   const element = evt.item;
   const elementId = element.getAttribute('id');
@@ -49,31 +64,34 @@ function handleDragEnd(evt) {
   const toRow = evt.to.getAttribute('data-parent-row');
   const targetElement = evt.to;
 
-  element.removeAttribute('data-from-row');
+  console.log(getRowFromDraggableElement(evt.to));
+  
 
-  Array.from(evt.to.children).forEach((child) => {
-    child.setAttribute('data-row', toRow);
-  });
+  // element.removeAttribute('data-from-row');
 
-  const item = list.value.flatMap(row => row).find(el => el.id == elementId);
+  // Array.from(evt.to.children).forEach((child) => {
+  //   child.setAttribute('data-row', toRow);
+  // });
 
-  if (item) {
-    item.row = Number(toRow);
-  }
+  // const item = list.value.flatMap(row => row).find(el => el.id == elementId);
 
-  const rowStart = list.value.find(row => row.some(item => item.row == fromRow));
-  const rowEnd = list.value.find(row => row.some(item => item.row == toRow));
+  // if (item) {
+  //   item.row = Number(toRow);
+  // }
 
-  if (fromRow !== toRow) {
-    cleanUpOnDragEnd(fromRow, toRow, rowStart, rowEnd);
-  }
+  // const rowStart = list.value.find(row => row.some(item => item.row == fromRow));
+  // const rowEnd = list.value.find(row => row.some(item => item.row == toRow));
 
-  element.setAttribute('data-row', toRow);
+  // if (fromRow !== toRow) {
+  //   cleanUpOnDragEnd(fromRow, toRow, rowStart, rowEnd);
+  // }
 
-  console.log('Moved element:', element);
-  console.log('Target element:', targetElement);
-  console.log('From row:', fromRow);
-  console.log('To row:', toRow);
+  // element.setAttribute('data-row', toRow);
+
+  // console.log('Moved element:', element);
+  // console.log('Target element:', targetElement);
+  // console.log('From row:', fromRow);
+  // console.log('To row:', toRow);
 }
 
 onBeforeMount(() => {
