@@ -1,7 +1,3 @@
-// import { camelize } from "../util/string";
-// import { events, isReadOnly } from "./sortableEvents";
-// import { isHtmlAttribute } from "../util/tags";
-
 import { useStringUtils } from "../Utils/String";
 import { useSortableEvents } from "./SortableEvents";
 import { useHtmlUtils } from "../Utils/Tags";
