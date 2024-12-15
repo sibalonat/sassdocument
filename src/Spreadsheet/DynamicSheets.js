@@ -163,10 +163,7 @@ export const useDynamicSheets = defineStore('sheets', () => {
       cleanUpOnDragStart(rowEnd, listEnd);
     }
 
-    function updateColSpan(id, newColSpan) {
-      console.log(id);
-      console.log(list.value);
-      
+    function updateColSpan(id, newColSpan) {     
         const item = list.value.find(item => item.id === id);
         console.log(item);
         
