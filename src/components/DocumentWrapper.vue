@@ -22,7 +22,7 @@ const cell = useDynamicResizeCell(list);
 const { 
   div,
   handleMouseDown,
-  // getRowFromDraggableElement,
+  getRowFromDraggableElement,
 } = cell;
 const enabled = ref(true);
 
@@ -39,73 +39,33 @@ function checkOther(e) {
 
 function handleDragStart(evt) {
   const element = evt.item;
-  console.log('handleDragStart', element);
-  
-  element.setAttribute('data-from-row', element.getAttribute('data-row'));
-}
-
-function getRowFromDraggableElement(evt) {
-    const draggableComponent = evt.__draggable_component__;
-    const list = draggableComponent.list;
-
-    console.log('list', list);
-    
-    
-    if (list.length > 0) {
-        return list[0].row; // Directly access the first element's row
-    }
-    return null;
 }
 
 function handleDragEnd(evt) {
   const element = evt.item;
   const elementId = element.getAttribute('id');
-  const fromRow = element.getAttribute('data-from-row');
-  const toRow = evt.to.getAttribute('data-parent-row');
-  const targetElement = evt.to;
+  const toRow = getRowFromDraggableElement(evt.to);
+  const fromRow = getRowFromDraggableElement(evt.from);
 
-  console.log(getRowFromDraggableElement(evt.to));
-  
+  const item = list.value.flatMap(row => row).find(el => el.id == elementId);
 
-  // element.removeAttribute('data-from-row');
+  if (item) {
+    item.row = Number(toRow);
+  }
 
-  // Array.from(evt.to.children).forEach((child) => {
-  //   child.setAttribute('data-row', toRow);
-  // });
+  const rowStart = list.value.find(row => row.some(item => item.row == fromRow));
+  const rowEnd = list.value.find(row => row.some(item => item.row == toRow));
 
-  // const item = list.value.flatMap(row => row).find(el => el.id == elementId);
-
-  // if (item) {
-  //   item.row = Number(toRow);
-  // }
-
-  // const rowStart = list.value.find(row => row.some(item => item.row == fromRow));
-  // const rowEnd = list.value.find(row => row.some(item => item.row == toRow));
-
-  // if (fromRow !== toRow) {
-  //   cleanUpOnDragEnd(fromRow, toRow, rowStart, rowEnd);
-  // }
-
-  // element.setAttribute('data-row', toRow);
-
-  // console.log('Moved element:', element);
-  // console.log('Target element:', targetElement);
-  // console.log('From row:', fromRow);
-  // console.log('To row:', toRow);
+  if (fromRow !== toRow) {
+    cleanUpOnDragEnd(fromRow, toRow, rowStart, rowEnd);
+  }
 }
 
 onBeforeMount(() => {
   initialIfListEmpty()
 });
 
-onMounted(() => {
-  console.log(alphabet.value);
-  console.log(list.value);
-  // initialIfListEmpty()
-  // nextTick(() => {
-  //   cleanUpRows();
-  // }); 
-});
+onMounted(() => {});
 </script>
 
 <template>
@@ -114,7 +74,6 @@ onMounted(() => {
     <div v-for="(row, rowIndex) in list" :key="rowIndex">
       <draggable
         :list="row"
-        :data-parent-row="getRowIndexPlusOne(rowIndex)"
         :disabled="!enabled"
         item-key="id"
         group="rows"
@@ -130,7 +89,6 @@ onMounted(() => {
         <template #item="{ element }">
           <div
             :id="element.id"
-            :data-row="getRowIndexPlusOne(rowIndex)"
             :class="['list-group-item', getTailwindGridClasses(element), { 'not-draggable': !enabled }]"
             :ref="(el) => { div[element.id] = el }">
             <div class="relative border">

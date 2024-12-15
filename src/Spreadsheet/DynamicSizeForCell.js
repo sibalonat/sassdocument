@@ -1,4 +1,4 @@
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, getCurrentInstance } from 'vue'
 import { useDynamicSheets } from './DynamicSheets';
 import { head } from 'lodash';
 
@@ -53,11 +53,32 @@ export function useDynamicResizeCell() {
     }
 
     function getRowFromDraggableElement(evt) {
-        const draggableComponent = evt.__draggable_component__;
+        const draggableComponent = evt.__draggable_component__;        
         const list = draggableComponent.list;
         
         if (list.length > 0) {
-            return list[0].row; // Directly access the first element's row
+            const rowFrequency = {};
+            
+            // Count the frequency of each row value
+            list.forEach(item => {
+                if (rowFrequency[item.row]) {
+                    rowFrequency[item.row]++;
+                } else {
+                    rowFrequency[item.row] = 1;
+                }
+            });
+            
+            // Find the most common row value
+            let mostCommonRow = null;
+            let maxCount = 0;
+            for (const row in rowFrequency) {
+                if (rowFrequency[row] > maxCount) {
+                    maxCount = rowFrequency[row];
+                    mostCommonRow = row;
+                }
+            }
+            
+            return mostCommonRow;
         }
         return null;
     }
