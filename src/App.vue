@@ -1,13 +1,20 @@
 <script setup>
+import { onMounted, ref } from 'vue';
 import DocumentWrapper from './components/DocumentWrapper.vue';
+import PropertiesSidebar from './components/Partial/PropertiesSidebar.vue';
+
 import { useDynamicSheets } from './Spreadsheet/DynamicSheets';
+
+const parent = ref(null);
+const xAxis = ref(0);
 
 const store = useDynamicSheets();
 const { createRowOnClick } = store;
+onMounted(() => xAxis.value = parent.value.clientWidth - 300);
 </script>
 
 <template>
-  <main class="w-screen h-screen overflow-x-hidden">
+  <main class="relative w-screen h-screen overflow-x-hidden" ref="parent">
     <div class="grid grid-cols-9 gap-x3">
       <div class="col-span-6">
         <p class="w-full px-1 py-4 text-xs">
@@ -24,6 +31,8 @@ const { createRowOnClick } = store;
       </div>
     </div>
     <DocumentWrapper />
+    <!-- {{ xAxis }} -->
+    <PropertiesSidebar xAxis />
   </main>
 </template>
 
