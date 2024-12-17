@@ -12,7 +12,7 @@ const xAxis = ref(0);
 
 const store = useDynamicSheets();
 const { createRowOnClick } = store;
-onMounted(() => xAxis.value = parent.value.clientWidth - 300);
+onMounted(() => xAxis.value = parent.value.clientWidth - 320);
 watch(opened, (val) => console.log(val));
 </script>
 

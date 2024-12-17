@@ -6,6 +6,14 @@ export default {
   ],
   theme: {
     extend: {
+      width: {
+        '120': '20rem',
+        '144': '36rem',
+      },
+      height: {
+        '7vh': '70vh',
+        '144': '36rem',
+      },
       gridColumn: {
         'span-16': 'span 16 / span 16',
         'span-15': 'span 15 / span 15',
