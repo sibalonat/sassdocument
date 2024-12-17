@@ -3,7 +3,7 @@ import DynamicHeroIcon from '../General/HeroIcon/DynamicHeroIcon.vue';
 import useUiInteractions from '@/Composables/Ui/UiInteractions';
 
 import { useDraggable } from '@vueuse/core'
-import { onMounted, ref } from 'vue'
+import { nextTick, onMounted, ref } from 'vue'
 
 // composables
 
@@ -24,8 +24,10 @@ const { x, y, style } = useDraggable(el, {
 })
 
 onMounted(() => {
-  console.log(prop.aX);
-  x.value = prop.aX;
+  nextTick(() => {
+    x.value = prop.aX;
+  })
+  // x.value = prop.aX;
 })
 
 </script>
