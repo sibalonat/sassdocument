@@ -1,12 +1,12 @@
 <script setup>
 import { nextTick, onBeforeMount, onMounted, reactive, ref } from 'vue';
-import { useDynamicSheets } from '../Spreadsheet/DynamicSheets';
+import { useDynamicSheets } from '@/Spreadsheet/DynamicSheets';
 import { storeToRefs } from 'pinia';
-import Draggable from './VueDraggable/Draggable';
-import AlphabetHeader from './Header/AlphabetHeader.vue';
+import Draggable from '@/Components/VueDraggable/Draggable';
+import AlphabetHeader from '@/Components/Header/AlphabetHeader.vue';
 import { watch } from 'vue';
-import DynamicHeroIcon from './General/HeroIcon/DynamicHeroIcon.vue';
-import { useDynamicResizeCell } from '../Spreadsheet/DynamicSizeForCell';
+import DynamicHeroIcon from '@/Components/General/HeroIcon/DynamicHeroIcon.vue';
+import { useDynamicResizeCell } from '@/Spreadsheet/DynamicSizeForCell';
 import { get } from 'lodash';
 
 const store = useDynamicSheets();

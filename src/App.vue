@@ -1,11 +1,11 @@
 <script setup>
-import { onMounted, ref } from 'vue';
-import DocumentWrapper from './components/DocumentWrapper.vue';
-import PropertiesSidebar from './components/Partial/PropertiesSidebar.vue';
+import { onMounted, ref, watch } from 'vue';
+import DocumentWrapper from '@/Components/DocumentWrapper.vue';
+import PropertiesSidebar from '@/Components/Partial/PropertiesSidebar.vue';
 import useUiInteractions from '@/Composables/Ui/UiInteractions';
-import { useDynamicSheets } from './Spreadsheet/DynamicSheets';
+import { useDynamicSheets } from '@/Spreadsheet/DynamicSheets';
 
-const { trigger } = useUiInteractions();
+const { trigger, opened } = useUiInteractions();
 
 const parent = ref(null);
 const xAxis = ref(0);
@@ -13,6 +13,7 @@ const xAxis = ref(0);
 const store = useDynamicSheets();
 const { createRowOnClick } = store;
 onMounted(() => xAxis.value = parent.value.clientWidth - 300);
+watch(opened, (val) => console.log(val));
 </script>
 
 <template>
@@ -27,14 +28,14 @@ onMounted(() => xAxis.value = parent.value.clientWidth - 300);
         <button type="button" class="col-span-4 px-4 text-sm border rounded-md" @click="createRowOnClick()">
           Add Group
         </button>
-        <button type="button" class="px-4 text-sm border rounded-md " @click="trigger">
+        <button type="button" class="px-4 text-sm border rounded-md" @click="trigger()">
           Menu
         </button>
       </div>
     </div>
     <DocumentWrapper />
     <!-- {{ xAxis }} -->
-    <PropertiesSidebar :aX="xAxis" />
+    <PropertiesSidebar :aX="xAxis" :open="opened" :trigger="trigger" />
   </main>
 </template>
 
