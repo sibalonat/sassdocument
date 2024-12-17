@@ -1,12 +1,17 @@
 <script setup>
 import DynamicHeroIcon from '@/Components/General/HeroIcon/DynamicHeroIcon.vue';
 import { useDraggable } from '@vueuse/core'
+import { useElementSize } from '@vueuse/core'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 
 // composables
+const { trigger, opened, useResizableElement, handleResize } = useUiInteractions();
+// state
 const el = ref(null)
 const dragEl = ref(null)  
 const prop = defineProps({ aX: Number, open: Boolean, trigger: Function });
+
+const { width, height } = useElementSize(el);
 
 const showCondition = computed(() => { 
   return prop.open && prop.aX !== 0;

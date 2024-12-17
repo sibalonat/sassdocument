@@ -33,7 +33,6 @@ export function useDynamicResizeCell() {
         if (element) {
             const newWidth = event.clientX - element.offsetLeft;
             const newColSpan = Math.min(16, Math.max(1, Math.round(newWidth / baseWidth.value))); // Ensure newColSpan does not exceed 16
-            console.log(newColSpan);
             
             updateColSpan(resizingElement.value.id, newColSpan);
             if (proxyElement.value) {
