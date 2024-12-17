@@ -33,7 +33,7 @@ onMounted(() => {
   :style="style">
   <div class="relative top-0 left-0 w-full h-full">
     <div class="flex flex-row w-full h-14">
-      <button ref="dragEl" class="basis-1/2">
+      <button ref="dragEl" class="h-full basis-1/2">
         <DynamicHeroIcon name="hand-raised" :size="5" class="mx-auto"  />
       </button>
       <button @click="trigger" class="basis-1/2">
