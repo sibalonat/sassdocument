@@ -1,8 +1,13 @@
 <script setup>
 import DynamicHeroIcon from '../General/HeroIcon/DynamicHeroIcon.vue';
+import useUiInteractions from '@/Composables/Ui/UiInteractions';
 
 import { useDraggable } from '@vueuse/core'
 import { ref } from 'vue'
+
+// composables
+
+const { trigger, opened } = useUiInteractions();
 
 const el = ref(null)
 // const xAxis = ref(0);

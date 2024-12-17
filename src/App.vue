@@ -2,8 +2,10 @@
 import { onMounted, ref } from 'vue';
 import DocumentWrapper from './components/DocumentWrapper.vue';
 import PropertiesSidebar from './components/Partial/PropertiesSidebar.vue';
-
+import useUiInteractions from '@/Composables/Ui/UiInteractions';
 import { useDynamicSheets } from './Spreadsheet/DynamicSheets';
+
+const { trigger } = useUiInteractions();
 
 const parent = ref(null);
 const xAxis = ref(0);
@@ -25,7 +27,7 @@ onMounted(() => xAxis.value = parent.value.clientWidth - 300);
         <button type="button" class="col-span-4 px-4 text-sm border rounded-md" @click="createRowOnClick()">
           Add Group
         </button>
-        <button type="button" class="px-4 text-sm border rounded-md " @click="createRowOnClick()">
+        <button type="button" class="px-4 text-sm border rounded-md " @click="trigger()">
           Menu
         </button>
       </div>
