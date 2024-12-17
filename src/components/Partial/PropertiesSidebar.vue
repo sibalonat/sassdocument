@@ -32,7 +32,7 @@ onMounted(() => {
 
 </script>
 <template>
-    <div class="fixed bottom-0 right-0 w-[300px] h-full bg-gray-100" ref="el" v-if="aX" :style="style">
+    <div class="fixed bottom-0 right-0 w-[300px] h-[70vh] bg-gray-100" ref="el" v-if="aX" :style="style">
         sidebar
         
 
