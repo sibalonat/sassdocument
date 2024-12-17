@@ -12,7 +12,7 @@ const xAxis = ref(0);
 
 const store = useDynamicSheets();
 const { createRowOnClick } = store;
-onMounted(() => xAxis.value = parent.value.clientWidth - 300);
+onMounted(() => xAxis.value = Number(parent.value.clientWidth - 300));
 </script>
 
 <template>
@@ -27,7 +27,7 @@ onMounted(() => xAxis.value = parent.value.clientWidth - 300);
         <button type="button" class="col-span-4 px-4 text-sm border rounded-md" @click="createRowOnClick()">
           Add Group
         </button>
-        <button type="button" class="px-4 text-sm border rounded-md " @click="trigger()">
+        <button type="button" class="px-4 text-sm border rounded-md " @click="trigger">
           Menu
         </button>
       </div>
