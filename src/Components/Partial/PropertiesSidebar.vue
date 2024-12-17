@@ -1,17 +1,28 @@
 <script setup>
 import DynamicHeroIcon from '@/Components/General/HeroIcon/DynamicHeroIcon.vue';
 import { useDraggable } from '@vueuse/core'
-import { useElementSize } from '@vueuse/core'
+// import { useElementSize } from '@vueuse/core'
+import useUiInteractions from '@/Composables/Ui/UiInteractions';
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 
 // composables
-const { trigger, opened, useResizableElement, handleResize } = useUiInteractions();
+const { useResizableElement, handleResize } = useUiInteractions();
 // state
 const el = ref(null)
 const dragEl = ref(null)  
 const prop = defineProps({ aX: Number, open: Boolean, trigger: Function });
 
-const { width, height } = useElementSize(el);
+// const { width, height } = useElementSize(el);
+const { minH, maxH, minW, maxW, width, height, initialHW } = useResizableElement(el, {
+  minH: 100,
+  maxH: 500,
+  minW: 100,
+  maxW: 500,
+  width: false,
+  height: true,
+  initialHW: { width: 300, height: 7 },
+  handler: handleResize,
+});
 
 const showCondition = computed(() => { 
   return prop.open && prop.aX !== 0;

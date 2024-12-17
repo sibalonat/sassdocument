@@ -1,5 +1,5 @@
 import { min } from 'lodash';
-import { reactive, ref, toRefs } from 'vue';
+import { onMounted, onUnmounted, reactive, ref, toRefs } from 'vue';
 
 export default function useUiInteractions() {
     const opened = ref(false);
@@ -42,7 +42,14 @@ export default function useUiInteractions() {
     }
   
     function useResizableElement(el, {
-      minH = 0, maxH = Infinity, minW = 0, maxW = Infinity, width = true, height = true, initialHW = { width: 0, height: 0 }, handler = handleResize
+      minH = 0, 
+      maxH = Infinity, 
+      minW = 0, 
+      maxW = Infinity, 
+      width = true, 
+      height = true, 
+      initialHW = { width: 0, height: 0 }, 
+      handler = handleResize
     }) {
       const resizing = ref(false);
   
@@ -80,6 +87,6 @@ export default function useUiInteractions() {
   return {
     opened,
     trigger,
-    useDraggableResizable,
+    useResizableElement,
   };
 }
