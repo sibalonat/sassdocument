@@ -14,7 +14,7 @@ const dragEl = ref(null)
 const prop = defineProps({ aX: Number, open: Boolean, trigger: Function });
 
 // const { width, height } = useElementSize(el);
-const { minH, maxH, minW, maxW, width, height, initialHW, handler, onMouseDown } = useResizableElement(el, {
+const { initialHW, onMouseDown } = useResizableElement(el, {
     minH: 100,
     maxH: 500,
     minW: 100,
