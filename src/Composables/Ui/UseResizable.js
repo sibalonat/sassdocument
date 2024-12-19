@@ -8,17 +8,24 @@ export function useResizableElement(el, {
   width = true, 
   height = true, 
   initialHW = { width: 0, height: 0 }, 
-  handler = () => {},
   startHandler = () => {} // New start handler
 }) {
   const resizing = ref(false);
 
+  function handleResize(event) {
+    if (resizing.value) {
+      if (width) {
+        el.value.style.width = `${event.clientX - el.value.getBoundingClientRect().left}px`;
+      }
+      if (height) {
+        el.value.style.height = `${event.clientY - el.value.getBoundingClientRect().top}px`;
+      }
+    }
+  }
+
   function onMouseMove(event) {
     console.log('onMouseMove');
-    
-    if (resizing.value) {
-      handler(event, el.value, { width, height, minH, maxH, minW, maxW });
-    }
+    handleResize(event);
   }
 
   function onMouseUp() {
@@ -35,6 +42,20 @@ export function useResizableElement(el, {
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
   }
+
+  onMounted(() => {
+    if (el.value) {
+      el.value.addEventListener('mousedown', onMouseDown);
+      console.log('Event listener added for mousedown');
+    }
+  });
+
+  onUnmounted(() => {
+    if (el.value) {
+      el.value.removeEventListener('mousedown', onMouseDown);
+      console.log('Event listener removed for mousedown');
+    }
+  });
 
   return { minH, maxH, minW, maxW, width, height, initialHW, el, onMouseDown };
 }
