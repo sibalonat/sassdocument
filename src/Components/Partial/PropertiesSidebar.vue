@@ -7,7 +7,7 @@ import { useResizableElement } from '@/Composables/Ui/UseResizable';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 
 // composables
-const { handleResize } = useUiInteractions();
+const { handleResize, handleResizeStart } = useUiInteractions();
 // state
 const el = ref(null)
 const dragEl = ref(null)  
@@ -23,6 +23,7 @@ const { initialHW, onMouseDown } = useResizableElement(el, {
     height: true,
     initialHW: { width: 300, height: 667 },
     handler: handleResize,
+    startHandler: handleResizeStart, // Use the new start handler
 });
 
 
