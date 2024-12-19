@@ -88,8 +88,9 @@ watch(el, (val) => {
   <!-- w-120 h-7vh -->
   <div 
   ref="el" 
-  class="fixed bottom-0 right-0 bg-white border rounded-l-lg resize-y" 
+  class="fixed bottom-0 right-0 overflow-y-auto bg-white border rounded-l-lg shadow-md resize-y" 
   v-if="showCondition" 
+  @mousedown="onMouseDown($event)"
   :style="[style, { width: `${initialHW.width}px`, height: `${initialHW.height}px` }]">
   <div class="relative top-0 left-0 w-full h-full p-3">
     <div class="flex flex-row w-full h-14">
@@ -103,11 +104,11 @@ watch(el, (val) => {
     </div>
       sidebar
     
-      <DynamicHeroIcon 
+      <!-- <DynamicHeroIcon 
       name="arrows-up-down" 
       :size="5" 
       class="absolute bottom-0 right-0 cursor-pointer"
-      @mousedown="onMouseDown" />
+      @mousedown="onMouseDown" /> -->
   </div>
 
     </div>

@@ -22,6 +22,7 @@ export function useResizableElement(el, {
   }
 
   function onMouseUp() {
+    console.log('onMouseUp');
     resizing.value = false;
     window.removeEventListener('mousemove', onMouseMove);
     window.removeEventListener('mouseup', onMouseUp);
