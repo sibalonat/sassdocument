@@ -43,6 +43,7 @@ onMounted(() => {
   })
   if (el.value) {
       el.value.addEventListener('mousedown', onMouseDown);
+      console.log('Event listener added for mousedown in PropertiesSidebar');
   }
 })
 
@@ -50,6 +51,7 @@ onMounted(() => {
 onUnmounted(() => {
   if (el.value) {
     el.value.removeEventListener('mousedown', onMouseDown);
+    console.log('Event listener removed for mousedown in PropertiesSidebar');
   }
 });
 
@@ -86,7 +88,7 @@ watch(el, (val) => {
   <!-- w-120 h-7vh -->
   <div 
   ref="el" 
-  class="fixed bottom-0 right-0 bg-white border rounded-l-lg" 
+  class="fixed bottom-0 right-0 bg-white border rounded-l-lg resize-y" 
   v-if="showCondition" 
   :style="[style, { width: `${initialHW.width}px`, height: `${initialHW.height}px` }]">
   <div class="relative top-0 left-0 w-full h-full p-3">
