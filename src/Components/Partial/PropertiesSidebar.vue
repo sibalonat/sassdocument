@@ -21,7 +21,7 @@ const { minH, maxH, minW, maxW, width, height, initialHW, handler, onMouseDown }
     maxW: 500,
     width: false,
     height: true,
-    initialHW: { width: 300, height: 7 },
+    initialHW: { width: 300, height: 667 },
     handler: handleResize,
 });
 
@@ -82,11 +82,12 @@ watch(el, (val) => {
 
 </script>
 <template>
+  <!-- w-120 h-7vh -->
   <div 
   ref="el" 
-  class="fixed bottom-0 right-0 bg-white border rounded-l-lg w-120 h-7vh" 
+  class="fixed bottom-0 right-0 bg-white border rounded-l-lg" 
   v-if="showCondition" 
-  :style="style">
+  :style="[style, { width: `${initialHW.width}px`, height: `${initialHW.height}px` }]">
   <div class="relative top-0 left-0 w-full h-full p-3">
     <div class="flex flex-row w-full h-14">
       <button ref="dragEl" class="h-full basis-1/2">
@@ -102,7 +103,8 @@ watch(el, (val) => {
       <DynamicHeroIcon 
       name="arrows-up-down" 
       :size="5" 
-      class="absolute bottom-0 right-0 cursor-pointer" />
+      class="absolute bottom-0 right-0 cursor-pointer"
+      @mousedown="onMouseDown" />
   </div>
 
     </div>
