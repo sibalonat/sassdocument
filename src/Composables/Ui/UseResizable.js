@@ -1,6 +1,6 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 
-export function useResizableElement(el, {
+export function useResizableElement(element, {
   minH = 0, 
   maxH = Infinity, 
   minW = 0, 
@@ -15,10 +15,10 @@ export function useResizableElement(el, {
   function handleResize(event) {
     if (resizing.value) {
       if (width) {
-        el.value.style.width = `${event.clientX - el.value.getBoundingClientRect().left}px`;
+        element.value.style.width = `${event.clientX - element.value.getBoundingClientRect().left}px`;
       }
       if (height) {
-        el.value.style.height = `${event.clientY - el.value.getBoundingClientRect().top}px`;
+        element.value.style.height = `${event.clientY - element.value.getBoundingClientRect().top}px`;
       }
     }
   }
@@ -38,24 +38,24 @@ export function useResizableElement(el, {
   function onMouseDown(event) {
     console.log('onMouseDown');
     resizing.value = true;
-    startHandler(event, el.value); // Call start handler
+    startHandler(event, element.value); // Call start handler
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
   }
 
   onMounted(() => {
-    if (el.value) {
-      el.value.addEventListener('mousedown', onMouseDown);
+    if (element.value) {
+      element.value.addEventListener('mousedown', onMouseDown);
       console.log('Event listener added for mousedown');
     }
   });
 
   onUnmounted(() => {
-    if (el.value) {
-      el.value.removeEventListener('mousedown', onMouseDown);
+    if (element.value) {
+      element.value.removeEventListener('mousedown', onMouseDown);
       console.log('Event listener removed for mousedown');
     }
   });
 
-  return { minH, maxH, minW, maxW, width, height, initialHW, el, onMouseDown };
+  return { minH, maxH, minW, maxW, width, height, initialHW, onMouseDown };
 }
