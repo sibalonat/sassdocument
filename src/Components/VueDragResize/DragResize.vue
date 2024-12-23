@@ -275,6 +275,347 @@ import { onBeforeMount, onBeforeUnmount, onMounted } from 'vue';
     
         removeEvent(window, 'resize', checkParentSize)
     })
+
+    // methods
+    const resetBoundsAndMouseState = () => {
+        // mouseClickPosition.value = { mouseX: 0, mouseY: 0, x: 0, y: 0, w: 0, h: 0 }
+    
+        bounds.value = {
+            minLeft: null,
+            maxLeft: null,
+            minRight: null,
+            maxRight: null,
+            minTop: null,
+            maxTop: null,
+            minBottom: null,
+            maxBottom: null
+        }
+    }
+
+    const checkParentSize = () => {
+        if (props.parent) {
+            const [newParentWidth, newParentHeight] = getParentSize()
+    
+            parentWidth.value = newParentWidth
+            parentHeight.value = newParentHeight
+            right.value = parentWidth - width - left
+            bottom.value = parentHeight - height - top
+        }
+    }
+
+    const getParentSize = () => {
+        if (props.parent) {
+            const style = window.getComputedStyle(element.value.parentNode, null)
+    
+            return [
+                parseInt(style.getPropertyValue('width'), 10),
+                parseInt(style.getPropertyValue('height'), 10)
+            ]
+        }
+    
+        return [null, null]
+    }
+
+    const elementTouchDown = (e) => {
+        eventsFor = events.touch
+    
+        elementDown(e)
+    }
+
+    const elementMouseDown = (e) => {
+        eventsFor = events.mouse
+    
+        elementDown(e)
+    }
+
+    const elementDown = (e) => {
+        if (e instanceof MouseEvent && e.button !== 0) {
+            return
+        }
+    
+        const target = e.target || e.srcElement
+    
+        if (element.value.contains(target)) {
+            if (props.onDragStart(e) === false) {
+                return
+            }
+    
+            if (
+                (props.dragHandle && !matchesSelectorToParentElements(target, props.dragHandle, element.value)) ||
+                (props.dragCancel && matchesSelectorToParentElements(target, props.dragCancel, element.value))
+            ) {
+                dragging.value = false
+    
+                return
+            }
+    
+            if (!enabled.value) {
+                enabled.value = true
+    
+                // $emit('activated')
+            }
+    
+            if (props.draggable) {
+                dragEnable.value = true
+            }
+    
+            // mouseClickPosition.value.mouseX = e.touches ? e.touches[0].pageX : e.pageX
+            // mouseClickPosition.value.mouseY = e.touches ? e.touches[0].pageY : e.pageY
+    
+            // mouseClickPosition.value.left = left.value
+            // mouseClickPosition.value.right = right.value
+            // mouseClickPosition.value.top = top.value
+            // mouseClickPosition.value.bottom = bottom.value
+    
+            if (props.parent) {
+                bounds.value = calcDragLimits()
+            }
+    
+            addEvent(document.documentElement, eventsFor.move, move)
+            addEvent(document.documentElement, eventsFor.stop, handleUp)
+        }
+    }
+
+    const calcDragLimits = () => {
+        return {
+            minLeft: left.value % props.grid[0],
+            maxLeft: Math.floor((parentWidth.value - width.value - left.value) / props.grid[0]) * props.grid[0] + left.value,
+            minRight: right.value % props.grid[0],
+            maxRight: Math.floor((parentWidth.value - width.value - right.value) / props.grid[0]) * props.grid[0] + right.value,
+            minTop: top.value % props.grid[1],
+            maxTop: Math.floor((parentHeight.value - height.value - top.value) / props.grid[1]) * props.grid[1] + top.value,
+            minBottom: bottom.value % props.grid[1],
+            maxBottom: Math.floor((parentHeight.value - height.value - bottom.value) / props.grid[1]) * props.grid[1] + bottom.value
+        }
+    }
+
+    const deselect = (e) => {
+        const target = e.target || e.srcElement
+        const regex = new RegExp(props.className + '-([trmbl]{2})', '')
+    
+        if (!element.value.contains(target) && !regex.test(target.className)) {
+            if (enabled.value && !props.preventDeactivation) {
+                enabled.value = false
+    
+                // $emit('deactivated')
+            }
+    
+            removeEvent(document.documentElement, eventsFor.move, handleResize)
+        }
+    
+        resetBoundsAndMouseState()
+    }
+
+    const handleTouchDown = (handle, e) => {
+        eventsFor = events.touch
+    
+        handleDown(handle, e)
+    }
+
+    const handleDown = (handle, e) => {
+        if (e instanceof MouseEvent && e.which !== 1) {
+            return
+        }
+    
+        if (props.onResizeStart(handle, e) === false) {
+            return
+        }
+    
+        if (e.stopPropagation) e.stopPropagation()
+    
+        // Here we avoid a dangerous recursion by faking
+        // corner handles as middle handles
+        if (props.lockAspectRatio && !handle.includes('m')) {
+            handle = 'm' + handle.substring(1)
+        } else {
+            handle = handle
+        }
+    
+        handle.value = handle
+    
+        resizeEnable.value = true
+    
+        // mouseClickPosition.value.mouseX = e.touches ? e.touches[0].pageX : e.pageX
+        // mouseClickPosition.value.mouseY = e.touches ? e.touches[0].pageY : e.pageY
+        // mouseClickPosition.value.left = left.value
+        // mouseClickPosition.value.right = right.value
+        // mouseClickPosition.value.top = top.value
+        // mouseClickPosition.value.bottom = bottom.value
+    
+        bounds.value = calcResizeLimits()
+    
+        addEvent(document.documentElement, eventsFor.move, handleResize)
+        addEvent(document.documentElement, eventsFor.stop, handleUp)
+    }
+
+    const calcResizeLimits = () => {
+        let minW = props.minW
+        let minH = props.minH
+        let maxW = props.maxW
+        let maxH = props.maxH
+    
+        const aspectFactor = aspectFactor.value
+        const [gridX, gridY] = props.grid
+        const width = width.value
+        const height = height.value
+        const left = left.value
+        const top = top.value
+        const right = right.value
+        const bottom = bottom.value
+    
+        if (props.lockAspectRatio) {
+            if (minW / minH > aspectFactor) {
+                minH = minW / aspectFactor
+            } else {
+                minW = aspectFactor * minH
+            }
+    
+            if (maxW && maxH) {
+                maxW = Math.min(maxW, aspectFactor * maxH)
+                maxH = Math.min(maxH, maxW / aspectFactor)
+            } else if (maxW) {
+                maxH = maxW / aspectFactor
+            } else if (maxH) {
+                maxW = aspectFactor * maxH
+            }
+        }
+    
+        maxW = maxW - (maxW % gridX)
+        maxH = maxH - (maxH % gridY)
+    
+        const limits = {
+            minLeft: null,
+            maxLeft: null,
+            minTop: null,
+            maxTop: null,
+            minRight: null,
+            maxRight: null,
+            minBottom: null,
+            maxBottom: null
+        }
+    
+        if (props.parent) {
+            limits.minLeft = left % gridX
+            limits.maxLeft = left + Math.floor((width - minW) / gridX) * gridX
+            limits.minTop = top % gridY
+            limits.maxTop = top + Math.floor((height - minH) / gridY) * gridY
+            limits.minRight = right % gridX
+            limits.maxRight = right + Math.floor((width - minW) / gridX) * gridX
+            limits.minBottom = bottom % gridY
+            limits.maxBottom = bottom + Math.floor((height - minH) / gridY) * gridY
+    
+            if (maxW) {
+                limits.minLeft = Math.max(limits.minLeft, parentWidth.value - right - maxW)
+                limits.minRight = Math.max(limits.minRight, parentWidth.value - left - maxW)
+            } 
+
+            if (maxH) {
+                limits.minTop = Math.max(limits.minTop, parentHeight.value - bottom - maxH)
+                limits.minBottom = Math.max(limits.minBottom, parentHeight.value - top - maxH)
+            }
+
+            if (props.lockAspectRatio) {
+                limits.minLeft = Math.max(limits.minLeft, left - top * aspectFactor)
+                limits.minTop = Math.max(limits.minTop, top - left / aspectFactor)
+                limits.minRight = Math.max(limits.minRight, right - bottom * aspectFactor)
+                limits.minBottom = Math.max(limits.minBottom, bottom - right / aspectFactor)
+            }
+
+        } else {
+            limits.minLeft = null
+            limits.maxLeft = left + Math.floor((width - minW) / gridX) * gridX
+            limits.minTop = null
+            limits.maxTop = top + Math.floor((height - minH) / gridY) * gridY
+            limits.minRight = null
+            limits.maxRight = right + Math.floor((width - minW) / gridX) * gridX
+            limits.minBottom = null
+            limits.maxBottom = bottom + Math.floor((height - minH) / gridY) * gridY
+    
+            if (maxW) {
+                limits.minLeft = -(right + maxW)
+                limits.minRight = -(left + maxW)
+            }
+    
+            if (maxH) {
+                limits.minTop = -(bottom + maxH)
+                limits.minBottom = -(top + maxH)
+            }
+    
+            if (props.lockAspectRatio && (maxW && maxH)) {
+                limits.minLeft = Math.min(limits.minLeft, -(right + maxW))
+                limits.minTop = Math.min(limits.minTop, -(maxH + bottom))
+                limits.minRight = Math.min(limits.minRight, -left - maxW)
+                limits.minBottom = Math.min(limits.minBottom, -top - maxH)
+            }
+        }
+    }
+
+    const handleResize = (e) => {
+        if (e.touches && e.touches.length > 1) {
+            return
+        }
+    
+        if (props.onResize(e) === false) {
+            return
+        }
+    
+        if (e.preventDefault) e.preventDefault()
+    
+        const x = e.touches ? e.touches[0].pageX : e.pageX
+        const y = e.touches ? e.touches[0].pageY : e.pageY
+    
+        const deltaX = x - mouseClickPosition.value.mouseX
+        const deltaY = y - mouseClickPosition.value.mouseY
+    
+        const [gridX, gridY] = props.grid
+    
+        if (props.lockAspectRatio) {
+            if (handle.value === 'tl') {
+                if (deltaX > deltaY) {
+                    deltaX = deltaY
+                } else {
+                    deltaY = deltaX
+                }
+            } else if (handle.value === 'tr') {
+                if (-deltaX > deltaY) {
+                    deltaX = -deltaY
+                } else {
+                    deltaY = -deltaX
+                }
+            } else if (handle.value === 'bl') {
+                if (deltaX > -deltaY) {
+                    deltaX = -deltaY
+                } else {
+                    deltaY = -deltaX
+                }
+            } else if (handle.value === 'br') {
+                if (-deltaX > -deltaY) {
+                    deltaX = deltaY
+                } else {
+                    deltaY = deltaX
+                }
+            }
+        }
+    
+        if (handle.value.includes('t')) {
+            if (top.value + deltaY < bounds.value.minTop) {
+                deltaY = bounds.value.minTop - top.value
+            } else if (top.value + deltaY > bounds.value.maxTop) {
+                deltaY = bounds.value.maxTop - top.value
+            }
+        } else if (handle.value.includes('b')) {
+            if (bottom.value - deltaY < bounds.value.minBottom) {
+                deltaY = bottom.value - bounds.value.minBottom
+            } else if (bottom.value - deltaY > bounds.value.maxBottom) {
+                deltaY = bottom.value - bounds.value.maxBottom
+            }
+        }
+    
+        if (handle.value.includes('l')) {
+            if (left.value + deltaX < bounds.value.minLeft) {
+                deltaX = bounds.value.minLeft - left.value
+            } else if (left.value + deltaX > bounds.value.maxLeft) {
+                deltaX = bounds.value.maxLeft - left.value
   
 //     methods: {
 //       resetBoundsAndMouseState () {
