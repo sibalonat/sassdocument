@@ -36,6 +36,7 @@ watch(opened, (val) => console.log(val));
     <DocumentWrapper />
     <!-- {{ xAxis }} -->
     <PropertiesSidebar :aX="xAxis" :open="opened" :trigger="trigger" />
+    <!-- <div class="fixed top-0 w-32 overflow-y-auto resize-y bg-slate-400 h-44 "></div> -->
   </main>
 </template>
 
