@@ -1,5 +1,6 @@
 <script setup>
 import { useGridUtils } from '@/Composables/Ui/UseGridUtils';
+import { onBeforeMount, onBeforeUnmount, onMounted } from 'vue';
 
   
   const events = {
@@ -88,201 +89,192 @@ import { useGridUtils } from '@/Composables/Ui/UseGridUtils';
         type: Boolean,
         default: false
     },
+    w: {
+        type: [Number, String],
+        default: 200,
+        validator: (val) => {
+            if (typeof val === 'number') {
+                return val > 0
+            }
+            return val === 'auto'
+        }
+    },
+    h: {
+        type: [Number, String],
+        default: 200,
+        validator: (val) => {
+            if (typeof val === 'number') {
+                return val > 0
+            }
+            return val === 'auto'
+        }
+    },
+    minWidth: {
+        type: Number,
+        default: 0,
+        validator: (val) => val >= 0
+    },
+    minHeight: {
+        type: Number,
+        default: 0,
+        validator: (val) => val >= 0
+    },
+    maxWidth: {
+        type: Number,
+        default: null,
+        validator: (val) => val >= 0
+    },
+    maxHeight: {
+        type: Number,
+        default: null,
+        validator: (val) => val >= 0
+    },
+    x: {
+        type: Number,
+        default: 0
+    },
+    y: {
+        type: Number,
+        default: 0
+    },
+    z: {
+        type: [String, Number],
+        default: 'auto',
+        validator: (val) => (typeof val === 'string' ? val === 'auto' : val >= 0)
+    },
+    handles: {
+        type: Array,
+        default: () => ['tl', 'tm', 'tr', 'mr', 'br', 'bm', 'bl', 'ml'],
+        validator: (val) => {
+            const s = new Set(['tl', 'tm', 'tr', 'mr', 'br', 'bm', 'bl', 'ml'])
+            return new Set(val.filter(h => s.has(h))).size === val.length
+        }
+    },
+    scale: {
+        type: [Number, Array],
+        default: 1,
+        validator: (val) => {
+            if (typeof val === 'number') {
+                return val > 0
+            }
+            return val.length === 2 && val[0] > 0 && val[1] > 0
+        }
+    },
+    onDragStart: {
+        type: Function,
+        default: () => true
+    },
+    onDrag: {
+        type: Function,
+        default: () => true
+    },
+    onResizeStart: {
+        type: Function,
+        default: () => true
+    },
+    onResize: {
+        type: Function,
+        default: () => true
+    },
+    draggHandle: {
+        type: String,
+        default: null
+    },
+    dragCancel: {
+        type: String,
+        default: null
+    },
+    axis: {
+        type: String,
+        default: 'both',
+        validator: (val) => ['x', 'y', 'both'].includes(val)
+    },
+    grid: {
+        type: Array,
+        default: () => [1, 1]
+    },
+    parent: {
+        type: Boolean,
+        default: false
+    },
   })
   
-//   export default {
-//     replace: true,
-//     name: 'vue-draggable-resizable',
-//     props: {
-//       w: {
-//         type: [Number, String],
-//         default: 200,
-//         validator: (val) => {
-//           if (typeof val === 'number') {
-//             return val > 0
-//           }
-  
-//           return val === 'auto'
-//         }
-//       },
-//       h: {
-//         type: [Number, String],
-//         default: 200,
-//         validator: (val) => {
-//           if (typeof val === 'number') {
-//             return val > 0
-//           }
-  
-//           return val === 'auto'
-//         }
-//       },
-//       minWidth: {
-//         type: Number,
-//         default: 0,
-//         validator: (val) => val >= 0
-//       },
-//       minHeight: {
-//         type: Number,
-//         default: 0,
-//         validator: (val) => val >= 0
-//       },
-//       maxWidth: {
-//         type: Number,
-//         default: null,
-//         validator: (val) => val >= 0
-//       },
-//       maxHeight: {
-//         type: Number,
-//         default: null,
-//         validator: (val) => val >= 0
-//       },
-//       x: {
-//         type: Number,
-//         default: 0
-//       },
-//       y: {
-//         type: Number,
-//         default: 0
-//       },
-//       z: {
-//         type: [String, Number],
-//         default: 'auto',
-//         validator: (val) => (typeof val === 'string' ? val === 'auto' : val >= 0)
-//       },
-//       handles: {
-//         type: Array,
-//         default: () => ['tl', 'tm', 'tr', 'mr', 'br', 'bm', 'bl', 'ml'],
-//         validator: (val) => {
-//           const s = new Set(['tl', 'tm', 'tr', 'mr', 'br', 'bm', 'bl', 'ml'])
-  
-//           return new Set(val.filter(h => s.has(h))).size === val.length
-//         }
-//       },
-//       dragHandle: {
-//         type: String,
-//         default: null
-//       },
-//       dragCancel: {
-//         type: String,
-//         default: null
-//       },
-//       axis: {
-//         type: String,
-//         default: 'both',
-//         validator: (val) => ['x', 'y', 'both'].includes(val)
-//       },
-//       grid: {
-//         type: Array,
-//         default: () => [1, 1]
-//       },
-//       parent: {
-//         type: Boolean,
-//         default: false
-//       },
-//       scale: {
-//         type: [Number, Array],
-//         default: 1,
-//         validator: (val) => {
-//           if (typeof val === 'number') {
-//             return val > 0
-//           }
-  
-//           return val.length === 2 && val[0] > 0 && val[1] > 0
-//         }
-//       },
-//       onDragStart: {
-//         type: Function,
-//         default: () => true
-//       },
-//       onDrag: {
-//         type: Function,
-//         default: () => true
-//       },
-//       onResizeStart: {
-//         type: Function,
-//         default: () => true
-//       },
-//       onResize: {
-//         type: Function,
-//         default: () => true
-//       }
-//     },
-  
-//     data: function () {
-//       return {
-//         left: this.x,
-//         top: this.y,
-//         right: null,
-//         bottom: null,
-  
-//         width: null,
-//         height: null,
-  
-//         widthTouched: false,
-//         heightTouched: false,
-  
-//         aspectFactor: null,
-  
-//         parentWidth: null,
-//         parentHeight: null,
-  
-//         handle: null,
-//         enabled: this.active,
-//         resizing: false,
-//         dragging: false,
-//         dragEnable: false,
-//         resizeEnable: false,
-//         zIndex: this.z
-//       }
-//     },
-  
-//     created: function () {
-//       // eslint-disable-next-line
-//       if (this.maxWidth && this.minWidth > this.maxWidth) console.warn('[Vdr warn]: Invalid prop: minWidth cannot be greater than maxWidth')
-//       // eslint-disable-next-line
-//       if (this.maxHeight && this.minHeight > this.maxHeight) console.warn('[Vdr warn]: Invalid prop: minHeight cannot be greater than maxHeight')
-  
-//       this.resetBoundsAndMouseState()
-//     },
-//     mounted: function () {
-//       if (!this.enableNativeDrag) {
-//         this.$el.ondragstart = () => false
-//       }
-  
-//       const [parentWidth, parentHeight] = this.getParentSize()
-  
-//       this.parentWidth = parentWidth
-//       this.parentHeight = parentHeight
-  
-//       const [width, height] = getComputedSize(this.$el)
-  
-//       this.aspectFactor = (this.w !== 'auto' ? this.w : width) / (this.h !== 'auto' ? this.h : height)
-  
-//       this.width = this.w !== 'auto' ? this.w : width
-//       this.height = this.h !== 'auto' ? this.h : height
-  
-//       this.right = this.parentWidth - this.width - this.left
-//       this.bottom = this.parentHeight - this.height - this.top
-  
-//       if (this.active) {
-//         this.$emit('activated')
-//       }
-  
-//       addEvent(document.documentElement, 'mousedown', this.deselect)
-//       addEvent(document.documentElement, 'touchend touchcancel', this.deselect)
-  
-//       addEvent(window, 'resize', this.checkParentSize)
-//     },
-//     beforeUnmount: function () {
-//       removeEvent(document.documentElement, 'mousedown', this.deselect)
-//       removeEvent(document.documentElement, 'touchstart', this.handleUp)
-//       removeEvent(document.documentElement, 'mousemove', this.move)
-//       removeEvent(document.documentElement, 'touchmove', this.move)
-//       removeEvent(document.documentElement, 'mouseup', this.handleUp)
-//       removeEvent(document.documentElement, 'touchend touchcancel', this.deselect)
-  
-//       removeEvent(window, 'resize', this.checkParentSize)
-//     },
+  // data
+    const left = ref(props.x)
+    const top = ref(props.y)
+    const right = ref(null)
+    const bottom = ref(null)
+
+    const width = ref(null)
+    const height = ref(null)
+
+    const widthTouched = ref(false)
+    const heightTouched = ref(false)
+
+    const aspectFactor = ref(null)
+
+    const parentWidth = ref(null)
+    const parentHeight = ref(null)
+
+    const handle = ref(null)
+    const enabled = ref(props.active)
+    const resizing = ref(false)
+    const dragging = ref(false)
+    const dragEnable = ref(false)
+    const resizeEnable = ref(false)
+    const zIndex = ref(props.z)
+
+    // const mouseClickPosition = ref({ mouseX: 0, mouseY: 0, x: 0, y: 0, w: 0, h: 0 })
+    // hooks
+    onBeforeMount(() => {
+        // eslint-disable-next-line
+        if (props.maxWidth && props.minWidth > props.maxWidth) console.warn('[Vdr warn]: Invalid prop: minWidth cannot be greater than maxWidth')
+        // eslint-disable-next-line
+        if (props.maxHeight && props.minHeight > props.maxHeight) console.warn('[Vdr warn]: Invalid prop: minHeight cannot be greater than maxHeight')
+    
+        resetBoundsAndMouseState()
+    })
+
+    onMounted(() => {
+        if (!props.enableNativeDrag) {
+            // $el.ondragstart = () => false
+        }
+    
+        const [parentWidth, parentHeight] = getParentSize()
+    
+        parentWidth.value = parentWidth
+        parentHeight.value = parentHeight
+    
+        const [width, height] = getComputedSize(element.value)
+    
+        aspectFactor.value = (props.w !== 'auto' ? props.w : width) / (props.h !== 'auto' ? props.h : height)
+    
+        width.value = props.w !== 'auto' ? props.w : width
+        height.value = props.h !== 'auto' ? props.h : height
+    
+        right.value = parentWidth - width - left
+        bottom.value = parentHeight - height - top
+    
+        if (props.active) {
+            // $emit('activated')
+        }
+    
+        addEvent(document.documentElement, 'mousedown', deselect)
+        addEvent(document.documentElement, 'touchend touchcancel', deselect)
+    
+        addEvent(window, 'resize', checkParentSize)
+    })
+    
+    onBeforeUnmount(() => {
+        removeEvent(document.documentElement, 'mousedown', deselect)
+        removeEvent(document.documentElement, 'touchstart', handleUp)
+        removeEvent(document.documentElement, 'mousemove', move)
+        removeEvent(document.documentElement, 'touchmove', move)
+        removeEvent(document.documentElement, 'mouseup', handleUp)
+        removeEvent(document.documentElement, 'touchend touchcancel', deselect)
+    
+        removeEvent(window, 'resize', checkParentSize)
+    })
   
 //     methods: {
 //       resetBoundsAndMouseState () {

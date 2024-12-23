@@ -4,7 +4,7 @@ import { useDraggable } from '@vueuse/core'
 // import { useElementSize } from '@vueuse/core'
 import useUiInteractions from '@/Composables/Ui/UiInteractions';
 import { useResizableElement } from '@/Composables/Ui/UseResizable';
-import { useGridUtils } from '@/Composables/Ui/UseGridUtils';
+
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 
 // composables
