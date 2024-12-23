@@ -616,6 +616,114 @@ import { onBeforeMount, onBeforeUnmount, onMounted } from 'vue';
                 deltaX = bounds.value.minLeft - left.value
             } else if (left.value + deltaX > bounds.value.maxLeft) {
                 deltaX = bounds.value.maxLeft - left.value
+            } 
+        } else if (handle.value.includes('r')) {
+            if (right.value - deltaX < bounds.value.minRight) {
+                deltaX = right.value - bounds.value.minRight
+            } else if (right.value - deltaX > bounds.value.maxRight) {
+                deltaX = right.value - bounds.value.maxRight
+            }
+        } 
+    }
+
+    const handleUp = (e) => {
+        if (e.touches && e.touches.length > 1) {
+            return
+        }
+    
+        if (props.onResize(e) === false) {
+            return
+        }
+    
+        if (e.preventDefault) e.preventDefault()
+    
+        removeEvent(document.documentElement, eventsFor.move, handleResize)
+        removeEvent(document.documentElement, eventsFor.stop, handleUp)
+    
+        resizing.value = false
+        resizeEnable.value = false
+    
+        // $emit('resized', { width: width.value, height: height.value })
+    
+        resetBoundsAndMouseState()
+    }
+
+    const handleDrag = (e) => {
+        if (e.touches && e.touches.length > 1) {
+            return
+        }
+    
+        if (props.onDrag(e) === false) {
+            return
+        }
+    
+        if (e.preventDefault) e.preventDefault()
+    
+        const x = e.touches ? e.touches[0].pageX : e.pageX
+        const y = e.touches ? e.touches[0].pageY : e.pageY
+    
+        const deltaX = x - mouseClickPosition.value.mouseX
+        const deltaY = y - mouseClickPosition.value.mouseY
+    
+        const [gridX, gridY] = props.grid
+    
+        if (handle.value.includes('t')) {
+            if (top.value + deltaY < bounds.value.minTop) {
+                deltaY = bounds.value.minTop - top.value
+            } else if (top.value + deltaY > bounds.value.maxTop) {
+                deltaY = bounds.value.maxTop - top.value
+            }
+        } else if (handle.value.includes('b')) {
+            if (bottom.value - deltaY < bounds.value.minBottom) {
+                deltaY = bottom.value - bounds.value.minBottom
+            } else if (bottom.value - deltaY > bounds.value.maxBottom) {
+                deltaY = bottom.value - bounds.value.maxBottom
+            }
+        }
+    
+        if (handle.value.includes('l')) {
+            if (left.value + deltaX < bounds.value.minLeft) {
+                deltaX = bounds.value.minLeft - left.value
+            } else if (left.value + deltaX > bounds.value.maxLeft) {
+                deltaX = bounds.value.maxLeft - left.value
+            }
+        } else if (handle.value.includes('r')) {
+            if (right.value - deltaX < bounds.value.minRight) {
+                deltaX = right.value - bounds.value.minRight
+            } else if (right.value - deltaX > bounds.value.maxRight) {
+                deltaX = right.value - bounds.value.maxRight
+            }
+        }
+    
+        left.value += deltaX
+        right.value -= deltaX
+        top.value += deltaY
+        bottom.value -= deltaY
+    
+        // $emit('dragged', { left: left.value, top: top.value })
+    }
+
+    // const handleUp = (e) => {
+    //     if (e.touches && e.touches.length > 1) {
+    //         return
+    //     }
+    
+    //     if (props.onDrag(e) === false) {
+    //         return
+    //     }
+    
+    //     if (e.preventDefault) e.preventDefault()
+    
+    //     removeEvent(document.documentElement, eventsFor.move, handleDrag)
+    //     removeEvent(document.documentElement, eventsFor.stop, handleUp)
+    
+    //     dragging.value = false
+    //     dragEnable.value = false
+    
+    //     // $emit('dragged', { left: left.value, top: top.value })
+    
+    //     resetBoundsAndMouseState()
+    // }
   
 //     methods: {
 //       resetBoundsAndMouseState () {
