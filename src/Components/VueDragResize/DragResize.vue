@@ -200,29 +200,35 @@ import { onBeforeMount, onBeforeUnmount, onMounted } from 'vue';
   })
   
   // data
-    const left = ref(props.x)
-    const top = ref(props.y)
-    const right = ref(null)
-    const bottom = ref(null)
+  const state = reactive({
+      left: props.x,
+      top: props.y,
+      right: null,
+      bottom: null,
+      width: null,
+      height: null,
+      widthTouched: false,
+      heightTouched: false,
+      aspectFactor: null,
+      parentWidth: null,
+      parentHeight: null,
+      handle: null,
+      enabled: props.active,
+      resizing: false,
+      dragging: false,
+      dragEnable: false,
+      resizeEnable: false,
+      zIndex: props.z
+    });
+    // computed
+    const style = computed(() => ({
+      transform: `translate(${state.left}px, ${state.top}px)`,
+      width: computedWidth.value,
+      height: computedHeight.value,
+      zIndex: state.zIndex,
+      ...(state.dragging && props.disableUserSelect ? userSelectNone : userSelectAuto)
+    }));
 
-    const width = ref(null)
-    const height = ref(null)
-
-    const widthTouched = ref(false)
-    const heightTouched = ref(false)
-
-    const aspectFactor = ref(null)
-
-    const parentWidth = ref(null)
-    const parentHeight = ref(null)
-
-    const handle = ref(null)
-    const enabled = ref(props.active)
-    const resizing = ref(false)
-    const dragging = ref(false)
-    const dragEnable = ref(false)
-    const resizeEnable = ref(false)
-    const zIndex = ref(props.z)
 
     // const mouseClickPosition = ref({ mouseX: 0, mouseY: 0, x: 0, y: 0, w: 0, h: 0 })
     // hooks
