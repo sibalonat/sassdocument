@@ -198,6 +198,8 @@ import { onBeforeMount, onBeforeUnmount, onMounted } from 'vue';
         default: false
     },
   })
+
+  const emit = defineEmits(['activated', 'update:active', 'deactivated', 'dragging', 'resizeStop', 'dragStop']);
   
   // data
   const state = reactive({
@@ -507,87 +509,181 @@ import { onBeforeMount, onBeforeUnmount, onMounted } from 'vue';
         if (e.touches && e.touches.length > 1) {
             return
         }
-    
         if (props.onResize(e) === false) {
             return
         }
-    
         if (e.preventDefault) e.preventDefault()
-    
         removeEvent(document.documentElement, eventsFor.move, handleResize)
         removeEvent(document.documentElement, eventsFor.stop, handleUp)
     
         resizing.value = false
         resizeEnable.value = false
     
-        // $emit('resized', { width: width.value, height: height.value })
-    
         resetBoundsAndMouseState()
     }
 
     const handleDrag = (e) => {
-        if (e.touches && e.touches.length > 1) {
-            return
+        const axis = props.axis;
+        const grid = props.grid;
+        const bounds = state.bounds;
+        const mouseClickPosition = state.mouseClickPosition;
+
+        const tmpDeltaX = axis && axis !== 'y' ? mouseClickPosition.mouseX - (e.touches ? e.touches[0].pageX : e.pageX) : 0;
+        const tmpDeltaY = axis && axis !== 'x' ? mouseClickPosition.mouseY - (e.touches ? e.touches[0].pageY : e.pageY) : 0;
+
+        const [deltaX, deltaY] = snapToGrid(grid, tmpDeltaX, tmpDeltaY, props.scale);
+
+        const left = restrictToBounds(mouseClickPosition.left - deltaX, bounds.minLeft, bounds.maxLeft);
+        const top = restrictToBounds(mouseClickPosition.top - deltaY, bounds.minTop, bounds.maxTop);
+
+        if (props.onDrag(left, top) === false) {
+            return;
         }
-    
-        if (props.onDrag(e) === false) {
-            return
+
+        const right = restrictToBounds(mouseClickPosition.right + deltaX, bounds.minRight, bounds.maxRight);
+        const bottom = restrictToBounds(mouseClickPosition.bottom + deltaY, bounds.minBottom, bounds.maxBottom);
+
+        state.left = left;
+        state.top = top;
+        state.right = right;
+        state.bottom = bottom;
+
+        emit('dragging', state.left, state.top);
+        state.dragging = true;
+    };
+
+    const moveHorizontally = (val) => {
+        const [deltaX, _] = snapToGrid(props.grid, val, state.top, 1);
+
+        const left = restrictToBounds(deltaX, state.bounds.minLeft, state.bounds.maxLeft);
+
+        state.left = left;
+        state.right = state.parentWidth - state.width - left;
+    };
+
+    const moveVertically = (val) => {
+        const [_, deltaY] = snapToGrid(props.grid, state.left, val, 1);
+
+        const top = restrictToBounds(deltaY, state.bounds.minTop, state.bounds.maxTop);
+
+        state.top = top;
+        state.bottom = state.parentHeight - state.height - top;
+    };
+
+    const handleResize = (e) => {
+        let left = state.left;
+        let top = state.top;
+        let right = state.right;
+        let bottom = state.bottom;
+
+        const mouseClickPosition = state.mouseClickPosition;
+        const aspectFactor = state.aspectFactor;
+
+        const tmpDeltaX = mouseClickPosition.mouseX - (e.touches ? e.touches[0].pageX : e.pageX);
+        const tmpDeltaY = mouseClickPosition.mouseY - (e.touches ? e.touches[0].pageY : e.pageY);
+
+        if (!state.widthTouched && tmpDeltaX) {
+            state.widthTouched = true;
         }
-    
-        if (e.preventDefault) e.preventDefault()
-    
-        const x = e.touches ? e.touches[0].pageX : e.pageX
-        const y = e.touches ? e.touches[0].pageY : e.pageY
-    
-        const deltaX = x - mouseClickPosition.value.mouseX
-        const deltaY = y - mouseClickPosition.value.mouseY
-    
-        const [gridX, gridY] = props.grid
-    
-        if (handle.value.includes('t')) {
-            if (top.value + deltaY < bounds.value.minTop) {
-                deltaY = bounds.value.minTop - top.value
-            } else if (top.value + deltaY > bounds.value.maxTop) {
-                deltaY = bounds.value.maxTop - top.value
+
+        if (!state.heightTouched && tmpDeltaY) {
+            state.heightTouched = true;
+        }
+
+        const [deltaX, deltaY] = snapToGrid(props.grid, tmpDeltaX, tmpDeltaY, props.scale);
+
+        if (state.handle.includes('b')) {
+            bottom = restrictToBounds(mouseClickPosition.bottom + deltaY, state.bounds.minBottom, state.bounds.maxBottom);
+
+            if (props.lockAspectRatio && resizingOnY.value) {
+            right = state.right - (state.bottom - bottom) * aspectFactor;
             }
-        } else if (handle.value.includes('b')) {
-            if (bottom.value - deltaY < bounds.value.minBottom) {
-                deltaY = bottom.value - bounds.value.minBottom
-            } else if (bottom.value - deltaY > bounds.value.maxBottom) {
-                deltaY = bottom.value - bounds.value.maxBottom
+        } else if (state.handle.includes('t')) {
+            top = restrictToBounds(mouseClickPosition.top - deltaY, state.bounds.minTop, state.bounds.maxTop);
+
+            if (props.lockAspectRatio && resizingOnY.value) {
+            left = state.left - (state.top - top) * aspectFactor;
             }
         }
-    
-        if (handle.value.includes('l')) {
-            if (left.value + deltaX < bounds.value.minLeft) {
-                deltaX = bounds.value.minLeft - left.value
-            } else if (left.value + deltaX > bounds.value.maxLeft) {
-                deltaX = bounds.value.maxLeft - left.value
+
+        if (state.handle.includes('r')) {
+            right = restrictToBounds(mouseClickPosition.right + deltaX, state.bounds.minRight, state.bounds.maxRight);
+
+            if (props.lockAspectRatio && resizingOnX.value) {
+            bottom = state.bottom - (state.right - right) / aspectFactor;
             }
-        } else if (handle.value.includes('r')) {
-            if (right.value - deltaX < bounds.value.minRight) {
-                deltaX = right.value - bounds.value.minRight
-            } else if (right.value - deltaX > bounds.value.maxRight) {
-                deltaX = right.value - bounds.value.maxRight
+        } else if (state.handle.includes('l')) {
+            left = restrictToBounds(mouseClickPosition.left - deltaX, state.bounds.minLeft, state.bounds.maxLeft);
+
+            if (props.lockAspectRatio && resizingOnX.value) {
+            top = state.top - (state.left - left) / aspectFactor;
             }
         }
-    
-        left.value += deltaX
-        right.value -= deltaX
-        top.value += deltaY
-        bottom.value -= deltaY
-    
-        // $emit('dragged', { left: left.value, top: top.value })
-    }
+
+        const width = computeWidth(state.parentWidth, left, right);
+        const height = computeHeight(state.parentHeight, top, bottom);
+
+        if (props.onResize(state.handle, left, top, width, height) === false) {
+            return;
+        }
+
+        state.left = left;
+        state.top = top;
+        state.right = right;
+        state.bottom = bottom;
+        state.width = width;
+        state.height = height;
+
+        emit('resizing', state.left, state.top, state.width, state.height);
+        state.resizing = true;
+    };
+
+    const changeWidth = (val) => {
+        const [newWidth, _] = snapToGrid(props.grid, val, 0, 1);
+
+        const right = restrictToBounds(state.parentWidth - newWidth - state.left, state.bounds.minRight, state.bounds.maxRight);
+        let bottom = state.bottom;
+
+        if (props.lockAspectRatio) {
+            bottom = state.bottom - (state.right - right) / state.aspectFactor;
+        }
+
+        const width = computedWidth(state.parentWidth, state.left, right);
+        const height = computedHeight(state.parentHeight, state.top, bottom);
+
+        state.right = right;
+        state.bottom = bottom;
+        state.width = width;
+        state.height = height;
+        };
+
+    const changeHeight = (val) => {
+        const [_, newHeight] = snapToGrid(props.grid, 0, val, 1);
+
+        const bottom = restrictToBounds(state.parentHeight - newHeight - state.top, state.bounds.minBottom, state.bounds.maxBottom);
+        let right = state.right;
+
+        if (props.lockAspectRatio) {
+            right = state.right - (state.bottom - bottom) * state.aspectFactor;
+        }
+
+        const width = computeWidth(state.parentWidth, state.left, right);
+        const height = computeHeight(state.parentHeight, state.top, bottom);
+
+        state.right = right;
+        state.bottom = bottom;
+        state.width = width;
+        state.height = height;
+    };
 
 
         // hooks
-        onBeforeMount(() => {
+    onBeforeMount(() => {
         // eslint-disable-next-line
         if (props.maxWidth && props.minWidth > props.maxWidth) console.warn('[Vdr warn]: Invalid prop: minWidth cannot be greater than maxWidth')
         // eslint-disable-next-line
         if (props.maxHeight && props.minHeight > props.maxHeight) console.warn('[Vdr warn]: Invalid prop: minHeight cannot be greater than maxHeight')
-    
+
         resetBoundsAndMouseState()
     })
 
