@@ -229,6 +229,39 @@ import { onBeforeMount, onBeforeUnmount, onMounted } from 'vue';
       ...(state.dragging && props.disableUserSelect ? userSelectNone : userSelectAuto)
     }));
 
+    const actualHandles = computed(() => {
+      if (!props.resizable) return [];
+      return props.handles;
+    });
+
+    const computedWidth = computed(() => {
+      if (props.w === 'auto') {
+        if (!state.widthTouched) {
+          return 'auto';
+        }
+      }
+      return state.width + 'px';
+    });
+
+    const computedHeight = computed(() => {
+      if (props.h === 'auto') {
+        if (!state.heightTouched) {
+          return 'auto';
+        }
+      }
+      return state.height + 'px';
+    });
+
+    const minW = computed(() => props.minWidth);
+    const minH = computed(() => props.minHeight);
+    const maxW = computed(() => props.maxWidth);
+    const maxH = computed(() => props.maxHeight);
+
+    const resizingOnX = computed(() => Boolean(state.handle) && (state.handle.includes('l') || state.handle.includes('r')));
+    const resizingOnY = computed(() => Boolean(state.handle) && (state.handle.includes('t') || state.handle.includes('b')));
+    const isCornerHandle = computed(() => Boolean(state.handle) && ['tl', 'tr', 'br', 'bl'].includes(state.handle));
+
+
 
     // const mouseClickPosition = ref({ mouseX: 0, mouseY: 0, x: 0, y: 0, w: 0, h: 0 })
     // hooks
