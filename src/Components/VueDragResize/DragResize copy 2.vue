@@ -1,0 +1,1275 @@
+<script setup>
+import { useGridUtils } from '@/Composables/Ui/UseGridUtils';
+import { onBeforeMount, onBeforeUnmount, onMounted } from 'vue';
+
+  
+  const events = {
+    mouse: {
+      start: 'mousedown',
+      move: 'mousemove',
+      stop: 'mouseup'
+    },
+    touch: {
+      start: 'touchstart',
+      move: 'touchmove',
+      stop: 'touchend'
+    }
+  }
+  
+  const userSelectNone = {
+    userSelect: 'none',
+    MozUserSelect: 'none',
+    WebkitUserSelect: 'none',
+    MsUserSelect: 'none'
+  }
+  
+  const userSelectAuto = {
+    userSelect: 'auto',
+    MozUserSelect: 'auto',
+    WebkitUserSelect: 'auto',
+    MsUserSelect: 'auto'
+  }
+  
+  let eventsFor = events.mouse
+
+  const props = defineProps({
+    className: {
+        type: String,
+        default: 'vdr'
+    },
+    classNameDraggable: {
+        type: String,
+        default: 'draggable'
+    },
+    classNameResizable: {
+        type: String,
+        default: 'resizable'
+    },
+    classNameDragging: {
+        type: String,
+        default: 'dragging'
+    },
+    classNameResizing: {
+        type: String,
+        default: 'resizing'
+    },
+    classNameActive: {
+        type: String,
+        default: 'active'
+    },
+    classNameHandle: {
+        type: String,
+        default: 'handle'
+    },
+    disableUserSelect: {
+        type: Boolean,
+        default: true
+    },  
+    enableNativeDrag: {
+        type: Boolean,
+        default: false
+    },
+    preventDeactivation: {
+        type: Boolean,
+        default: false
+    },
+    active: {
+        type: Boolean,
+        default: false
+    },
+    draggable: {
+        type: Boolean,
+        default: true
+    },
+    resizable: {
+        type: Boolean,
+        default: true
+    },
+    lockAspectRatio: {
+        type: Boolean,
+        default: false
+    },
+    w: {
+        type: [Number, String],
+        default: 200,
+        validator: (val) => {
+            if (typeof val === 'number') {
+                return val > 0
+            }
+            return val === 'auto'
+        }
+    },
+    h: {
+        type: [Number, String],
+        default: 200,
+        validator: (val) => {
+            if (typeof val === 'number') {
+                return val > 0
+            }
+            return val === 'auto'
+        }
+    },
+    minWidth: {
+        type: Number,
+        default: 0,
+        validator: (val) => val >= 0
+    },
+    minHeight: {
+        type: Number,
+        default: 0,
+        validator: (val) => val >= 0
+    },
+    maxWidth: {
+        type: Number,
+        default: null,
+        validator: (val) => val >= 0
+    },
+    maxHeight: {
+        type: Number,
+        default: null,
+        validator: (val) => val >= 0
+    },
+    x: {
+        type: Number,
+        default: 0
+    },
+    y: {
+        type: Number,
+        default: 0
+    },
+    z: {
+        type: [String, Number],
+        default: 'auto',
+        validator: (val) => (typeof val === 'string' ? val === 'auto' : val >= 0)
+    },
+    handles: {
+        type: Array,
+        default: () => ['tl', 'tm', 'tr', 'mr', 'br', 'bm', 'bl', 'ml'],
+        validator: (val) => {
+            const s = new Set(['tl', 'tm', 'tr', 'mr', 'br', 'bm', 'bl', 'ml'])
+            return new Set(val.filter(h => s.has(h))).size === val.length
+        }
+    },
+    scale: {
+        type: [Number, Array],
+        default: 1,
+        validator: (val) => {
+            if (typeof val === 'number') {
+                return val > 0
+            }
+            return val.length === 2 && val[0] > 0 && val[1] > 0
+        }
+    },
+    onDragStart: {
+        type: Function,
+        default: () => true
+    },
+    onDrag: {
+        type: Function,
+        default: () => true
+    },
+    onResizeStart: {
+        type: Function,
+        default: () => true
+    },
+    onResize: {
+        type: Function,
+        default: () => true
+    },
+    draggHandle: {
+        type: String,
+        default: null
+    },
+    dragCancel: {
+        type: String,
+        default: null
+    },
+    axis: {
+        type: String,
+        default: 'both',
+        validator: (val) => ['x', 'y', 'both'].includes(val)
+    },
+    grid: {
+        type: Array,
+        default: () => [1, 1]
+    },
+    parent: {
+        type: Boolean,
+        default: false
+    },
+  })
+  
+  // data
+  const state = reactive({
+      left: props.x,
+      top: props.y,
+      right: null,
+      bottom: null,
+      width: null,
+      height: null,
+      widthTouched: false,
+      heightTouched: false,
+      aspectFactor: null,
+      parentWidth: null,
+      parentHeight: null,
+      handle: null,
+      enabled: props.active,
+      resizing: false,
+      dragging: false,
+      dragEnable: false,
+      resizeEnable: false,
+      zIndex: props.z
+    });
+    // computed
+    const style = computed(() => ({
+      transform: `translate(${state.left}px, ${state.top}px)`,
+      width: computedWidth.value,
+      height: computedHeight.value,
+      zIndex: state.zIndex,
+      ...(state.dragging && props.disableUserSelect ? userSelectNone : userSelectAuto)
+    }));
+
+    const actualHandles = computed(() => {
+      if (!props.resizable) return [];
+      return props.handles;
+    });
+
+    const computedWidth = computed(() => {
+      if (props.w === 'auto') {
+        if (!state.widthTouched) {
+          return 'auto';
+        }
+      }
+      return state.width + 'px';
+    });
+
+    const computedHeight = computed(() => {
+      if (props.h === 'auto') {
+        if (!state.heightTouched) {
+          return 'auto';
+        }
+      }
+      return state.height + 'px';
+    });
+
+    const minW = computed(() => props.minWidth);
+    const minH = computed(() => props.minHeight);
+    const maxW = computed(() => props.maxWidth);
+    const maxH = computed(() => props.maxHeight);
+
+    const resizingOnX = computed(() => Boolean(state.handle) && (state.handle.includes('l') || state.handle.includes('r')));
+    const resizingOnY = computed(() => Boolean(state.handle) && (state.handle.includes('t') || state.handle.includes('b')));
+    const isCornerHandle = computed(() => Boolean(state.handle) && ['tl', 'tr', 'br', 'bl'].includes(state.handle));
+
+
+
+    // const mouseClickPosition = ref({ mouseX: 0, mouseY: 0, x: 0, y: 0, w: 0, h: 0 })
+
+    // methods
+    const resetBoundsAndMouseState = () => {
+      state.mouseClickPosition = { mouseX: 0, mouseY: 0, x: 0, y: 0, w: 0, h: 0 };
+      state.bounds = {
+        minLeft: null,
+        maxLeft: null,
+        minRight: null,
+        maxRight: null,
+        minTop: null,
+        maxTop: null,
+        minBottom: null,
+        maxBottom: null
+      };
+    };
+
+    const checkParentSize = () => {
+      if (props.parent) {
+        const [newParentWidth, newParentHeight] = getParentSize();
+        state.parentWidth = newParentWidth;
+        state.parentHeight = newParentHeight;
+        state.right = state.parentWidth - state.width - state.left;
+        state.bottom = state.parentHeight - state.height - state.top;
+      }
+    };
+
+    const getParentSize = () => {
+      if (props.parent) {
+        const style = window.getComputedStyle(state.$el.parentNode, null);
+        return [
+          parseInt(style.getPropertyValue('width'), 10),
+          parseInt(style.getPropertyValue('height'), 10)
+        ];
+      }
+      return [null, null];
+    };
+
+
+    const elementTouchDown = (e) => {
+      eventsFor = events.touch;
+      elementDown(e);
+    };
+
+    const elementMouseDown = (e) => {
+      eventsFor = events.mouse;
+      elementDown(e);
+    };
+
+    const elementDown = (e) => {
+      if (e instanceof MouseEvent && e.button !== 0) {
+        return;
+      }
+      const target = e.target || e.srcElement;
+      if (state.$el.contains(target)) {
+        if (props.onDragStart(e) === false) {
+          return;
+        }
+        if (
+          (props.dragHandle && !matchesSelectorToParentElements(target, props.dragHandle, state.$el)) ||
+          (props.dragCancel && matchesSelectorToParentElements(target, props.dragCancel, state.$el))
+        ) {
+          state.dragging = false;
+          return;
+        }
+        if (!state.enabled) {
+          state.enabled = true;
+          emit('activated');
+          emit('update:active', true);
+        }
+        if (props.draggable) {
+          state.dragEnable = true;
+        }
+        state.mouseClickPosition.mouseX = e.touches ? e.touches[0].pageX : e.pageX;
+        state.mouseClickPosition.mouseY = e.touches ? e.touches[0].pageY : e.pageY;
+        state.mouseClickPosition.left = state.left;
+        state.mouseClickPosition.right = state.right;
+        state.mouseClickPosition.top = state.top;
+        state.mouseClickPosition.bottom = state.bottom;
+        if (props.parent) {
+          state.bounds = calcDragLimits();
+        }
+        addEvent(document.documentElement, eventsFor.move, move);
+        addEvent(document.documentElement, eventsFor.stop, handleUp);
+      }
+    };
+
+    const calcDragLimits = () => ({
+      minLeft: state.left % props.grid[0],
+      maxLeft: Math.floor((state.parentWidth - state.width - state.left) / props.grid[0]) * props.grid[0] + state.left,
+      minRight: state.right % props.grid[0],
+      maxRight: Math.floor((state.parentWidth - state.width - state.right) / props.grid[0]) * props.grid[0] + state.right,
+      minTop: state.top % props.grid[1],
+      maxTop: Math.floor((state.parentHeight - state.height - state.top) / props.grid[1]) * props.grid[1] + state.top,
+      minBottom: state.bottom % props.grid[1],
+      maxBottom: Math.floor((state.parentHeight - state.height - state.bottom) / props.grid[1]) * props.grid[1] + state.bottom
+    });
+
+    const deselect = (e) => {
+      const target = e.target || e.srcElement;
+      const regex = new RegExp(props.className + '-([trmbl]{2})', '');
+      if (!state.$el.contains(target) && !regex.test(target.className)) {
+        if (state.enabled && !props.preventDeactivation) {
+          state.enabled = false;
+          emit('deactivated');
+          emit('update:active', false);
+        }
+        removeEvent(document.documentElement, eventsFor.move, handleResize);
+      }
+      resetBoundsAndMouseState();
+    };
+
+    const handleTouchDown = (handle, e) => {
+      eventsFor = events.touch;
+      handleDown(handle, e);
+    };
+
+    const handleDown = (handle, e) => {
+      if (e instanceof MouseEvent && e.which !== 1) {
+        return;
+      }
+      if (props.onResizeStart(handle, e) === false) {
+        return;
+      }
+      if (e.stopPropagation) e.stopPropagation();
+      if (props.lockAspectRatio && !handle.includes('m')) {
+        state.handle = 'm' + handle.substring(1);
+      } else {
+        state.handle = handle;
+      }
+      state.resizeEnable = true;
+      state.mouseClickPosition.mouseX = e.touches ? e.touches[0].pageX : e.pageX;
+      state.mouseClickPosition.mouseY = e.touches ? e.touches[0].pageY : e.pageY;
+      state.mouseClickPosition.left = state.left;
+      state.mouseClickPosition.right = state.right;
+      state.mouseClickPosition.top = state.top;
+      state.mouseClickPosition.bottom = state.bottom;
+      state.bounds = calcResizeLimits();
+      addEvent(document.documentElement, eventsFor.move, handleResize);
+      addEvent(document.documentElement, eventsFor.stop, handleUp);
+    };
+
+    const calcResizeLimits = () => {
+      let minW = minW.value;
+      let minH = minH.value;
+      let maxW = maxW.value;
+      let maxH = maxH.value;
+      const aspectFactor = state.aspectFactor;
+      const [gridX, gridY] = props.grid;
+      const width = state.width;
+      const height = state.height;
+      const left = state.left;
+      const top = state.top;
+      const right = state.right;
+      const bottom = state.bottom;
+      if (props.lockAspectRatio) {
+        if (minW / minH > aspectFactor) {
+          minH = minW / aspectFactor;
+        } else {
+          minW = aspectFactor * minH;
+        }
+        if (maxW && maxH) {
+          maxW = Math.min(maxW, aspectFactor * maxH);
+          maxH = Math.min(maxH, maxW / aspectFactor);
+        } else if (maxW) {
+          maxH = maxW / aspectFactor;
+        } else if (maxH) {
+          maxW = aspectFactor * maxH;
+        }
+      }
+      maxW = maxW - (maxW % gridX);
+      maxH = maxH - (maxH % gridY);
+      const limits = {
+        minLeft: null,
+        maxLeft: null,
+        minTop: null,
+        maxTop: null,
+        minRight: null,
+        maxRight: null,
+        minBottom: null,
+        maxBottom: null
+      };
+      if (props.parent) {
+        limits.minLeft = left % gridX;
+        limits.maxLeft = left + Math.floor((width - minW) / gridX) * gridX;
+        limits.minTop = top % gridY;
+        limits.maxTop = top + Math.floor((height - minH) / gridY) * gridY;
+        limits.minRight = right % gridX;
+        limits.maxRight = right + Math.floor((width - minW) / gridX) * gridX;
+        limits.minBottom = bottom % gridY;
+        limits.maxBottom = bottom + Math.floor((height - minH) / gridY) * gridY;
+        if (maxW) {
+          limits.minLeft = Math.max(limits.minLeft, state.parentWidth - right - maxW);
+          limits.minRight = Math.max(limits.minRight, state.parentWidth - left - maxW);
+        }
+        if (maxH) {
+          limits.minTop = Math.max(limits.minTop, state.parentHeight - bottom - maxH);
+          limits.minBottom = Math.max(limits.minBottom, state.parentHeight - top - maxH);
+        }
+        if (props.lockAspectRatio) {
+          limits.minLeft = Math.max(limits.minLeft, left - top * aspectFactor);
+          limits.minTop = Math.max(limits.minTop, top - left / aspectFactor);
+          limits.minRight = Math.max(limits.minRight, right - bottom * aspectFactor);
+          limits.minBottom = Math.max(limits.minBottom, bottom - right / aspectFactor);
+        }
+      } else {
+        limits.minLeft = null;
+        limits.maxLeft = left + Math.floor((width - minW) / gridX) * gridX;
+        limits.minTop = null;
+        limits.maxTop = top + Math.floor((height - minH) / gridY) * gridY;
+        limits.minRight = null;
+        limits.maxRight = right + Math.floor((width - minW) / gridX) * gridX;
+        limits.minBottom = null;
+        limits.maxBottom = bottom + Math.floor((height - minH) / gridY) * gridY;
+        if (maxW) {
+          limits.minLeft = -(right + maxW);
+          limits.minRight = -(left + maxW);
+        }
+        if (maxH) {
+          limits.minTop = -(bottom + maxH);
+          limits.minBottom = -(top + maxH);
+        }
+        if (props.lockAspectRatio && (maxW && maxH)) {
+          limits.minLeft = Math.min(limits.minLeft, -(right + maxW));
+          limits.minTop = Math.min(limits.minTop, -(maxH + bottom));
+          limits.minRight = Math.min(limits.minRight, -left - maxW);
+          limits.minBottom = Math.min(limits.minBottom, -top - maxH);
+        }
+      }
+      return limits;
+    };
+
+    const move = (e) => {
+      if (state.resizing) {
+        handleResize(e);
+      } else if (state.dragEnable) {
+        handleDrag(e);
+      }
+    };
+
+    const handleUp = (e) => {
+        if (e.touches && e.touches.length > 1) {
+            return
+        }
+    
+        if (props.onResize(e) === false) {
+            return
+        }
+    
+        if (e.preventDefault) e.preventDefault()
+    
+        removeEvent(document.documentElement, eventsFor.move, handleResize)
+        removeEvent(document.documentElement, eventsFor.stop, handleUp)
+    
+        resizing.value = false
+        resizeEnable.value = false
+    
+        // $emit('resized', { width: width.value, height: height.value })
+    
+        resetBoundsAndMouseState()
+    }
+
+    const handleDrag = (e) => {
+        if (e.touches && e.touches.length > 1) {
+            return
+        }
+    
+        if (props.onDrag(e) === false) {
+            return
+        }
+    
+        if (e.preventDefault) e.preventDefault()
+    
+        const x = e.touches ? e.touches[0].pageX : e.pageX
+        const y = e.touches ? e.touches[0].pageY : e.pageY
+    
+        const deltaX = x - mouseClickPosition.value.mouseX
+        const deltaY = y - mouseClickPosition.value.mouseY
+    
+        const [gridX, gridY] = props.grid
+    
+        if (handle.value.includes('t')) {
+            if (top.value + deltaY < bounds.value.minTop) {
+                deltaY = bounds.value.minTop - top.value
+            } else if (top.value + deltaY > bounds.value.maxTop) {
+                deltaY = bounds.value.maxTop - top.value
+            }
+        } else if (handle.value.includes('b')) {
+            if (bottom.value - deltaY < bounds.value.minBottom) {
+                deltaY = bottom.value - bounds.value.minBottom
+            } else if (bottom.value - deltaY > bounds.value.maxBottom) {
+                deltaY = bottom.value - bounds.value.maxBottom
+            }
+        }
+    
+        if (handle.value.includes('l')) {
+            if (left.value + deltaX < bounds.value.minLeft) {
+                deltaX = bounds.value.minLeft - left.value
+            } else if (left.value + deltaX > bounds.value.maxLeft) {
+                deltaX = bounds.value.maxLeft - left.value
+            }
+        } else if (handle.value.includes('r')) {
+            if (right.value - deltaX < bounds.value.minRight) {
+                deltaX = right.value - bounds.value.minRight
+            } else if (right.value - deltaX > bounds.value.maxRight) {
+                deltaX = right.value - bounds.value.maxRight
+            }
+        }
+    
+        left.value += deltaX
+        right.value -= deltaX
+        top.value += deltaY
+        bottom.value -= deltaY
+    
+        // $emit('dragged', { left: left.value, top: top.value })
+    }
+
+
+        // hooks
+        onBeforeMount(() => {
+        // eslint-disable-next-line
+        if (props.maxWidth && props.minWidth > props.maxWidth) console.warn('[Vdr warn]: Invalid prop: minWidth cannot be greater than maxWidth')
+        // eslint-disable-next-line
+        if (props.maxHeight && props.minHeight > props.maxHeight) console.warn('[Vdr warn]: Invalid prop: minHeight cannot be greater than maxHeight')
+    
+        resetBoundsAndMouseState()
+    })
+
+    onMounted(() => {
+        if (!props.enableNativeDrag) {
+            // $el.ondragstart = () => false
+        }
+    
+        const [parentWidth, parentHeight] = getParentSize()
+    
+        parentWidth.value = parentWidth
+        parentHeight.value = parentHeight
+    
+        const [width, height] = getComputedSize(element.value)
+    
+        aspectFactor.value = (props.w !== 'auto' ? props.w : width) / (props.h !== 'auto' ? props.h : height)
+    
+        width.value = props.w !== 'auto' ? props.w : width
+        height.value = props.h !== 'auto' ? props.h : height
+    
+        right.value = parentWidth - width - left
+        bottom.value = parentHeight - height - top
+    
+        if (props.active) {
+            // $emit('activated')
+        }
+    
+        addEvent(document.documentElement, 'mousedown', deselect)
+        addEvent(document.documentElement, 'touchend touchcancel', deselect)
+    
+        addEvent(window, 'resize', checkParentSize)
+    })
+    
+    onBeforeUnmount(() => {
+        removeEvent(document.documentElement, 'mousedown', deselect)
+        removeEvent(document.documentElement, 'touchstart', handleUp)
+        removeEvent(document.documentElement, 'mousemove', move)
+        removeEvent(document.documentElement, 'touchmove', move)
+        removeEvent(document.documentElement, 'mouseup', handleUp)
+        removeEvent(document.documentElement, 'touchend touchcancel', deselect)
+    
+        removeEvent(window, 'resize', checkParentSize)
+    })
+
+    // const handleUp = (e) => {
+    //     if (e.touches && e.touches.length > 1) {
+    //         return
+    //     }
+    
+    //     if (props.onDrag(e) === false) {
+    //         return
+    //     }
+    
+    //     if (e.preventDefault) e.preventDefault()
+    
+    //     removeEvent(document.documentElement, eventsFor.move, handleDrag)
+    //     removeEvent(document.documentElement, eventsFor.stop, handleUp)
+    
+    //     dragging.value = false
+    //     dragEnable.value = false
+    
+    //     // $emit('dragged', { left: left.value, top: top.value })
+    
+    //     resetBoundsAndMouseState()
+    // }
+  
+//     methods: {
+//       resetBoundsAndMouseState () {
+//         this.mouseClickPosition = { mouseX: 0, mouseY: 0, x: 0, y: 0, w: 0, h: 0 }
+  
+//         this.bounds = {
+//           minLeft: null,
+//           maxLeft: null,
+//           minRight: null,
+//           maxRight: null,
+//           minTop: null,
+//           maxTop: null,
+//           minBottom: null,
+//           maxBottom: null
+//         }
+//       },
+//       checkParentSize () {
+//         if (this.parent) {
+//           const [newParentWidth, newParentHeight] = this.getParentSize()
+  
+//           this.parentWidth = newParentWidth
+//           this.parentHeight = newParentHeight
+//           this.right = this.parentWidth - this.width - this.left
+//           this.bottom = this.parentHeight - this.height - this.top
+//         }
+//       },
+//       getParentSize () {
+//         if (this.parent) {
+//           const style = window.getComputedStyle(this.$el.parentNode, null)
+  
+//           return [
+//             parseInt(style.getPropertyValue('width'), 10),
+//             parseInt(style.getPropertyValue('height'), 10)
+//           ]
+//         }
+  
+//         return [null, null]
+//       },
+//       elementTouchDown (e) {
+//         eventsFor = events.touch
+  
+//         this.elementDown(e)
+//       },
+//       elementMouseDown (e) {
+//         eventsFor = events.mouse
+  
+//         this.elementDown(e)
+//       },
+//       elementDown (e) {
+//         if (e instanceof MouseEvent && e.button !== 0) {
+//           return
+//         }
+  
+//         const target = e.target || e.srcElement
+  
+//         if (this.$el.contains(target)) {
+//           if (this.onDragStart(e) === false) {
+//             return
+//           }
+  
+//           if (
+//             (this.dragHandle && !matchesSelectorToParentElements(target, this.dragHandle, this.$el)) ||
+//             (this.dragCancel && matchesSelectorToParentElements(target, this.dragCancel, this.$el))
+//           ) {
+//             this.dragging = false
+  
+//             return
+//           }
+  
+//           if (!this.enabled) {
+//             this.enabled = true
+  
+//             this.$emit('activated')
+//             this.$emit('update:active', true)
+//           }
+  
+//           if (this.draggable) {
+//             this.dragEnable = true
+//           }
+  
+//           this.mouseClickPosition.mouseX = e.touches ? e.touches[0].pageX : e.pageX
+//           this.mouseClickPosition.mouseY = e.touches ? e.touches[0].pageY : e.pageY
+  
+//           this.mouseClickPosition.left = this.left
+//           this.mouseClickPosition.right = this.right
+//           this.mouseClickPosition.top = this.top
+//           this.mouseClickPosition.bottom = this.bottom
+  
+//           if (this.parent) {
+//             this.bounds = this.calcDragLimits()
+//           }
+  
+//           addEvent(document.documentElement, eventsFor.move, this.move)
+//           addEvent(document.documentElement, eventsFor.stop, this.handleUp)
+//         }
+//       },
+//       calcDragLimits () {
+//         return {
+//           minLeft: this.left % this.grid[0],
+//           maxLeft: Math.floor((this.parentWidth - this.width - this.left) / this.grid[0]) * this.grid[0] + this.left,
+//           minRight: this.right % this.grid[0],
+//           maxRight: Math.floor((this.parentWidth - this.width - this.right) / this.grid[0]) * this.grid[0] + this.right,
+//           minTop: this.top % this.grid[1],
+//           maxTop: Math.floor((this.parentHeight - this.height - this.top) / this.grid[1]) * this.grid[1] + this.top,
+//           minBottom: this.bottom % this.grid[1],
+//           maxBottom: Math.floor((this.parentHeight - this.height - this.bottom) / this.grid[1]) * this.grid[1] + this.bottom
+//         }
+//       },
+//       deselect (e) {
+//         const target = e.target || e.srcElement
+//         const regex = new RegExp(this.className + '-([trmbl]{2})', '')
+  
+//         if (!this.$el.contains(target) && !regex.test(target.className)) {
+//           if (this.enabled && !this.preventDeactivation) {
+//             this.enabled = false
+  
+//             this.$emit('deactivated')
+//             this.$emit('update:active', false)
+//           }
+  
+//           removeEvent(document.documentElement, eventsFor.move, this.handleResize)
+//         }
+  
+//         this.resetBoundsAndMouseState()
+//       },
+//       handleTouchDown (handle, e) {
+//         eventsFor = events.touch
+  
+//         this.handleDown(handle, e)
+//       },
+//       handleDown (handle, e) {
+//         if (e instanceof MouseEvent && e.which !== 1) {
+//           return
+//         }
+  
+//         if (this.onResizeStart(handle, e) === false) {
+//           return
+//         }
+  
+//         if (e.stopPropagation) e.stopPropagation()
+  
+//         // Here we avoid a dangerous recursion by faking
+//         // corner handles as middle handles
+//         if (this.lockAspectRatio && !handle.includes('m')) {
+//           this.handle = 'm' + handle.substring(1)
+//         } else {
+//           this.handle = handle
+//         }
+  
+//         this.resizeEnable = true
+  
+//         this.mouseClickPosition.mouseX = e.touches ? e.touches[0].pageX : e.pageX
+//         this.mouseClickPosition.mouseY = e.touches ? e.touches[0].pageY : e.pageY
+//         this.mouseClickPosition.left = this.left
+//         this.mouseClickPosition.right = this.right
+//         this.mouseClickPosition.top = this.top
+//         this.mouseClickPosition.bottom = this.bottom
+  
+//         this.bounds = this.calcResizeLimits()
+  
+//         addEvent(document.documentElement, eventsFor.move, this.handleResize)
+//         addEvent(document.documentElement, eventsFor.stop, this.handleUp)
+//       },
+//       calcResizeLimits () {
+//         let minW = this.minW
+//         let minH = this.minH
+//         let maxW = this.maxW
+//         let maxH = this.maxH
+  
+//         const aspectFactor = this.aspectFactor
+//         const [gridX, gridY] = this.grid
+//         const width = this.width
+//         const height = this.height
+//         const left = this.left
+//         const top = this.top
+//         const right = this.right
+//         const bottom = this.bottom
+  
+//         if (this.lockAspectRatio) {
+//           if (minW / minH > aspectFactor) {
+//             minH = minW / aspectFactor
+//           } else {
+//             minW = aspectFactor * minH
+//           }
+  
+//           if (maxW && maxH) {
+//             maxW = Math.min(maxW, aspectFactor * maxH)
+//             maxH = Math.min(maxH, maxW / aspectFactor)
+//           } else if (maxW) {
+//             maxH = maxW / aspectFactor
+//           } else if (maxH) {
+//             maxW = aspectFactor * maxH
+//           }
+//         }
+  
+//         maxW = maxW - (maxW % gridX)
+//         maxH = maxH - (maxH % gridY)
+  
+//         const limits = {
+//           minLeft: null,
+//           maxLeft: null,
+//           minTop: null,
+//           maxTop: null,
+//           minRight: null,
+//           maxRight: null,
+//           minBottom: null,
+//           maxBottom: null
+//         }
+  
+//         if (this.parent) {
+//           limits.minLeft = left % gridX
+//           limits.maxLeft = left + Math.floor((width - minW) / gridX) * gridX
+//           limits.minTop = top % gridY
+//           limits.maxTop = top + Math.floor((height - minH) / gridY) * gridY
+//           limits.minRight = right % gridX
+//           limits.maxRight = right + Math.floor((width - minW) / gridX) * gridX
+//           limits.minBottom = bottom % gridY
+//           limits.maxBottom = bottom + Math.floor((height - minH) / gridY) * gridY
+  
+//           if (maxW) {
+//             limits.minLeft = Math.max(limits.minLeft, this.parentWidth - right - maxW)
+//             limits.minRight = Math.max(limits.minRight, this.parentWidth - left - maxW)
+//           }
+  
+//           if (maxH) {
+//             limits.minTop = Math.max(limits.minTop, this.parentHeight - bottom - maxH)
+//             limits.minBottom = Math.max(limits.minBottom, this.parentHeight - top - maxH)
+//           }
+  
+//           if (this.lockAspectRatio) {
+//             limits.minLeft = Math.max(limits.minLeft, left - top * aspectFactor)
+//             limits.minTop = Math.max(limits.minTop, top - left / aspectFactor)
+//             limits.minRight = Math.max(limits.minRight, right - bottom * aspectFactor)
+//             limits.minBottom = Math.max(limits.minBottom, bottom - right / aspectFactor)
+//           }
+//         } else {
+//           limits.minLeft = null
+//           limits.maxLeft = left + Math.floor((width - minW) / gridX) * gridX
+//           limits.minTop = null
+//           limits.maxTop = top + Math.floor((height - minH) / gridY) * gridY
+//           limits.minRight = null
+//           limits.maxRight = right + Math.floor((width - minW) / gridX) * gridX
+//           limits.minBottom = null
+//           limits.maxBottom = bottom + Math.floor((height - minH) / gridY) * gridY
+  
+//           if (maxW) {
+//             limits.minLeft = -(right + maxW)
+//             limits.minRight = -(left + maxW)
+//           }
+  
+//           if (maxH) {
+//             limits.minTop = -(bottom + maxH)
+//             limits.minBottom = -(top + maxH)
+//           }
+  
+//           if (this.lockAspectRatio && (maxW && maxH)) {
+//             limits.minLeft = Math.min(limits.minLeft, -(right + maxW))
+//             limits.minTop = Math.min(limits.minTop, -(maxH + bottom))
+//             limits.minRight = Math.min(limits.minRight, -left - maxW)
+//             limits.minBottom = Math.min(limits.minBottom, -top - maxH)
+//           }
+//         }
+  
+//         return limits
+//       },
+//       move (e) {
+//         if (this.resizing) {
+//           this.handleResize(e)
+//         } else if (this.dragEnable) {
+//           this.handleDrag(e)
+//         }
+//       },
+//       handleDrag (e) {
+//         const axis = this.axis
+//         const grid = this.grid
+//         const bounds = this.bounds
+//         const mouseClickPosition = this.mouseClickPosition
+  
+//         const tmpDeltaX = axis && axis !== 'y' ? mouseClickPosition.mouseX - (e.touches ? e.touches[0].pageX : e.pageX) : 0
+//         const tmpDeltaY = axis && axis !== 'x' ? mouseClickPosition.mouseY - (e.touches ? e.touches[0].pageY : e.pageY) : 0
+  
+//         const [deltaX, deltaY] = snapToGrid(grid, tmpDeltaX, tmpDeltaY, this.scale)
+  
+//         const left = restrictToBounds(mouseClickPosition.left - deltaX, bounds.minLeft, bounds.maxLeft)
+//         const top = restrictToBounds(mouseClickPosition.top - deltaY, bounds.minTop, bounds.maxTop)
+  
+//         if (this.onDrag(left, top) === false) {
+//           return
+//         }
+  
+//         const right = restrictToBounds(mouseClickPosition.right + deltaX, bounds.minRight, bounds.maxRight)
+//         const bottom = restrictToBounds(mouseClickPosition.bottom + deltaY, bounds.minBottom, bounds.maxBottom)
+  
+//         this.left = left
+//         this.top = top
+//         this.right = right
+//         this.bottom = bottom
+  
+//         this.$emit('dragging', this.left, this.top)
+//         this.dragging = true
+//       },
+//       moveHorizontally (val) {
+//         // should calculate with scale 1.
+//         const [deltaX, _] = snapToGrid(this.grid, val, this.top, 1)
+  
+//         const left = restrictToBounds(deltaX, this.bounds.minLeft, this.bounds.maxLeft)
+  
+//         this.left = left
+//         this.right = this.parentWidth - this.width - left
+//       },
+//       moveVertically (val) {
+//         // should calculate with scale 1.
+//         const [_, deltaY] = snapToGrid(this.grid, this.left, val, 1)
+  
+//         const top = restrictToBounds(deltaY, this.bounds.minTop, this.bounds.maxTop)
+  
+//         this.top = top
+//         this.bottom = this.parentHeight - this.height - top
+//       },
+//       handleResize (e) {
+//         let left = this.left
+//         let top = this.top
+//         let right = this.right
+//         let bottom = this.bottom
+  
+//         const mouseClickPosition = this.mouseClickPosition
+//         const aspectFactor = this.aspectFactor
+  
+//         const tmpDeltaX = mouseClickPosition.mouseX - (e.touches ? e.touches[0].pageX : e.pageX)
+//         const tmpDeltaY = mouseClickPosition.mouseY - (e.touches ? e.touches[0].pageY : e.pageY)
+  
+//         if (!this.widthTouched && tmpDeltaX) {
+//           this.widthTouched = true
+//         }
+  
+//         if (!this.heightTouched && tmpDeltaY) {
+//           this.heightTouched = true
+//         }
+  
+//         const [deltaX, deltaY] = snapToGrid(this.grid, tmpDeltaX, tmpDeltaY, this.scale)
+  
+//         if (this.handle.includes('b')) {
+//           bottom = restrictToBounds(
+//             mouseClickPosition.bottom + deltaY,
+//             this.bounds.minBottom,
+//             this.bounds.maxBottom
+//           )
+  
+//           if (this.lockAspectRatio && this.resizingOnY) {
+//             right = this.right - (this.bottom - bottom) * aspectFactor
+//           }
+//         } else if (this.handle.includes('t')) {
+//           top = restrictToBounds(
+//             mouseClickPosition.top - deltaY,
+//             this.bounds.minTop,
+//             this.bounds.maxTop
+//           )
+  
+//           if (this.lockAspectRatio && this.resizingOnY) {
+//             left = this.left - (this.top - top) * aspectFactor
+//           }
+//         }
+  
+//         if (this.handle.includes('r')) {
+//           right = restrictToBounds(
+//             mouseClickPosition.right + deltaX,
+//             this.bounds.minRight,
+//             this.bounds.maxRight
+//           )
+  
+//           if (this.lockAspectRatio && this.resizingOnX) {
+//             bottom = this.bottom - (this.right - right) / aspectFactor
+//           }
+//         } else if (this.handle.includes('l')) {
+//           left = restrictToBounds(
+//             mouseClickPosition.left - deltaX,
+//             this.bounds.minLeft,
+//             this.bounds.maxLeft
+//           )
+  
+//           if (this.lockAspectRatio && this.resizingOnX) {
+//             top = this.top - (this.left - left) / aspectFactor
+//           }
+//         }
+  
+//         const width = computeWidth(this.parentWidth, left, right)
+//         const height = computeHeight(this.parentHeight, top, bottom)
+  
+//         if (this.onResize(this.handle, left, top, width, height) === false) {
+//           return
+//         }
+  
+//         this.left = left
+//         this.top = top
+//         this.right = right
+//         this.bottom = bottom
+//         this.width = width
+//         this.height = height
+  
+//         this.$emit('resizing', this.left, this.top, this.width, this.height)
+//         this.resizing = true
+//       },
+//       changeWidth (val) {
+//         // should calculate with scale 1.
+//         const [newWidth, _] = snapToGrid(this.grid, val, 0, 1)
+  
+//         const right = restrictToBounds(
+//           (this.parentWidth - newWidth - this.left),
+//           this.bounds.minRight,
+//           this.bounds.maxRight
+//         )
+//         let bottom = this.bottom
+  
+//         if (this.lockAspectRatio) {
+//           bottom = this.bottom - (this.right - right) / this.aspectFactor
+//         }
+  
+//         const width = computeWidth(this.parentWidth, this.left, right)
+//         const height = computeHeight(this.parentHeight, this.top, bottom)
+  
+//         this.right = right
+//         this.bottom = bottom
+//         this.width = width
+//         this.height = height
+//       },
+//       changeHeight (val) {
+//         // should calculate with scale 1.
+//         const [_, newHeight] = snapToGrid(this.grid, 0, val, 1)
+  
+//         const bottom = restrictToBounds(
+//           (this.parentHeight - newHeight - this.top),
+//           this.bounds.minBottom,
+//           this.bounds.maxBottom
+//         )
+//         let right = this.right
+  
+//         if (this.lockAspectRatio) {
+//           right = this.right - (this.bottom - bottom) * this.aspectFactor
+//         }
+  
+//         const width = computeWidth(this.parentWidth, this.left, right)
+//         const height = computeHeight(this.parentHeight, this.top, bottom)
+  
+//         this.right = right
+//         this.bottom = bottom
+//         this.width = width
+//         this.height = height
+//       },
+//       handleUp (e) {
+//         this.handle = null
+  
+//         this.resetBoundsAndMouseState()
+  
+//         this.dragEnable = false
+//         this.resizeEnable = false
+  
+//         if (this.resizing) {
+//           this.resizing = false
+//           this.$emit('resizeStop', this.left, this.top, this.width, this.height)
+//         }
+  
+//         if (this.dragging) {
+//           this.dragging = false
+//           this.$emit('dragStop', this.left, this.top)
+//         }
+  
+//         removeEvent(document.documentElement, eventsFor.move, this.handleResize)
+//       }
+//     },
+//     computed: {
+//       style () {
+//         return {
+//           transform: `translate(${this.left}px, ${this.top}px)`,
+//           width: this.computedWidth,
+//           height: this.computedHeight,
+//           zIndex: this.zIndex,
+//           ...(this.dragging && this.disableUserSelect ? userSelectNone : userSelectAuto)
+//         }
+//       },
+//       actualHandles () {
+//         if (!this.resizable) return []
+  
+//         return this.handles
+//       },
+//       computedWidth () {
+//         if (this.w === 'auto') {
+//           if (!this.widthTouched) {
+//             return 'auto'
+//           }
+//         }
+  
+//         return this.width + 'px'
+//       },
+//       computedHeight () {
+//         if (this.h === 'auto') {
+//           if (!this.heightTouched) {
+//             return 'auto'
+//           }
+//         }
+  
+//         return this.height + 'px'
+//       },
+//       minW () {
+//         return this.minWidth
+//       },
+//       minH () {
+//         return this.minHeight
+//       },
+//       maxW () {
+//         return this.maxWidth
+//       },
+//       maxH () {
+//         return this.maxHeight
+//       },
+//       resizingOnX () {
+//         return (Boolean(this.handle) && (this.handle.includes('l') || this.handle.includes('r')))
+//       },
+//       resizingOnY () {
+//         return (Boolean(this.handle) && (this.handle.includes('t') || this.handle.includes('b')))
+//       },
+//       isCornerHandle () {
+//         return (Boolean(this.handle) && ['tl', 'tr', 'br', 'bl'].includes(this.handle))
+//       }
+//     },
+  
+//     watch: {
+//       active (val) {
+//         this.enabled = val
+  
+//         if (val) {
+//           this.$emit('activated')
+//         } else {
+//           this.$emit('deactivated')
+//         }
+//       },
+//       z (val) {
+//         if (val >= 0 || val === 'auto') {
+//           this.zIndex = val
+//         }
+//       },
+//       x (val) {
+//         if (this.resizing || this.dragging) {
+//           return
+//         }
+  
+//         if (this.parent) {
+//           this.bounds = this.calcDragLimits()
+//         }
+  
+//         this.moveHorizontally(val)
+//       },
+//       y (val) {
+//         if (this.resizing || this.dragging) {
+//           return
+//         }
+  
+//         if (this.parent) {
+//           this.bounds = this.calcDragLimits()
+//         }
+  
+//         this.moveVertically(val)
+//       },
+//       lockAspectRatio (val) {
+//         if (val) {
+//           this.aspectFactor = this.width / this.height
+//         } else {
+//           this.aspectFactor = undefined
+//         }
+//       },
+//       w (val) {
+//         if (this.resizing || this.dragging) {
+//           return
+//         }
+  
+//         if (this.parent) {
+//           this.bounds = this.calcResizeLimits()
+//         }
+  
+//         this.changeWidth(val)
+//       },
+//       h (val) {
+//         if (this.resizing || this.dragging) {
+//           return
+//         }
+  
+//         if (this.parent) {
+//           this.bounds = this.calcResizeLimits()
+//         }
+  
+//         this.changeHeight(val)
+//       }
+//     }
+//   }
+</script>
+<template>
+    <div
+      :style="style"
+      :class="[{
+        [classNameActive]: enabled,
+        [classNameDragging]: dragging,
+        [classNameResizing]: resizing,
+        [classNameDraggable]: draggable,
+        [classNameResizable]: resizable
+      }, className]"
+      @mousedown="elementMouseDown"
+      @touchstart="elementTouchDown"
+    >
+      <div
+        v-for="handle in actualHandles"
+        :key="handle"
+        :class="[classNameHandle, classNameHandle + '-' + handle]"
+        :style="{display: enabled ? 'block' : 'none'}"
+        @mousedown.stop.prevent="handleDown(handle, $event)"
+        @touchstart.stop.prevent="handleTouchDown(handle, $event)"
+      >
+        <slot :name="handle"></slot>
+      </div>
+      <slot></slot>
+    </div>
+</template>
