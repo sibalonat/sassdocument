@@ -251,37 +251,37 @@ const emit = defineEmits(['activated', 'update:active', 'deactivated', 'dragging
     ...(state.dragging && props.disableUserSelect ? userSelectNone : userSelectAuto)
   }));
 
-    const actualHandles = computed(() => {
-      if (!props.resizable) return [];
-      return props.handles;
-    });
+  const actualHandles = computed(() => {
+    if (!props.resizable) return [];
+    return props.handles;
+  });
 
-    const computedWidth = computed(() => {
-      if (props.w === 'auto') {
-        if (!state.widthTouched) {
-          return 'auto';
-        }
+  const computedWidth = computed(() => {
+    if (props.w === 'auto') {
+      if (!state.widthTouched) {
+        return 'auto';
       }
-      return state.width + 'px';
-    });
+    }
+    return state.width + 'px';
+  });
 
-    const computedHeight = computed(() => {
-      if (props.h === 'auto') {
-        if (!state.heightTouched) {
-          return 'auto';
-        }
+  const computedHeight = computed(() => {
+    if (props.h === 'auto') {
+      if (!state.heightTouched) {
+        return 'auto';
       }
-      return state.height + 'px';
-    });
+    }
+    return state.height + 'px';
+  });
 
-    const minW = computed(() => props.minWidth);
-    const minH = computed(() => props.minHeight);
-    const maxW = computed(() => props.maxWidth);
-    const maxH = computed(() => props.maxHeight);
+  const minW = computed(() => props.minWidth);
+  const minH = computed(() => props.minHeight);
+  const maxW = computed(() => props.maxWidth);
+  const maxH = computed(() => props.maxHeight);
 
-    const resizingOnX = computed(() => Boolean(state.handle) && (state.handle.includes('l') || state.handle.includes('r')));
-    const resizingOnY = computed(() => Boolean(state.handle) && (state.handle.includes('t') || state.handle.includes('b')));
-    const isCornerHandle = computed(() => Boolean(state.handle) && ['tl', 'tr', 'br', 'bl'].includes(state.handle));
+  const resizingOnX = computed(() => Boolean(state.handle) && (state.handle.includes('l') || state.handle.includes('r')));
+  const resizingOnY = computed(() => Boolean(state.handle) && (state.handle.includes('t') || state.handle.includes('b')));
+  const isCornerHandle = computed(() => Boolean(state.handle) && ['tl', 'tr', 'br', 'bl'].includes(state.handle));
 
 
 
