@@ -516,8 +516,7 @@ const handleDown = (handle, e) => {
     return;
   }
   
-  console.log('Handle down:', handle); // Debug
-  
+  console.log('Handle down:', handle); // Debug  
   if (props.onResizeStart(handle, e) === false) {
     return;
   }
@@ -560,24 +559,18 @@ const move = (e) => {
 };
 
 const handleUp = (e) => {
-  if (e.touches && e.touches.length > 1) return;
-  
-  console.log('Handle up'); // Debug
-  
-  if (props.onResize(e) === false) return;
-  
+  if (e.touches && e.touches.length > 1) {
+    return;
+  }
+  if (props.onResize(e) === false) {
+    return;
+  }
   if (e.preventDefault) e.preventDefault();
-  
   removeEvent(document.documentElement, eventsFor.move, handleResize);
   removeEvent(document.documentElement, eventsFor.stop, handleUp);
 
-  if (state.resizing) {
-    emit('resizeStop', state.left, state.top, state.width, state.height);
-  }
-  
   state.resizing = false;
   state.resizeEnable = false;
-  state.handle = null;
 
   resetBoundsAndMouseState();
 };
