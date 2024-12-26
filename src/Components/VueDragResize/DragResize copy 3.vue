@@ -341,7 +341,7 @@ const elementDown = (e) => {
     return;
   }
   const target = e.target || e.srcElement;
-  if (element.value.contains(target)) {
+  if (state.$el.contains(target)) {
     if (props.onDragStart(e) === false) {
       return;
     }
@@ -388,7 +388,7 @@ const calcDragLimits = () => ({
 const deselect = (e) => {
   const target = e.target || e.srcElement;
   const regex = new RegExp(props.className + '-([trmbl]{2})', '');
-  if (!element.value.contains(target) && !regex.test(target.className)) {
+  if (!state.$el.contains(target) && !regex.test(target.className)) {
     if (state.enabled && !props.preventDeactivation) {
       state.enabled = false;
       emit('deactivated');
@@ -528,21 +528,21 @@ const move = (e) => {
 };
 
 const handleUp = (e) => {
-  if (e.touches && e.touches.length > 1) {
-    return;
-  }
-  if (props.onResize(e) === false) {
-    return;
-  }
-  if (e.preventDefault) e.preventDefault();
-  removeEvent(document.documentElement, eventsFor.move, handleResize);
-  removeEvent(document.documentElement, eventsFor.stop, handleUp);
+    if (e.touches && e.touches.length > 1) {
+        return
+    }
+    if (props.onResize(e) === false) {
+        return
+    }
+    if (e.preventDefault) e.preventDefault()
+    removeEvent(document.documentElement, eventsFor.move, handleResize)
+    removeEvent(document.documentElement, eventsFor.stop, handleUp)
 
-  state.resizing = false;
-  state.resizeEnable = false;
+    resizing.value = false
+    resizeEnable.value = false
 
-  resetBoundsAndMouseState();
-};
+    resetBoundsAndMouseState()
+}
 
 const handleDrag = (e) => {
     const axis = props.axis;
