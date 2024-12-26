@@ -47,6 +47,10 @@ const userSelectAuto = {
 let eventsFor = events.mouse
 
 const props = defineProps({
+  elementRef: {
+      type: Object,
+      required: true
+  },
   className: {
       type: String,
       default: 'vdr'

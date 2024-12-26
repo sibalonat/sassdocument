@@ -11,6 +11,7 @@ const { trigger, opened } = useUiInteractions();
 
 const parent = ref(null);
 const xAxis = ref(0);
+const dragElement = ref(null)
 
 const store = useDynamicSheets();
 const { createRowOnClick } = store;
