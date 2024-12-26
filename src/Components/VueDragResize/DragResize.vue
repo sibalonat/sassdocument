@@ -515,23 +515,36 @@ const handleDown = (handle, e) => {
   if (e instanceof MouseEvent && e.which !== 1) {
     return;
   }
+  
+  console.log('Handle down:', handle); // Debug
+  
   if (props.onResizeStart(handle, e) === false) {
     return;
   }
+  
   if (e.stopPropagation) e.stopPropagation();
+  
   if (props.lockAspectRatio && !handle.includes('m')) {
     state.handle = 'm' + handle.substring(1);
   } else {
     state.handle = handle;
   }
+  
+  state.resizing = true; // Add this
   state.resizeEnable = true;
+  
+  // Store initial positions
   state.mouseClickPosition.mouseX = e.touches ? e.touches[0].pageX : e.pageX;
   state.mouseClickPosition.mouseY = e.touches ? e.touches[0].pageY : e.pageY;
   state.mouseClickPosition.left = state.left;
   state.mouseClickPosition.right = state.right;
   state.mouseClickPosition.top = state.top;
   state.mouseClickPosition.bottom = state.bottom;
+  state.mouseClickPosition.width = state.width;  // Add these
+  state.mouseClickPosition.height = state.height;
+  
   state.bounds = calcResizeLimits();
+  
   addEvent(document.documentElement, eventsFor.move, handleResize);
   addEvent(document.documentElement, eventsFor.stop, handleUp);
 };
@@ -547,18 +560,24 @@ const move = (e) => {
 };
 
 const handleUp = (e) => {
-  if (e.touches && e.touches.length > 1) {
-    return;
-  }
-  if (props.onResize(e) === false) {
-    return;
-  }
+  if (e.touches && e.touches.length > 1) return;
+  
+  console.log('Handle up'); // Debug
+  
+  if (props.onResize(e) === false) return;
+  
   if (e.preventDefault) e.preventDefault();
+  
   removeEvent(document.documentElement, eventsFor.move, handleResize);
   removeEvent(document.documentElement, eventsFor.stop, handleUp);
 
+  if (state.resizing) {
+    emit('resizeStop', state.left, state.top, state.width, state.height);
+  }
+  
   state.resizing = false;
   state.resizeEnable = false;
+  state.handle = null;
 
   resetBoundsAndMouseState();
 };
@@ -612,71 +631,65 @@ const moveVertically = (val) => {
 };
 
 const handleResize = (e) => {
-    let left = state.left;
-    let top = state.top;
-    let right = state.right;
-    let bottom = state.bottom;
+  if (!state.resizing) return;
+  
+  console.log('Resizing...', state.handle); // Debug
+  
+  let left = state.left;
+  let top = state.top;
+  let right = state.right;
+  let bottom = state.bottom;
 
-    const mouseClickPosition = state.mouseClickPosition;
-    const aspectFactor = state.aspectFactor;
+  const mouseClickPosition = state.mouseClickPosition;
+  const aspectFactor = state.aspectFactor;
 
-    const tmpDeltaX = mouseClickPosition.mouseX - (e.touches ? e.touches[0].pageX : e.pageX);
-    const tmpDeltaY = mouseClickPosition.mouseY - (e.touches ? e.touches[0].pageY : e.pageY);
+  const tmpDeltaX = mouseClickPosition.mouseX - (e.touches ? e.touches[0].pageX : e.pageX);
+  const tmpDeltaY = mouseClickPosition.mouseY - (e.touches ? e.touches[0].pageY : e.pageY);
 
-    if (!state.widthTouched && tmpDeltaX) {
-        state.widthTouched = true;
-    }
+  console.log('Delta:', tmpDeltaX, tmpDeltaY); // Debug
 
-    if (!state.heightTouched && tmpDeltaY) {
-        state.heightTouched = true;
-    }
+  if (!state.widthTouched && tmpDeltaX) {
+    state.widthTouched = true;
+  }
 
-    const [deltaX, deltaY] = snapToGrid(props.grid, tmpDeltaX, tmpDeltaY, props.scale);
+  if (!state.heightTouched && tmpDeltaY) {
+    state.heightTouched = true;
+  }
 
-    if (state.handle.includes('b')) {
-        bottom = restrictToBounds(mouseClickPosition.bottom + deltaY, state.bounds.minBottom, state.bounds.maxBottom);
+  const [deltaX, deltaY] = snapToGrid(props.grid, tmpDeltaX, tmpDeltaY, props.scale);
 
-        if (props.lockAspectRatio && resizingOnY.value) {
-        right = state.right - (state.bottom - bottom) * aspectFactor;
-        }
-    } else if (state.handle.includes('t')) {
-        top = restrictToBounds(mouseClickPosition.top - deltaY, state.bounds.minTop, state.bounds.maxTop);
+  // Handle resize based on handle position
+  if (state.handle.includes('b')) {
+    bottom = restrictToBounds(mouseClickPosition.bottom + deltaY, state.bounds.minBottom, state.bounds.maxBottom);
+  } else if (state.handle.includes('t')) {
+    top = restrictToBounds(mouseClickPosition.top - deltaY, state.bounds.minTop, state.bounds.maxTop);
+  }
 
-        if (props.lockAspectRatio && resizingOnY.value) {
-        left = state.left - (state.top - top) * aspectFactor;
-        }
-    }
+  if (state.handle.includes('r')) {
+    right = restrictToBounds(mouseClickPosition.right + deltaX, state.bounds.minRight, state.bounds.maxRight);
+  } else if (state.handle.includes('l')) {
+    left = restrictToBounds(mouseClickPosition.left - deltaX, state.bounds.minLeft, state.bounds.maxLeft);
+  }
 
-    if (state.handle.includes('r')) {
-        right = restrictToBounds(mouseClickPosition.right + deltaX, state.bounds.minRight, state.bounds.maxRight);
+  // Calculate new dimensions
+  const width = computeWidth(state.parentWidth, left, right);
+  const height = computeHeight(state.parentHeight, top, bottom);
 
-        if (props.lockAspectRatio && resizingOnX.value) {
-        bottom = state.bottom - (state.right - right) / aspectFactor;
-        }
-    } else if (state.handle.includes('l')) {
-        left = restrictToBounds(mouseClickPosition.left - deltaX, state.bounds.minLeft, state.bounds.maxLeft);
+  console.log('New dimensions:', width, height); // Debug
 
-        if (props.lockAspectRatio && resizingOnX.value) {
-        top = state.top - (state.left - left) / aspectFactor;
-        }
-    }
+  if (props.onResize(state.handle, left, top, width, height) === false) {
+    return;
+  }
 
-    const width = computeWidth(state.parentWidth, left, right);
-    const height = computeHeight(state.parentHeight, top, bottom);
+  // Update state
+  state.left = left;
+  state.top = top;
+  state.right = right;
+  state.bottom = bottom;
+  state.width = width;
+  state.height = height;
 
-    if (props.onResize(state.handle, left, top, width, height) === false) {
-        return;
-    }
-
-    state.left = left;
-    state.top = top;
-    state.right = right;
-    state.bottom = bottom;
-    state.width = width;
-    state.height = height;
-
-    emit('resizing', state.left, state.top, state.width, state.height);
-    state.resizing = true;
+  emit('resizing', state.left, state.top, state.width, state.height);
 };
 
 const changeWidth = (val) => {
