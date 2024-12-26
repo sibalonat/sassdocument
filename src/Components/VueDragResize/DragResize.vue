@@ -1,5 +1,6 @@
 <script setup>
 import { useGridUtils } from '@/Composables/Ui/UseGridUtils';
+import { ref } from 'vue';
 // import { reactive } from 'vue';
 import { onBeforeMount, onBeforeUnmount, onMounted, reactive, computed, watch } from 'vue';
 
@@ -47,10 +48,10 @@ const userSelectAuto = {
 let eventsFor = events.mouse
 
 const props = defineProps({
-  elementRef: {
-      type: Object,
-      required: true
-  },
+  // elementRef: {
+  //     type: Object,
+  //     required: true
+  // },
   className: {
       type: String,
       default: 'vdr'
@@ -674,7 +675,7 @@ const emit = defineEmits(['activated', 'update:active', 'deactivated', 'dragging
         state.bottom = bottom;
         state.width = width;
         state.height = height;
-        };
+    };
 
     const changeHeight = (val) => {
         const [_, newHeight] = snapToGrid(props.grid, 0, val, 1);
@@ -707,14 +708,18 @@ const emit = defineEmits(['activated', 'update:active', 'deactivated', 'dragging
     })
 
     onMounted(() => {
+      console.log('el', element.value);
+      
+        const el = element.value;
         if (!props.enableNativeDrag) {
-            // $el.ondragstart = () => false
+          el.ondragstart = () => false;
         }
     
         const [parentWidth, parentHeight] = getParentSize()
     
         state.parentWidth = parentWidth
         state.parentHeight = parentHeight
+
     
         const [width, height] = getComputedSize(element.value)
     
@@ -723,11 +728,11 @@ const emit = defineEmits(['activated', 'update:active', 'deactivated', 'dragging
         state.width = props.w !== 'auto' ? props.w : width
         state.height = props.h !== 'auto' ? props.h : height
     
-        state.right = parentWidth - width - left
-        state.bottom = parentHeight - height - top
+        state.right = parentWidth - width - state.left
+        state.bottom = parentHeight - height - state.top
     
         if (props.active) {
-            // $emit('activated')
+          emit('activated');
         }
     
         addEvent(document.documentElement, 'mousedown', deselect)
