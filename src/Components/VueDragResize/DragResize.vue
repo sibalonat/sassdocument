@@ -239,7 +239,18 @@ const state = reactive({
   dragging: false,
   dragEnable: false,
   resizeEnable: false,
-  zIndex: props.z
+  zIndex: props.z,
+  mouseClickPosition: { mouseX: 0, mouseY: 0, x: 0, y: 0, w: 0, h: 0 },
+  bounds: {
+    minLeft: null,
+    maxLeft: null,
+    minRight: null,
+    maxRight: null,
+    minTop: null,
+    maxTop: null,
+    minBottom: null,
+    maxBottom: null
+  }
 });
 const element = ref(null);
 // computed
@@ -316,7 +327,7 @@ const checkParentSize = () => {
 
 const getParentSize = () => {
   if (props.parent) {
-    const style = window.getComputedStyle(state.$el.parentNode, null);
+    const style = window.getComputedStyle(element.value.parentNode, null);
     return [
       parseInt(style.getPropertyValue('width'), 10),
       parseInt(style.getPropertyValue('height'), 10)
@@ -346,8 +357,8 @@ const elementDown = (e) => {
       return;
     }
     if (
-      (props.dragHandle && !matchesSelectorToParentElements(target, props.dragHandle, state.$el)) ||
-      (props.dragCancel && matchesSelectorToParentElements(target, props.dragCancel, state.$el))
+      (props.dragHandle && !matchesSelectorToParentElements(target, props.dragHandle, element.value)) ||
+      (props.dragCancel && matchesSelectorToParentElements(target, props.dragCancel, element.value))
     ) {
       state.dragging = false;
       return;
@@ -828,29 +839,29 @@ watch(() => props.h, (val) => {
 });
 </script>
 <template>
+  <div
+    ref="element"
+    :style="style"
+    :class="[{
+      [props.classNameActive]: state.enabled,
+      [props.classNameDragging]: state.dragging,
+      [props.classNameResizing]: state.resizing,
+      [props.classNameDraggable]: props.draggable,
+      [props.classNameResizable]: props.resizable
+    }, props.className]"
+    @mousedown="elementMouseDown"
+    @touchstart="elementTouchDown"
+  >
     <div
-      ref="element"
-      :style="style"
-      :class="[{
-        [classNameActive]: enabled,
-        [classNameDragging]: dragging,
-        [classNameResizing]: resizing,
-        [classNameDraggable]: draggable,
-        [classNameResizable]: resizable
-      }, className]"
-      @mousedown="elementMouseDown"
-      @touchstart="elementTouchDown"
+      v-for="handle in actualHandles"
+      :key="handle"
+      :class="[props.classNameHandle, props.classNameHandle + '-' + handle]"
+      :style="{display: state.enabled ? 'block' : 'none'}"
+      @mousedown.stop.prevent="handleDown(handle, $event)"
+      @touchstart.stop.prevent="handleTouchDown(handle, $event)"
     >
-      <div
-        v-for="handle in actualHandles"
-        :key="handle"
-        :class="[classNameHandle, classNameHandle + '-' + handle]"
-        :style="{display: enabled ? 'block' : 'none'}"
-        @mousedown.stop.prevent="handleDown(handle, $event)"
-        @touchstart.stop.prevent="handleTouchDown(handle, $event)"
-      >
-        <slot :name="handle"></slot>
-      </div>
-      <slot></slot>
+      <slot :name="handle"></slot>
     </div>
+    <slot></slot>
+  </div>
 </template>
