@@ -2,8 +2,10 @@
 import { onMounted, ref, watch } from 'vue';
 import DocumentWrapper from '@/Components/DocumentWrapper.vue';
 import PropertiesSidebar from '@/Components/Partial/PropertiesSidebar.vue';
+// DragResize
 import useUiInteractions from '@/Composables/Ui/UiInteractions';
 import { useDynamicSheets } from '@/Spreadsheet/DynamicSheets';
+import Resize from '@/Components/VueDragResize/DragResize.vue';
 
 const { trigger, opened } = useUiInteractions();
 
@@ -35,8 +37,10 @@ watch(opened, (val) => console.log(val));
     </div>
     <DocumentWrapper />
     <!-- {{ xAxis }} -->
-    <PropertiesSidebar :aX="xAxis" :open="opened" :trigger="trigger" />
+    <!-- <PropertiesSidebar :aX="xAxis" :open="opened" :trigger="trigger" /> -->
+
     <!-- <div class="fixed top-0 w-32 overflow-y-auto resize-y bg-slate-400 h-44 "></div> -->
+    <Resize />
   </main>
 </template>
 

@@ -1,235 +1,250 @@
 <script setup>
 import { useGridUtils } from '@/Composables/Ui/UseGridUtils';
-import { onBeforeMount, onBeforeUnmount, onMounted } from 'vue';
+// import { reactive } from 'vue';
+import { onBeforeMount, onBeforeUnmount, onMounted, reactive, computed, watch } from 'vue';
 
-  
-  const events = {
-    mouse: {
-      start: 'mousedown',
-      move: 'mousemove',
-      stop: 'mouseup'
-    },
-    touch: {
-      start: 'touchstart',
-      move: 'touchmove',
-      stop: 'touchend'
-    }
-  }
-  
-  const userSelectNone = {
-    userSelect: 'none',
-    MozUserSelect: 'none',
-    WebkitUserSelect: 'none',
-    MsUserSelect: 'none'
-  }
-  
-  const userSelectAuto = {
-    userSelect: 'auto',
-    MozUserSelect: 'auto',
-    WebkitUserSelect: 'auto',
-    MsUserSelect: 'auto'
-  }
-  
-  let eventsFor = events.mouse
 
-  const props = defineProps({
-    className: {
-        type: String,
-        default: 'vdr'
-    },
-    classNameDraggable: {
-        type: String,
-        default: 'draggable'
-    },
-    classNameResizable: {
-        type: String,
-        default: 'resizable'
-    },
-    classNameDragging: {
-        type: String,
-        default: 'dragging'
-    },
-    classNameResizing: {
-        type: String,
-        default: 'resizing'
-    },
-    classNameActive: {
-        type: String,
-        default: 'active'
-    },
-    classNameHandle: {
-        type: String,
-        default: 'handle'
-    },
-    disableUserSelect: {
-        type: Boolean,
-        default: true
-    },  
-    enableNativeDrag: {
-        type: Boolean,
-        default: false
-    },
-    preventDeactivation: {
-        type: Boolean,
-        default: false
-    },
-    active: {
-        type: Boolean,
-        default: false
-    },
-    draggable: {
-        type: Boolean,
-        default: true
-    },
-    resizable: {
-        type: Boolean,
-        default: true
-    },
-    lockAspectRatio: {
-        type: Boolean,
-        default: false
-    },
-    w: {
-        type: [Number, String],
-        default: 200,
-        validator: (val) => {
-            if (typeof val === 'number') {
-                return val > 0
-            }
-            return val === 'auto'
-        }
-    },
-    h: {
-        type: [Number, String],
-        default: 200,
-        validator: (val) => {
-            if (typeof val === 'number') {
-                return val > 0
-            }
-            return val === 'auto'
-        }
-    },
-    minWidth: {
-        type: Number,
-        default: 0,
-        validator: (val) => val >= 0
-    },
-    minHeight: {
-        type: Number,
-        default: 0,
-        validator: (val) => val >= 0
-    },
-    maxWidth: {
-        type: Number,
-        default: null,
-        validator: (val) => val >= 0
-    },
-    maxHeight: {
-        type: Number,
-        default: null,
-        validator: (val) => val >= 0
-    },
-    x: {
-        type: Number,
-        default: 0
-    },
-    y: {
-        type: Number,
-        default: 0
-    },
-    z: {
-        type: [String, Number],
-        default: 'auto',
-        validator: (val) => (typeof val === 'string' ? val === 'auto' : val >= 0)
-    },
-    handles: {
-        type: Array,
-        default: () => ['tl', 'tm', 'tr', 'mr', 'br', 'bm', 'bl', 'ml'],
-        validator: (val) => {
-            const s = new Set(['tl', 'tm', 'tr', 'mr', 'br', 'bm', 'bl', 'ml'])
-            return new Set(val.filter(h => s.has(h))).size === val.length
-        }
-    },
-    scale: {
-        type: [Number, Array],
-        default: 1,
-        validator: (val) => {
-            if (typeof val === 'number') {
-                return val > 0
-            }
-            return val.length === 2 && val[0] > 0 && val[1] > 0
-        }
-    },
-    onDragStart: {
-        type: Function,
-        default: () => true
-    },
-    onDrag: {
-        type: Function,
-        default: () => true
-    },
-    onResizeStart: {
-        type: Function,
-        default: () => true
-    },
-    onResize: {
-        type: Function,
-        default: () => true
-    },
-    dragHandle: {
-        type: String,
-        default: null
-    },
-    dragCancel: {
-        type: String,
-        default: null
-    },
-    axis: {
-        type: String,
-        default: 'both',
-        validator: (val) => ['x', 'y', 'both'].includes(val)
-    },
-    grid: {
-        type: Array,
-        default: () => [1, 1]
-    },
-    parent: {
-        type: Boolean,
-        default: false
-    },
-  })
+const { 
+  isFunction, 
+  snapToGrid, 
+  getSize, 
+  computeWidth, 
+  computeHeight, 
+  restrictToBounds, 
+  matchesSelectorToParentElements, 
+  getComputedSize, 
+  addEvent, 
+  removeEvent 
+} = useGridUtils();
+  
+const events = {
+  mouse: {
+    start: 'mousedown',
+    move: 'mousemove',
+    stop: 'mouseup'
+  },
+  touch: {
+    start: 'touchstart',
+    move: 'touchmove',
+    stop: 'touchend'
+  }
+}
+  
+const userSelectNone = {
+  userSelect: 'none',
+  MozUserSelect: 'none',
+  WebkitUserSelect: 'none',
+  MsUserSelect: 'none'
+}
 
-  const emit = defineEmits(['activated', 'update:active', 'deactivated', 'dragging', 'resizeStop', 'dragStop']);
+const userSelectAuto = {
+  userSelect: 'auto',
+  MozUserSelect: 'auto',
+  WebkitUserSelect: 'auto',
+  MsUserSelect: 'auto'
+}
+
+let eventsFor = events.mouse
+
+const props = defineProps({
+  className: {
+      type: String,
+      default: 'vdr'
+  },
+  classNameDraggable: {
+      type: String,
+      default: 'draggable'
+  },
+  classNameResizable: {
+      type: String,
+      default: 'resizable'
+  },
+  classNameDragging: {
+      type: String,
+      default: 'dragging'
+  },
+  classNameResizing: {
+      type: String,
+      default: 'resizing'
+  },
+  classNameActive: {
+      type: String,
+      default: 'active'
+  },
+  classNameHandle: {
+      type: String,
+      default: 'handle'
+  },
+  disableUserSelect: {
+      type: Boolean,
+      default: true
+  },  
+  enableNativeDrag: {
+      type: Boolean,
+      default: false
+  },
+  preventDeactivation: {
+      type: Boolean,
+      default: false
+  },
+  active: {
+      type: Boolean,
+      default: false
+  },
+  draggable: {
+      type: Boolean,
+      default: true
+  },
+  resizable: {
+      type: Boolean,
+      default: true
+  },
+  lockAspectRatio: {
+      type: Boolean,
+      default: false
+  },
+  w: {
+      type: [Number, String],
+      default: 200,
+      validator: (val) => {
+          if (typeof val === 'number') {
+              return val > 0
+          }
+          return val === 'auto'
+      }
+  },
+  h: {
+      type: [Number, String],
+      default: 200,
+      validator: (val) => {
+          if (typeof val === 'number') {
+              return val > 0
+          }
+          return val === 'auto'
+      }
+  },
+  minWidth: {
+      type: Number,
+      default: 0,
+      validator: (val) => val >= 0
+  },
+  minHeight: {
+      type: Number,
+      default: 0,
+      validator: (val) => val >= 0
+  },
+  maxWidth: {
+      type: Number,
+      default: null,
+      validator: (val) => val >= 0
+  },
+  maxHeight: {
+      type: Number,
+      default: null,
+      validator: (val) => val >= 0
+  },
+  x: {
+      type: Number,
+      default: 0
+  },
+  y: {
+      type: Number,
+      default: 0
+  },
+  z: {
+      type: [String, Number],
+      default: 'auto',
+      validator: (val) => (typeof val === 'string' ? val === 'auto' : val >= 0)
+  },
+  handles: {
+      type: Array,
+      default: () => ['tl', 'tm', 'tr', 'mr', 'br', 'bm', 'bl', 'ml'],
+      validator: (val) => {
+          const s = new Set(['tl', 'tm', 'tr', 'mr', 'br', 'bm', 'bl', 'ml'])
+          return new Set(val.filter(h => s.has(h))).size === val.length
+      }
+  },
+  scale: {
+      type: [Number, Array],
+      default: 1,
+      validator: (val) => {
+          if (typeof val === 'number') {
+              return val > 0
+          }
+          return val.length === 2 && val[0] > 0 && val[1] > 0
+      }
+  },
+  onDragStart: {
+      type: Function,
+      default: () => true
+  },
+  onDrag: {
+      type: Function,
+      default: () => true
+  },
+  onResizeStart: {
+      type: Function,
+      default: () => true
+  },
+  onResize: {
+      type: Function,
+      default: () => true
+  },
+  dragHandle: {
+      type: String,
+      default: null
+  },
+  dragCancel: {
+      type: String,
+      default: null
+  },
+  axis: {
+      type: String,
+      default: 'both',
+      validator: (val) => ['x', 'y', 'both'].includes(val)
+  },
+  grid: {
+      type: Array,
+      default: () => [1, 1]
+  },
+  parent: {
+      type: Boolean,
+      default: false
+  },
+})
+
+const emit = defineEmits(['activated', 'update:active', 'deactivated', 'dragging', 'resizeStop', 'dragStop']);
   
   // data
-    const state = reactive({
-      left: props.x,
-      top: props.y,
-      right: null,
-      bottom: null,
-      width: null,
-      height: null,
-      widthTouched: false,
-      heightTouched: false,
-      aspectFactor: null,
-      parentWidth: null,
-      parentHeight: null,
-      handle: null,
-      enabled: props.active,
-      resizing: false,
-      dragging: false,
-      dragEnable: false,
-      resizeEnable: false,
-      zIndex: props.z
-    });
-    // computed
-    const style = computed(() => ({
-      transform: `translate(${state.left}px, ${state.top}px)`,
-      width: computedWidth.value,
-      height: computedHeight.value,
-      zIndex: state.zIndex,
-      ...(state.dragging && props.disableUserSelect ? userSelectNone : userSelectAuto)
-    }));
+  const state = reactive({
+    left: props.x,
+    top: props.y,
+    right: null,
+    bottom: null,
+    width: null,
+    height: null,
+    widthTouched: false,
+    heightTouched: false,
+    aspectFactor: null,
+    parentWidth: null,
+    parentHeight: null,
+    handle: null,
+    enabled: props.active,
+    resizing: false,
+    dragging: false,
+    dragEnable: false,
+    resizeEnable: false,
+    zIndex: props.z
+  });
+  const element = ref(null);
+  // computed
+  const style = computed(() => ({
+    transform: `translate(${state.left}px, ${state.top}px)`,
+    width: computedWidth.value,
+    height: computedHeight.value,
+    zIndex: state.zIndex,
+    ...(state.dragging && props.disableUserSelect ? userSelectNone : userSelectAuto)
+  }));
 
     const actualHandles = computed(() => {
       if (!props.resizable) return [];
@@ -694,18 +709,18 @@ import { onBeforeMount, onBeforeUnmount, onMounted } from 'vue';
     
         const [parentWidth, parentHeight] = getParentSize()
     
-        parentWidth.value = parentWidth
-        parentHeight.value = parentHeight
+        state.parentWidth = parentWidth
+        state.parentHeight = parentHeight
     
         const [width, height] = getComputedSize(element.value)
     
-        aspectFactor.value = (props.w !== 'auto' ? props.w : width) / (props.h !== 'auto' ? props.h : height)
+        state.aspectFactor = (props.w !== 'auto' ? props.w : width) / (props.h !== 'auto' ? props.h : height)
     
-        width.value = props.w !== 'auto' ? props.w : width
-        height.value = props.h !== 'auto' ? props.h : height
+        state.width = props.w !== 'auto' ? props.w : width
+        state.height = props.h !== 'auto' ? props.h : height
     
-        right.value = parentWidth - width - left
-        bottom.value = parentHeight - height - top
+        state.right = parentWidth - width - left
+        state.bottom = parentHeight - height - top
     
         if (props.active) {
             // $emit('activated')
@@ -803,6 +818,7 @@ import { onBeforeMount, onBeforeUnmount, onMounted } from 'vue';
 </script>
 <template>
     <div
+      ref="element"
       :style="style"
       :class="[{
         [classNameActive]: enabled,
