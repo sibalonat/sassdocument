@@ -176,7 +176,7 @@ import { onBeforeMount, onBeforeUnmount, onMounted } from 'vue';
         type: Function,
         default: () => true
     },
-    draggHandle: {
+    dragHandle: {
         type: String,
         default: null
     },
@@ -202,7 +202,7 @@ import { onBeforeMount, onBeforeUnmount, onMounted } from 'vue';
   const emit = defineEmits(['activated', 'update:active', 'deactivated', 'dragging', 'resizeStop', 'dragStop']);
   
   // data
-  const state = reactive({
+    const state = reactive({
       left: props.x,
       top: props.y,
       right: null,
@@ -727,6 +727,79 @@ import { onBeforeMount, onBeforeUnmount, onMounted } from 'vue';
     
         removeEvent(window, 'resize', checkParentSize)
     })
+
+    // watch
+    watch(() => props.active, (val) => {
+        state.enabled = val;
+
+        if (val) {
+            emit('activated');
+        } else {
+            emit('deactivated');
+        }
+    });
+
+    watch(() => props.z, (val) => {
+        if (val >= 0 || val === 'auto') {
+            state.zIndex = val;
+        }
+    });
+
+    watch(() => props.x, (val) => {
+        if (state.resizing || state.dragging) {
+            return;
+        }
+
+        if (props.parent) {
+            state.bounds = calcDragLimits();
+        }
+
+        moveHorizontally(val);
+    });
+
+    watch(() => props.y, (val) => {
+        if (state.resizing || state.dragging) {
+            return;
+        }
+
+        if (props.parent) {
+            state.bounds = calcDragLimits();
+        }
+
+        moveVertically(val);
+    });
+
+    watch(() => props.lockAspectRatio, (val) => {
+        if (val) {
+            state.aspectFactor = state.width / state.height;
+        } else {
+            state.aspectFactor = undefined;
+        }
+    });
+
+    watch(() => props.w, (val) => {
+        if (state.resizing || state.dragging) {
+            return;
+        }
+
+        if (props.parent) {
+            state.bounds = calcResizeLimits();
+        }
+
+        changeWidth(val);
+    });
+
+    watch(() => props.h, (val) => {
+        if (state.resizing || state.dragging) {
+            return;
+        }
+
+        if (props.parent) {
+            state.bounds = calcResizeLimits();
+        }
+
+        changeHeight(val);
+    });
 </script>
 <template>
     <div
