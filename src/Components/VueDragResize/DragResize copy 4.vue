@@ -845,11 +845,6 @@ watch(() => props.h, (val) => {
 
     changeHeight(val);
 });
-
-watch(() => props.minWidth, (val) => minW.value = val);
-watch(() => props.minHeight, (val) => minH.value = val);
-watch(() => props.maxWidth, (val) => maxW.value = val);
-watch(() => props.maxHeight, (val) => maxH.value = val);
 </script>
 <template>
   <div

@@ -218,7 +218,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['activated', 'update:active', 'deactivated', 'dragging', 'resizeStop', 'dragStop', 'resizing']);
+const emit = defineEmits(['activated', 'update:active', 'deactivated', 'dragging', 'resizeStop', 'dragStop']);
   
 // data
 const state = reactive({
@@ -253,10 +253,6 @@ const state = reactive({
   }
 });
 const element = ref(null);
-const minW = ref(props.minWidth);
-const minH = ref(props.minHeight);
-const maxW = ref(props.maxWidth);
-const maxH = ref(props.maxHeight);
 // computed
 const style = computed(() => ({
   transform: `translate(${state.left}px, ${state.top}px)`,
@@ -291,10 +287,10 @@ const computedHeight = computed(() => {
   return state.height + 'px';
 });
 
-// const minW = computed(() => props.minWidth);
-// const minH = computed(() => props.minHeight);
-// const maxW = computed(() => props.maxWidth);
-// const maxH = computed(() => props.maxHeight);
+const minW = computed(() => props.minWidth);
+const minH = computed(() => props.minHeight);
+const maxW = computed(() => props.maxWidth);
+const maxH = computed(() => props.maxHeight);
 
 const resizingOnX = computed(() => Boolean(state.handle) && (state.handle.includes('l') || state.handle.includes('r')));
 const resizingOnY = computed(() => Boolean(state.handle) && (state.handle.includes('t') || state.handle.includes('b')));
@@ -400,98 +396,6 @@ const calcDragLimits = () => ({
   maxBottom: Math.floor((state.parentHeight - state.height - state.bottom) / props.grid[1]) * props.grid[1] + state.bottom
 });
 
-const calcResizeLimits = () => {
-  console.log('minW', minW.value);
-  
-  // let minW = minW.value;
-  // let minH = minH.value;
-  // let maxW = maxW.value;
-  // let maxH = maxH.value;
-  const aspectFactor = state.aspectFactor;
-  const [gridX, gridY] = props.grid;
-  const width = state.width;
-  const height = state.height;
-  const left = state.left;
-  const top = state.top;
-  const right = state.right;
-  const bottom = state.bottom;
-  if (props.lockAspectRatio) {
-    if (minW.value / minH.value > aspectFactor) {
-      minH.value = minW.value / aspectFactor;
-    } else {
-      minW.value = aspectFactor * minH.value;
-    }
-    if (maxW.value && maxH.value) {
-      maxW.value = Math.min(maxW.value, aspectFactor * maxH.value);
-      maxH.value = Math.min(maxH.value, maxW.value / aspectFactor);
-    } else if (maxW.value) {
-      maxH.value = maxW.value / aspectFactor;
-    } else if (maxH.value) {
-      maxW.value = aspectFactor * maxH.value;
-    }
-  }
-  maxW.value = maxW.value - (maxW.value % gridX);
-  maxH.value = maxH.value - (maxH.value % gridY);
-  const limits = {
-    minLeft: null,
-    maxLeft: null,
-    minTop: null,
-    maxTop: null,
-    minRight: null,
-    maxRight: null,
-    minBottom: null,
-    maxBottom: null
-  };
-  if (props.parent) {
-    limits.minLeft = left % gridX;
-    limits.maxLeft = left + Math.floor((width - minW.value) / gridX) * gridX;
-    limits.minTop = top % gridY;
-    limits.maxTop = top + Math.floor((height - minH.value) / gridY) * gridY;
-    limits.minRight = right % gridX;
-    limits.maxRight = right + Math.floor((width - minW.value) / gridX) * gridX;
-    limits.minBottom = bottom % gridY;
-    limits.maxBottom = bottom + Math.floor((height - minH.value) / gridY) * gridY;
-    if (maxW.value) {
-      limits.minLeft = Math.max(limits.minLeft, state.parentWidth - right - maxW.value);
-      limits.minRight = Math.max(limits.minRight, state.parentWidth - left - maxW.value);
-    }
-    if (maxH) {
-      limits.minTop = Math.max(limits.minTop, state.parentHeight - bottom - maxH.value);
-      limits.minBottom = Math.max(limits.minBottom, state.parentHeight - top - maxH.value);
-    }
-    if (props.lockAspectRatio) {
-      limits.minLeft = Math.max(limits.minLeft, left - top * aspectFactor);
-      limits.minTop = Math.max(limits.minTop, top - left / aspectFactor);
-      limits.minRight = Math.max(limits.minRight, right - bottom * aspectFactor);
-      limits.minBottom = Math.max(limits.minBottom, bottom - right / aspectFactor);
-    }
-  } else {
-    limits.minLeft = null;
-    limits.maxLeft = left + Math.floor((width - minW.value) / gridX) * gridX;
-    limits.minTop = null;
-    limits.maxTop = top + Math.floor((height - minH.value) / gridY) * gridY;
-    limits.minRight = null;
-    limits.maxRight = right + Math.floor((width - minW.value) / gridX) * gridX;
-    limits.minBottom = null;
-    limits.maxBottom = bottom + Math.floor((height - minH.value) / gridY) * gridY;
-    if (maxW.value) {
-      limits.minLeft = -(right + maxW.value);
-      limits.minRight = -(left + maxW.value);
-    }
-    if (maxH.value) {
-      limits.minTop = -(bottom + maxH);
-      limits.minBottom = -(top + maxH);
-    }
-    if (props.lockAspectRatio && (maxW.value && maxH.value)) {
-      limits.minLeft = Math.min(limits.minLeft, -(right + maxW.value));
-      limits.minTop = Math.min(limits.minTop, -(maxH.value + bottom));
-      limits.minRight = Math.min(limits.minRight, -left - maxW.value);
-      limits.minBottom = Math.min(limits.minBottom, -top - maxH.value);
-    }
-  }
-  return limits;
-};
-
 const deselect = (e) => {
   const target = e.target || e.srcElement;
   const regex = new RegExp(props.className + '-([trmbl]{2})', '');
@@ -536,7 +440,95 @@ const handleDown = (handle, e) => {
   addEvent(document.documentElement, eventsFor.stop, handleUp);
 };
 
-
+const calcResizeLimits = () => {
+  let minW = minW.value;
+  let minH = minH.value;
+  let maxW = maxW.value;
+  let maxH = maxH.value;
+  const aspectFactor = state.aspectFactor;
+  const [gridX, gridY] = props.grid;
+  const width = state.width;
+  const height = state.height;
+  const left = state.left;
+  const top = state.top;
+  const right = state.right;
+  const bottom = state.bottom;
+  if (props.lockAspectRatio) {
+    if (minW / minH > aspectFactor) {
+      minH = minW / aspectFactor;
+    } else {
+      minW = aspectFactor * minH;
+    }
+    if (maxW && maxH) {
+      maxW = Math.min(maxW, aspectFactor * maxH);
+      maxH = Math.min(maxH, maxW / aspectFactor);
+    } else if (maxW) {
+      maxH = maxW / aspectFactor;
+    } else if (maxH) {
+      maxW = aspectFactor * maxH;
+    }
+  }
+  maxW = maxW - (maxW % gridX);
+  maxH = maxH - (maxH % gridY);
+  const limits = {
+    minLeft: null,
+    maxLeft: null,
+    minTop: null,
+    maxTop: null,
+    minRight: null,
+    maxRight: null,
+    minBottom: null,
+    maxBottom: null
+  };
+  if (props.parent) {
+    limits.minLeft = left % gridX;
+    limits.maxLeft = left + Math.floor((width - minW) / gridX) * gridX;
+    limits.minTop = top % gridY;
+    limits.maxTop = top + Math.floor((height - minH) / gridY) * gridY;
+    limits.minRight = right % gridX;
+    limits.maxRight = right + Math.floor((width - minW) / gridX) * gridX;
+    limits.minBottom = bottom % gridY;
+    limits.maxBottom = bottom + Math.floor((height - minH) / gridY) * gridY;
+    if (maxW) {
+      limits.minLeft = Math.max(limits.minLeft, state.parentWidth - right - maxW);
+      limits.minRight = Math.max(limits.minRight, state.parentWidth - left - maxW);
+    }
+    if (maxH) {
+      limits.minTop = Math.max(limits.minTop, state.parentHeight - bottom - maxH);
+      limits.minBottom = Math.max(limits.minBottom, state.parentHeight - top - maxH);
+    }
+    if (props.lockAspectRatio) {
+      limits.minLeft = Math.max(limits.minLeft, left - top * aspectFactor);
+      limits.minTop = Math.max(limits.minTop, top - left / aspectFactor);
+      limits.minRight = Math.max(limits.minRight, right - bottom * aspectFactor);
+      limits.minBottom = Math.max(limits.minBottom, bottom - right / aspectFactor);
+    }
+  } else {
+    limits.minLeft = null;
+    limits.maxLeft = left + Math.floor((width - minW) / gridX) * gridX;
+    limits.minTop = null;
+    limits.maxTop = top + Math.floor((height - minH) / gridY) * gridY;
+    limits.minRight = null;
+    limits.maxRight = right + Math.floor((width - minW) / gridX) * gridX;
+    limits.minBottom = null;
+    limits.maxBottom = bottom + Math.floor((height - minH) / gridY) * gridY;
+    if (maxW) {
+      limits.minLeft = -(right + maxW);
+      limits.minRight = -(left + maxW);
+    }
+    if (maxH) {
+      limits.minTop = -(bottom + maxH);
+      limits.minBottom = -(top + maxH);
+    }
+    if (props.lockAspectRatio && (maxW && maxH)) {
+      limits.minLeft = Math.min(limits.minLeft, -(right + maxW));
+      limits.minTop = Math.min(limits.minTop, -(maxH + bottom));
+      limits.minRight = Math.min(limits.minRight, -left - maxW);
+      limits.minBottom = Math.min(limits.minBottom, -top - maxH);
+    }
+  }
+  return limits;
+};
 
 const move = (e) => {
   if (state.resizing) {
@@ -845,11 +837,6 @@ watch(() => props.h, (val) => {
 
     changeHeight(val);
 });
-
-watch(() => props.minWidth, (val) => minW.value = val);
-watch(() => props.minHeight, (val) => minH.value = val);
-watch(() => props.maxWidth, (val) => maxW.value = val);
-watch(() => props.maxHeight, (val) => maxH.value = val);
 </script>
 <template>
   <div
