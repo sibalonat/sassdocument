@@ -77,7 +77,7 @@ onMounted(() => {});
         group="rows"
         class="grid w-full gap-0 grid-cols-16 columns list-group"
         ghost-class="ghost"
-        handle=".handle"
+        handle=".handler"
         :dragging="false"
         @move="checkMove"
         @start="handleDragStart"
@@ -89,7 +89,7 @@ onMounted(() => {});
             :class="['list-group-item', getTailwindGridClasses(element), { 'not-draggable': !enabled }]"
             :ref="(el) => { div[element.id] = el }">
             <div class="relative border">
-              <DynamicHeroIcon name="equals" :size="3" class="absolute cursor-pointer top-1/3 handle" />
+              <DynamicHeroIcon name="equals" :size="3" class="absolute cursor-pointer top-1/3 handler" />
               {{ element.name }}
               <DynamicHeroIcon
                 name="chevron-right"

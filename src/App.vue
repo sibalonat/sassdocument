@@ -36,7 +36,7 @@ watch(opened, (val) => console.log(val));
         </button>
       </div>
     </div>
-    <DocumentWrapper />
+    <!-- <DocumentWrapper /> -->
     <!-- {{ xAxis }} -->
     <!-- <PropertiesSidebar :aX="xAxis" :open="opened" :trigger="trigger" /> -->
 

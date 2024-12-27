@@ -4,7 +4,6 @@ import { ref } from 'vue';
 // import { reactive } from 'vue';
 import { onBeforeMount, onBeforeUnmount, onMounted, reactive, computed, watch } from 'vue';
 
-
 const { 
   isFunction, 
   snapToGrid, 
@@ -56,58 +55,72 @@ const props = defineProps({
       type: String,
       default: 'vdr'
   },
+
   classNameDraggable: {
       type: String,
       default: 'draggable'
   },
+
   classNameResizable: {
       type: String,
       default: 'resizable'
   },
+
   classNameDragging: {
       type: String,
       default: 'dragging'
   },
+
   classNameResizing: {
       type: String,
       default: 'resizing'
   },
+
   classNameActive: {
       type: String,
       default: 'active'
   },
+
   classNameHandle: {
       type: String,
       default: 'handle'
   },
+
   disableUserSelect: {
       type: Boolean,
       default: true
-  },  
+  },
+
   enableNativeDrag: {
       type: Boolean,
       default: false
   },
+
   preventDeactivation: {
       type: Boolean,
       default: false
   },
+
   active: {
       type: Boolean,
       default: false
   },
+
   draggable: {
       type: Boolean,
       default: true
   },
+
   resizable: {
       type: Boolean,
       default: true
   },
+
   lockAspectRatio: {
       type: Boolean,
       default: false
   },
+
   w: {
       type: [Number, String],
       default: 200,
@@ -118,6 +131,7 @@ const props = defineProps({
           return val === 'auto'
       }
   },
+
   h: {
       type: [Number, String],
       default: 200,
@@ -128,39 +142,47 @@ const props = defineProps({
           return val === 'auto'
       }
   },
+
   minWidth: {
       type: Number,
       default: 0,
       validator: (val) => val >= 0
   },
+
   minHeight: {
       type: Number,
       default: 0,
       validator: (val) => val >= 0
   },
+
   maxWidth: {
       type: Number,
       default: null,
       validator: (val) => val >= 0
   },
+
   maxHeight: {
       type: Number,
       default: null,
       validator: (val) => val >= 0
   },
+
   x: {
       type: Number,
       default: 0
   },
+
   y: {
       type: Number,
       default: 0
   },
+
   z: {
       type: [String, Number],
       default: 'auto',
       validator: (val) => (typeof val === 'string' ? val === 'auto' : val >= 0)
   },
+
   handles: {
       type: Array,
       default: () => ['tl', 'tm', 'tr', 'mr', 'br', 'bm', 'bl', 'ml'],
@@ -179,46 +201,64 @@ const props = defineProps({
           return val.length === 2 && val[0] > 0 && val[1] > 0
       }
   },
+
   onDragStart: {
       type: Function,
       default: () => true
   },
+
   onDrag: {
       type: Function,
       default: () => true
   },
+
   onResizeStart: {
       type: Function,
       default: () => true
   },
+
   onResize: {
       type: Function,
       default: () => true
   },
+
   dragHandle: {
       type: String,
       default: null
   },
+
   dragCancel: {
       type: String,
       default: null
   },
+
   axis: {
       type: String,
       default: 'both',
       validator: (val) => ['x', 'y', 'both'].includes(val)
   },
+
   grid: {
       type: Array,
       default: () => [1, 1]
   },
+
   parent: {
       type: Boolean,
       default: false
   },
+
 })
 
-const emit = defineEmits(['activated', 'update:active', 'deactivated', 'dragging', 'resizeStop', 'dragStop', 'resizing']);
+const emit = defineEmits([
+  'activated', 
+  'update:active', 
+  'deactivated', 
+  'dragging', 
+  'resizeStop', 
+  'dragStop', 
+  'resizing'
+]);
   
 // data
 const state = reactive({
@@ -240,7 +280,8 @@ const state = reactive({
   dragEnable: false,
   resizeEnable: false,
   zIndex: props.z,
-  mouseClickPosition: { mouseX: 0, mouseY: 0, x: 0, y: 0, w: 0, h: 0 },
+  mouseClickPosition: 
+  { mouseX: 0, mouseY: 0, x: 0, y: 0, w: 0, h: 0 },
   bounds: {
     minLeft: null,
     maxLeft: null,
@@ -257,6 +298,7 @@ const minW = ref(props.minWidth);
 const minH = ref(props.minHeight);
 const maxW = ref(props.maxWidth);
 const maxH = ref(props.maxHeight);
+
 // computed
 const style = computed(() => ({
   transform: `translate(${state.left}px, ${state.top}px)`,
@@ -270,8 +312,6 @@ const actualHandles = computed(() => {
   if (!props.resizable) return [];
   return props.handles;
 });
-
-
 
 const computedWidth = computed(() => {
   if (props.w === 'auto') {
@@ -300,9 +340,7 @@ const resizingOnX = computed(() => Boolean(state.handle) && (state.handle.includ
 const resizingOnY = computed(() => Boolean(state.handle) && (state.handle.includes('t') || state.handle.includes('b')));
 const isCornerHandle = computed(() => Boolean(state.handle) && ['tl', 'tr', 'br', 'bl'].includes(state.handle));
 
-
-
-  // const mouseClickPosition = ref({ mouseX: 0, mouseY: 0, x: 0, y: 0, w: 0, h: 0 })
+// const mouseClickPosition = ref({ mouseX: 0, mouseY: 0, x: 0, y: 0, w: 0, h: 0 })
 
 // methods
 const resetBoundsAndMouseState = () => {
@@ -593,8 +631,16 @@ const handleDrag = (e) => {
         return;
     }
 
-    const right = restrictToBounds(mouseClickPosition.right + deltaX, bounds.minRight, bounds.maxRight);
-    const bottom = restrictToBounds(mouseClickPosition.bottom + deltaY, bounds.minBottom, bounds.maxBottom);
+    const right = restrictToBounds(
+      mouseClickPosition.right + deltaX, 
+      bounds.minRight, 
+      bounds.maxRight
+    );
+    const bottom = restrictToBounds(
+      mouseClickPosition.bottom + deltaY, 
+      bounds.minBottom,
+      bounds.maxBottom
+    );
 
     state.left = left;
     state.top = top;
@@ -606,8 +652,9 @@ const handleDrag = (e) => {
 };
 
 const moveHorizontally = (val) => {
-    const [deltaX, _] = snapToGrid(props.grid, val, state.top, 1);
-
+    const [deltaX, _] = snapToGrid(
+      props.grid, val, state.top, 1
+    );
     const left = restrictToBounds(deltaX, state.bounds.minLeft, state.bounds.maxLeft);
 
     state.left = left;
@@ -723,8 +770,7 @@ const changeHeight = (val) => {
     state.height = height;
 };
 
-
-    // hooks
+// hooks
 onBeforeMount(() => {
     // eslint-disable-next-line
     if (props.maxWidth && props.minWidth > props.maxWidth) console.warn('[Vdr warn]: Invalid prop: minWidth cannot be greater than maxWidth')
@@ -736,7 +782,6 @@ onBeforeMount(() => {
 
 onMounted(() => {
   console.log('el', minW.value);
-  
     const el = element.value;
     if (!props.enableNativeDrag) {
       el.ondragstart = () => false;
@@ -762,11 +807,16 @@ onMounted(() => {
       emit('activated');
     }
 
-    addEvent(document.documentElement, 'mousedown', deselect)
-    addEvent(document.documentElement, 'touchend touchcancel', deselect)
+    addEvent(
+      document.documentElement, 'mousedown', deselect
+    )
 
+    addEvent(
+      document.documentElement, 'touchend touchcancel', deselect
+    )
     addEvent(window, 'resize', checkParentSize)
 })
+
 
 onBeforeUnmount(() => {
     removeEvent(document.documentElement, 'mousedown', deselect)
@@ -852,11 +902,22 @@ watch(() => props.h, (val) => {
     changeHeight(val);
 });
 
-watch(() => props.minWidth, (val) => minW.value = val);
-watch(() => props.minHeight, (val) => minH.value = val);
-watch(() => props.maxWidth, (val) => maxW.value = val);
-watch(() => props.maxHeight, (val) => maxH.value = val);
+watch(
+  () => props.minWidth, (val) => minW.value = val
+);
+
+watch(
+  () => props.minHeight, (val) => minH.value = val
+);
+
+watch(
+  () => props.maxWidth, (val) => maxW.value = val
+);
+
+watch((
+) => props.maxHeight, (val) => maxH.value = val);
 </script>
+
 <template>
   <div
     ref="element"
@@ -879,8 +940,8 @@ watch(() => props.maxHeight, (val) => maxH.value = val);
       @mousedown.stop.prevent="handleDown(handle, $event)"
       @touchstart.stop.prevent="handleTouchDown(handle, $event)"
     >
-      <slot :name="handle"></slot>
-    </div>
+    <slot :name="handle"></slot>
+    </div>    
     <slot></slot>
   </div>
 </template>
