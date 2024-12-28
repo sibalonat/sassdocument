@@ -600,16 +600,16 @@ const handleUp = (e) => {
   if (e.touches && e.touches.length > 1) {
     return;
   }
-  if (props.onResize(e) === false) {
-    return;
+  if (state.resizing) {
+    emit('resizeStop', state.left, state.top, state.width, state.height);
+  } else if (state.dragging) {
+    emit('dragStop', state.left, state.top);
   }
-  if (e.preventDefault) e.preventDefault();
-  removeEvent(document.documentElement, eventsFor.move, handleResize);
-  removeEvent(document.documentElement, eventsFor.stop, handleUp);
-
   state.resizing = false;
-  state.resizeEnable = false;
-
+  state.dragEnable = false;
+  state.dragging = false;
+  removeEvent(document.documentElement, eventsFor.move, move);
+  removeEvent(document.documentElement, eventsFor.stop, handleUp);
   resetBoundsAndMouseState();
 };
 

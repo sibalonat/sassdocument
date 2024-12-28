@@ -41,7 +41,21 @@ watch(opened, (val) => console.log(val));
     <!-- <PropertiesSidebar :aX="xAxis" :open="opened" :trigger="trigger" /> -->
 
     <!-- <div class="fixed top-0 w-32 overflow-y-auto resize-y bg-slate-400 h-44 "></div> -->
-    <Resize />
+    <Resize 
+      :x="0" 
+      :y="0" 
+      :w="200" 
+      :h="200" 
+      :minWidth="50" 
+      :minHeight="50" 
+      :maxWidth="500" 
+      :maxHeight="500" 
+      :grid="[10, 10]" 
+      :parent="true" 
+      :active="true" 
+      @resizeStop="(left, top, width, height) => console.log('Resize stopped:', left, top, width, height)" 
+      @dragStop="(left, top) => console.log('Drag stopped:', left, top)" 
+    />
   </main>
 </template>
 
