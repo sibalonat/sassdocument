@@ -285,16 +285,7 @@ const state = reactive({
   dragEnable: false,
   resizeEnable: false,
   zIndex: props.z,
-  mouseClickPosition: reactive({ 
-    mouseX: 0, 
-    mouseY: 0, 
-    left: 0, 
-    right: 0, 
-    top: 0, 
-    bottom: 0, 
-    width: 0, 
-    height: 0 
-  }),
+  mouseClickPosition: reactive({}),
   bounds: {
     minLeft: null,
     maxLeft: null,
@@ -434,8 +425,8 @@ const elementDown = (e) => {
     if (props.draggable) {
       state.dragEnable = true;
     }
-    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-    const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+    const clientX = parseFloat(e.clientX || (e.touches && e.touches[0].clientX));
+    const clientY = parseFloat(e.clientY || (e.touches && e.touches[0].clientY));
     state.mouseClickPosition.mouseX = clientX;
     state.mouseClickPosition.mouseY = clientY;
     state.mouseClickPosition.left = state.left;
@@ -591,9 +582,6 @@ const handleDown = (handle, e) => {
   } else {
     state.handle = handle;
   }
-
-  const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-  const clientY = e.clientY || (e.touches && e.touches[0].clientY);
   
   state.resizing = true; // Add this
   state.resizeEnable = true;
@@ -602,7 +590,10 @@ const handleDown = (handle, e) => {
   
   
   // Store initial positions
-
+  const clientX = parseFloat(e.clientX || (e.touches && e.touches[0].clientX));
+  const clientY = parseFloat(e.clientY || (e.touches && e.touches[0].clientY));
+  console.log('clientX', clientX); // Debug
+  
   state.mouseClickPosition.mouseX = clientX;
   state.mouseClickPosition.mouseY = clientY;
   state.mouseClickPosition.left = state.left;
@@ -612,7 +603,6 @@ const handleDown = (handle, e) => {
   state.mouseClickPosition.width = state.width;
   state.mouseClickPosition.height = state.height;
   
-  console.log('state.bounds', state); // Debug
   state.bounds = calcResizeLimits();
   console.log('state.bounds', state); // Debug
   
