@@ -44,7 +44,7 @@ watch(opened, (val) => console.log(val));
       <Resize 
         :x="0" 
         :y="0" 
-        :w="200" 
+        :w="300" 
         :h="200" 
         :minWidth="50" 
         :minHeight="50" 

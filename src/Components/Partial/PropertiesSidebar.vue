@@ -4,7 +4,7 @@ import { useDraggable } from '@vueuse/core'
 // import { useElementSize } from '@vueuse/core'
 import useUiInteractions from '@/Composables/Ui/UiInteractions';
 import { useResizableElement } from '@/Composables/Ui/UseResizable';
-
+import Resize from '@/Components/VueDragResize/DragResize.vue';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 
 // composables
@@ -84,7 +84,7 @@ watch(el, (val) => {
    <!-- {{ style }} -->
    <!-- <div class="fixed top-0 right-0 w-32 h-full overflow-y-auto resize-y bg-slate-400"></div> -->
    <!-- ref="el"  -->
-   <div
+   <!-- <div
     ref="element" 
     class="fixed bg-white border rounded-l-lg shadow-md"
     :style="style">
@@ -100,9 +100,27 @@ watch(el, (val) => {
       sidebar
 
     </div>
-    <!-- <div class="relative top-0 left-0 w-full h-full p-3"> -->
-    <!-- </div> -->
-  </div>
+  </div> -->
+  <!-- <div class="relative top-0 left-0 w-full h-full p-3"> -->
+  <!-- </div> -->
+  <Resize 
+        :x="0" 
+        :y="0" 
+        :w="300" 
+        :h="200" 
+        :minWidth="50" 
+        :minHeight="50" 
+        :maxWidth="500" 
+        :maxHeight="500" 
+        :grid="[10, 10]" 
+        :parent="true" 
+        :active="true" 
+        :className="'bg-white'"
+        :handles="['bl']"
+        :resizeAxis="'y'" 
+        @resizeStop="(left, top, width, height) => console.log('Resize stopped:', left, top, width, height)" 
+        @dragStop="(left, top) => console.log('Drag stopped:', left, top)" 
+      />
 </template>
 
 <style scoped>
