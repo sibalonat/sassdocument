@@ -53,6 +53,7 @@ watch(opened, (val) => console.log(val));
         :grid="[10, 10]" 
         :parent="true" 
         :active="true" 
+        :resizeAxis="'y'" 
         @resizeStop="(left, top, width, height) => console.log('Resize stopped:', left, top, width, height)" 
         @dragStop="(left, top) => console.log('Drag stopped:', left, top)" 
       />

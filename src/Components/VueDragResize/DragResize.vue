@@ -248,6 +248,11 @@ const props = defineProps({
       default: false
   },
 
+  resizeAxis: {
+    type: String,
+    default: 'both',
+    validator: (val) => ['x', 'y', 'both'].includes(val)
+  },
 })
 
 const emit = defineEmits([
@@ -692,16 +697,20 @@ const handleResize = (e) => {
 
   const [deltaX, deltaY] = snapToGrid(props.grid, tmpDeltaX, tmpDeltaY, props.scale);
 
-  if (state.handle.includes('b')) {
-    bottom = restrictToBounds(mouseClickPosition.bottom + deltaY, state.bounds.minBottom, state.bounds.maxBottom);
-  } else if (state.handle.includes('t')) {
-    top = restrictToBounds(mouseClickPosition.top - deltaY, state.bounds.minTop, state.bounds.maxTop);
+  if (props.resizeAxis !== 'x') {
+    if (state.handle.includes('b')) {
+      bottom = restrictToBounds(mouseClickPosition.bottom + deltaY, state.bounds.minBottom, state.bounds.maxBottom);
+    } else if (state.handle.includes('t')) {
+      top = restrictToBounds(mouseClickPosition.top - deltaY, state.bounds.minTop, state.bounds.maxTop);
+    }
   }
 
-  if (state.handle.includes('r')) {
-    right = restrictToBounds(mouseClickPosition.right + deltaX, state.bounds.minRight, state.bounds.maxRight);
-  } else if (state.handle.includes('l')) {
-    left = restrictToBounds(mouseClickPosition.left - deltaX, state.bounds.minLeft, state.bounds.maxLeft);
+  if (props.resizeAxis !== 'y') {
+    if (state.handle.includes('r')) {
+      right = restrictToBounds(mouseClickPosition.right + deltaX, state.bounds.minRight, state.bounds.maxRight);
+    } else if (state.handle.includes('l')) {
+      left = restrictToBounds(mouseClickPosition.left - deltaX, state.bounds.minLeft, state.bounds.maxLeft);
+    }
   }
 
   const width = computeWidth(state.parentWidth, left, right);
