@@ -285,8 +285,16 @@ const state = reactive({
   dragEnable: false,
   resizeEnable: false,
   zIndex: props.z,
-  mouseClickPosition: 
-  { mouseX: 0, mouseY: 0, x: 0, y: 0, w: 0, h: 0 },
+  mouseClickPosition: reactive({ 
+    mouseX: 0, 
+    mouseY: 0, 
+    left: 0, 
+    right: 0, 
+    top: 0, 
+    bottom: 0, 
+    width: 0, 
+    height: 0 
+  }),
   bounds: {
     minLeft: null,
     maxLeft: null,
@@ -349,7 +357,7 @@ const isCornerHandle = computed(() => Boolean(state.handle) && ['tl', 'tr', 'br'
 
 // methods
 const resetBoundsAndMouseState = () => {
-  state.mouseClickPosition = { mouseX: 0, mouseY: 0, x: 0, y: 0, w: 0, h: 0 };
+  state.mouseClickPosition = { mouseX: 0, mouseY: 0, left: 0, right: 0, top: 0, bottom: 0, width: 0, height: 0 };
   state.bounds = {
     minLeft: null,
     maxLeft: null,
@@ -401,6 +409,8 @@ const elementMouseDown = (e) => {
 };
 
 const elementDown = (e) => {
+  console.log('Element down:', e); // Debug
+  
   if (e instanceof MouseEvent && e.button !== 0) {
     return;
   }
@@ -424,12 +434,16 @@ const elementDown = (e) => {
     if (props.draggable) {
       state.dragEnable = true;
     }
-    state.mouseClickPosition.mouseX = e.touches ? e.touches[0].pageX : e.pageX;
-    state.mouseClickPosition.mouseY = e.touches ? e.touches[0].pageY : e.pageY;
+    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+    const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+    state.mouseClickPosition.mouseX = clientX;
+    state.mouseClickPosition.mouseY = clientY;
     state.mouseClickPosition.left = state.left;
     state.mouseClickPosition.right = state.right;
     state.mouseClickPosition.top = state.top;
     state.mouseClickPosition.bottom = state.bottom;
+    state.mouseClickPosition.width = state.width;
+    state.mouseClickPosition.height = state.height;
     if (props.parent) {
       state.bounds = calcDragLimits();
     }
@@ -577,27 +591,35 @@ const handleDown = (handle, e) => {
   } else {
     state.handle = handle;
   }
+
+  const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+  const clientY = e.clientY || (e.touches && e.touches[0].clientY);
   
   state.resizing = true; // Add this
   state.resizeEnable = true;
+
+  console.log('state', state); // Debug
+  
   
   // Store initial positions
-  state.mouseClickPosition.mouseX = e.touches ? e.touches[0].pageX : e.pageX;
-  state.mouseClickPosition.mouseY = e.touches ? e.touches[0].pageY : e.pageY;
+
+  state.mouseClickPosition.mouseX = clientX;
+  state.mouseClickPosition.mouseY = clientY;
   state.mouseClickPosition.left = state.left;
   state.mouseClickPosition.right = state.right;
   state.mouseClickPosition.top = state.top;
   state.mouseClickPosition.bottom = state.bottom;
-  state.mouseClickPosition.width = state.width;  // Add these
+  state.mouseClickPosition.width = state.width;
   state.mouseClickPosition.height = state.height;
   
+  console.log('state.bounds', state); // Debug
   state.bounds = calcResizeLimits();
+  console.log('state.bounds', state); // Debug
+  
   
   addEvent(document.documentElement, eventsFor.move, handleResize);
   addEvent(document.documentElement, eventsFor.stop, handleUp);
 };
-
-
 
 const move = (e) => {
   if (state.resizing) {
