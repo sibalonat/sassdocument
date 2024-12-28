@@ -40,7 +40,7 @@ watch(opened, (val) => console.log(val));
     <!-- {{ xAxis }} -->
     <!-- <PropertiesSidebar :aX="xAxis" :open="opened" :trigger="trigger" /> -->
 
-    <div class="absolute top-0 left-0 w-full h-full bg-slate-400">
+    <div class="absolute top-0 left-0 w-full h-full">
       <Resize 
         :x="0" 
         :y="0" 
