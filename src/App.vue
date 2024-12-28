@@ -36,11 +36,11 @@ watch(opened, (val) => console.log(val));
         </button>
       </div>
     </div>
-    <DocumentWrapper />
+    <!-- <DocumentWrapper /> -->
     <!-- {{ xAxis }} -->
     <!-- <PropertiesSidebar :aX="xAxis" :open="opened" :trigger="trigger" /> -->
 
-    <div class="fixed top-0 bg-slate-400">
+    <div class="absolute top-0 left-0 w-full h-full bg-slate-400">
       <Resize 
         :x="0" 
         :y="0" 

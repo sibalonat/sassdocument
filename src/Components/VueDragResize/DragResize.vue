@@ -359,9 +359,11 @@ const resetBoundsAndMouseState = () => {
 
 const checkParentSize = () => {
   if (props.parent) {
-    const [newParentWidth, newParentHeight] = getParentSize();
+    const [newParentWidth, newParentHeight, parentLeft, parentTop] = getParentSize();
     state.parentWidth = newParentWidth;
     state.parentHeight = newParentHeight;
+    state.parentLeft = parentLeft;
+    state.parentTop = parentTop;
     state.right = state.parentWidth - state.width - state.left;
     state.bottom = state.parentHeight - state.height - state.top;
   }
@@ -369,13 +371,17 @@ const checkParentSize = () => {
 
 const getParentSize = () => {
   if (props.parent) {
-    const style = window.getComputedStyle(element.value.parentNode, null);
+    const parent = element.value.parentNode;
+    const style = window.getComputedStyle(parent, null);
+    const rect = parent.getBoundingClientRect();
     return [
       parseInt(style.getPropertyValue('width'), 10),
-      parseInt(style.getPropertyValue('height'), 10)
+      parseInt(style.getPropertyValue('height'), 10),
+      rect.left,
+      rect.top
     ];
   }
-  return [null, null];
+  return [null, null, null, null];
 };
 
 
@@ -672,9 +678,7 @@ const moveVertically = (val) => {
 
 const handleResize = (e) => {
   if (!state.resizing) return;
-  
-  console.log('Resizing...', state.handle); // Debug
-  
+
   let left = state.left;
   let top = state.top;
   let right = state.right;
@@ -686,19 +690,8 @@ const handleResize = (e) => {
   const tmpDeltaX = mouseClickPosition.mouseX - (e.touches ? e.touches[0].pageX : e.pageX);
   const tmpDeltaY = mouseClickPosition.mouseY - (e.touches ? e.touches[0].pageY : e.pageY);
 
-  console.log('Delta:', tmpDeltaX, tmpDeltaY); // Debug
-
-  if (!state.widthTouched && tmpDeltaX) {
-    state.widthTouched = true;
-  }
-
-  if (!state.heightTouched && tmpDeltaY) {
-    state.heightTouched = true;
-  }
-
   const [deltaX, deltaY] = snapToGrid(props.grid, tmpDeltaX, tmpDeltaY, props.scale);
 
-  // Handle resize based on handle position
   if (state.handle.includes('b')) {
     bottom = restrictToBounds(mouseClickPosition.bottom + deltaY, state.bounds.minBottom, state.bounds.maxBottom);
   } else if (state.handle.includes('t')) {
@@ -711,17 +704,13 @@ const handleResize = (e) => {
     left = restrictToBounds(mouseClickPosition.left - deltaX, state.bounds.minLeft, state.bounds.maxLeft);
   }
 
-  // Calculate new dimensions
   const width = computeWidth(state.parentWidth, left, right);
   const height = computeHeight(state.parentHeight, top, bottom);
-
-  console.log('New dimensions:', width, height); // Debug
 
   if (props.onResize(state.handle, left, top, width, height) === false) {
     return;
   }
 
-  // Update state
   state.left = left;
   state.top = top;
   state.right = right;
@@ -787,21 +776,22 @@ onMounted(() => {
       el.ondragstart = () => false;
     }
 
-    const [parentWidth, parentHeight] = getParentSize()
+    const [parentWidth, parentHeight, parentLeft, parentTop] = getParentSize();
 
-    state.parentWidth = parentWidth
-    state.parentHeight = parentHeight
+    state.parentWidth = parentWidth;
+    state.parentHeight = parentHeight;
+    state.parentLeft = parentLeft;
+    state.parentTop = parentTop;
 
+    const [width, height] = getComputedSize(element.value);
 
-    const [width, height] = getComputedSize(element.value)
+    state.aspectFactor = (props.w !== 'auto' ? props.w : width) / (props.h !== 'auto' ? props.h : height);
 
-    state.aspectFactor = (props.w !== 'auto' ? props.w : width) / (props.h !== 'auto' ? props.h : height)
+    state.width = props.w !== 'auto' ? props.w : width;
+    state.height = props.h !== 'auto' ? props.h : height;
 
-    state.width = props.w !== 'auto' ? props.w : width
-    state.height = props.h !== 'auto' ? props.h : height
-
-    state.right = parentWidth - width - state.left
-    state.bottom = parentHeight - height - state.top
+    state.right = parentWidth - width - state.left;
+    state.bottom = parentHeight - height - state.top;
 
     if (props.active) {
       emit('activated');
