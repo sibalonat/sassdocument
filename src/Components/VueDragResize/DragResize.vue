@@ -297,7 +297,8 @@ const state = reactive({
   }
 });
 
-const mouseClickPosition = reactive({
+// Remove mouseClickPosition from state and make it a ref
+const mousePosition = ref({
   mouseX: 0,
   mouseY: 0,
   left: 0,
@@ -346,11 +347,6 @@ const computedHeight = computed(() => {
   return state.height + 'px';
 });
 
-// const minW = computed(() => props.minWidth);
-// const minH = computed(() => props.minHeight);
-// const maxW = computed(() => props.maxWidth);
-// const maxH = computed(() => props.maxHeight);
-
 const resizingOnX = computed(() => Boolean(state.handle) && (state.handle.includes('l') || state.handle.includes('r')));
 const resizingOnY = computed(() => Boolean(state.handle) && (state.handle.includes('t') || state.handle.includes('b')));
 const isCornerHandle = computed(() => Boolean(state.handle) && ['tl', 'tr', 'br', 'bl'].includes(state.handle));
@@ -359,7 +355,7 @@ const isCornerHandle = computed(() => Boolean(state.handle) && ['tl', 'tr', 'br'
 
 // methods
 const resetBoundsAndMouseState = () => {
-  Object.assign(mouseClickPosition, {
+  mousePosition.value = {
     mouseX: 0,
     mouseY: 0,
     left: 0,
@@ -368,7 +364,7 @@ const resetBoundsAndMouseState = () => {
     bottom: 0,
     width: 0,
     height: 0
-  });
+  };
   
   state.bounds = {
     minLeft: null,
@@ -420,20 +416,23 @@ const elementMouseDown = (e) => {
   elementDown(e);
 };
 
-const updateMouseClickPosition = (e) => {
+const updateMousePosition = (e) => {
   const clientX = Number(e.clientX || (e.touches && e.touches[0].clientX));
   const clientY = Number(e.clientY || (e.touches && e.touches[0].clientY));
   
-  mouseClickPosition.mouseX = clientX;
-  mouseClickPosition.mouseY = clientY;
-  mouseClickPosition.left = state.left;
-  mouseClickPosition.right = state.right;
-  mouseClickPosition.top = state.top;
-  mouseClickPosition.bottom = state.bottom;
-  mouseClickPosition.width = state.width;
-  mouseClickPosition.height = state.height;
-
-  console.log('Updated mouseClickPosition:', mouseClickPosition);
+  // Create a new object to ensure the ref is updated
+  mousePosition.value = {
+    mouseX: clientX,
+    mouseY: clientY,
+    left: state.left,
+    right: state.right,
+    top: state.top,
+    bottom: state.bottom,
+    width: state.width,
+    height: state.height
+  };
+  
+  console.log('Mouse position updated:', mousePosition.value);
 };
 
 const elementDown = (e) => {
@@ -461,7 +460,7 @@ const elementDown = (e) => {
     }
     if (props.draggable) {
       state.dragEnable = true;
-      updateMouseClickPosition(e);
+      updateMousePosition(e);
     }
     if (props.parent) {
       state.bounds = calcDragLimits();
@@ -598,12 +597,20 @@ const handleDown = (handle, e) => {
     return;
   }
   
-  console.log('Handle down:', handle); // Debug  
   if (props.onResizeStart(handle, e) === false) {
     return;
   }
   
   if (e.stopPropagation) e.stopPropagation();
+  
+  // Initialize current dimensions if they're not set
+  if (!state.width || !state.height) {
+    const [width, height] = getComputedSize(element.value);
+    state.width = width;
+    state.height = height;
+    state.right = state.parentWidth - width - state.left;
+    state.bottom = state.parentHeight - height - state.top;
+  }
   
   if (props.lockAspectRatio && !handle.includes('m')) {
     state.handle = 'm' + handle.substring(1);
@@ -611,16 +618,24 @@ const handleDown = (handle, e) => {
     state.handle = handle;
   }
   
-  state.resizing = true; // Add this
+  state.resizing = true;
   state.resizeEnable = true;
-  updateMouseClickPosition(e);
-
-  console.log('state', state); // Debug
   
+  // Store initial positions and current dimensions
+  const clientX = Number(e.clientX || (e.touches && e.touches[0].clientX));
+  const clientY = Number(e.clientY || (e.touches && e.touches[0].clientY));
+  mousePosition.value = {
+    mouseX: clientX,
+    mouseY: clientY,
+    left: state.left,
+    right: state.right,
+    top: state.top,
+    bottom: state.bottom,
+    width: state.width,
+    height: state.height
+  };
   
   state.bounds = calcResizeLimits();
-  console.log('state.bounds', state); // Debug
-  
   
   addEvent(document.documentElement, eventsFor.move, handleResize);
   addEvent(document.documentElement, eventsFor.stop, handleUp);
@@ -656,25 +671,25 @@ const handleDrag = (e) => {
     const grid = props.grid;
     const bounds = state.bounds;
 
-    const tmpDeltaX = axis && axis !== 'y' ? mouseClickPosition.mouseX - (e.touches ? e.touches[0].pageX : e.pageX) : 0;
-    const tmpDeltaY = axis && axis !== 'x' ? mouseClickPosition.mouseY - (e.touches ? e.touches[0].pageY : e.pageY) : 0;
+    const tmpDeltaX = axis && axis !== 'y' ? mousePosition.value.mouseX - (e.touches ? e.touches[0].pageX : e.pageX) : 0;
+    const tmpDeltaY = axis && axis !== 'x' ? mousePosition.value.mouseY - (e.touches ? e.touches[0].pageY : e.pageY) : 0;
 
     const [deltaX, deltaY] = snapToGrid(grid, tmpDeltaX, tmpDeltaY, props.scale);
 
-    const left = restrictToBounds(mouseClickPosition.left - deltaX, bounds.minLeft, bounds.maxLeft);
-    const top = restrictToBounds(mouseClickPosition.top - deltaY, bounds.minTop, bounds.maxTop);
+    const left = restrictToBounds(mousePosition.value.left - deltaX, bounds.minLeft, bounds.maxLeft);
+    const top = restrictToBounds(mousePosition.value.top - deltaY, bounds.minTop, bounds.maxTop);
 
     if (props.onDrag(left, top) === false) {
         return;
     }
 
     const right = restrictToBounds(
-      mouseClickPosition.right + deltaX, 
+      mousePosition.value.right + deltaX, 
       bounds.minRight, 
       bounds.maxRight
     );
     const bottom = restrictToBounds(
-      mouseClickPosition.bottom + deltaY, 
+      mousePosition.value.bottom + deltaY, 
       bounds.minBottom,
       bounds.maxBottom
     );
@@ -715,24 +730,24 @@ const handleResize = (e) => {
   let right = state.right;
   let bottom = state.bottom;
 
-  const tmpDeltaX = mouseClickPosition.mouseX - (e.touches ? e.touches[0].pageX : e.pageX);
-  const tmpDeltaY = mouseClickPosition.mouseY - (e.touches ? e.touches[0].pageY : e.pageY);
+  const tmpDeltaX = mousePosition.value.mouseX - (e.touches ? e.touches[0].pageX : e.pageX);
+  const tmpDeltaY = mousePosition.value.mouseY - (e.touches ? e.touches[0].pageY : e.pageY);
 
   const [deltaX, deltaY] = snapToGrid(props.grid, tmpDeltaX, tmpDeltaY, props.scale);
 
   if (props.resizeAxis !== 'x') {
     if (state.handle.includes('b')) {
-      bottom = restrictToBounds(mouseClickPosition.bottom + deltaY, state.bounds.minBottom, state.bounds.maxBottom);
+      bottom = restrictToBounds(mousePosition.value.bottom + deltaY, state.bounds.minBottom, state.bounds.maxBottom);
     } else if (state.handle.includes('t')) {
-      top = restrictToBounds(mouseClickPosition.top - deltaY, state.bounds.minTop, state.bounds.maxTop);
+      top = restrictToBounds(mousePosition.value.top - deltaY, state.bounds.minTop, state.bounds.maxTop);
     }
   }
 
   if (props.resizeAxis !== 'y') {
     if (state.handle.includes('r')) {
-      right = restrictToBounds(mouseClickPosition.right + deltaX, state.bounds.minRight, state.bounds.maxRight);
+      right = restrictToBounds(mousePosition.value.right + deltaX, state.bounds.minRight, state.bounds.maxRight);
     } else if (state.handle.includes('l')) {
-      left = restrictToBounds(mouseClickPosition.left - deltaX, state.bounds.minLeft, state.bounds.maxLeft);
+      left = restrictToBounds(mousePosition.value.left - deltaX, state.bounds.minLeft, state.bounds.maxLeft);
     }
   }
 
@@ -802,41 +817,39 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
-  console.log('el', minW.value);
-    const el = element.value;
-    if (!props.enableNativeDrag) {
-      el.ondragstart = () => false;
-    }
+  const el = element.value;
+  if (!props.enableNativeDrag) {
+    el.ondragstart = () => false;
+  }
 
-    const [parentWidth, parentHeight, parentLeft, parentTop] = getParentSize();
+  const [parentWidth, parentHeight, parentLeft, parentTop] = getParentSize();
 
-    state.parentWidth = parentWidth;
-    state.parentHeight = parentHeight;
-    state.parentLeft = parentLeft;
-    state.parentTop = parentTop;
+  state.parentWidth = parentWidth;
+  state.parentHeight = parentHeight;
+  state.parentLeft = parentLeft;
+  state.parentTop = parentTop;
 
-    const [width, height] = getComputedSize(element.value);
+  const [width, height] = getComputedSize(element.value);
+  
+  // Ensure initial dimensions are set
+  state.width = props.w !== 'auto' ? props.w : width;
+  state.height = props.h !== 'auto' ? props.h : height;
+  state.aspectFactor = state.width / state.height;
+  state.right = parentWidth - state.width - state.left;
+  state.bottom = parentHeight - state.height - state.top;
 
-    state.aspectFactor = (props.w !== 'auto' ? props.w : width) / (props.h !== 'auto' ? props.h : height);
+  if (props.active) {
+    emit('activated');
+  }
 
-    state.width = props.w !== 'auto' ? props.w : width;
-    state.height = props.h !== 'auto' ? props.h : height;
+  addEvent(
+    document.documentElement, 'mousedown', deselect
+  )
 
-    state.right = parentWidth - width - state.left;
-    state.bottom = parentHeight - height - state.top;
-
-    if (props.active) {
-      emit('activated');
-    }
-
-    addEvent(
-      document.documentElement, 'mousedown', deselect
-    )
-
-    addEvent(
-      document.documentElement, 'touchend touchcancel', deselect
-    )
-    addEvent(window, 'resize', checkParentSize)
+  addEvent(
+    document.documentElement, 'touchend touchcancel', deselect
+  )
+  addEvent(window, 'resize', checkParentSize)
 })
 
 
