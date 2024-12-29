@@ -1,5 +1,3 @@
-import { ref } from 'vue';
-
 export function useGridUtils() {
   const isFunction = (func) => {
     return (typeof func === 'function' || Object.prototype.toString.call(func) === '[object Function]');
