@@ -6,24 +6,33 @@ import { computed, nextTick, onMounted, onUnmounted, ref, watch, toRefs } from '
 // composables
 
 // state
-const y = ref(0);
 const prop = defineProps({ 
   aX: Number, 
   open: Boolean, 
-  trigger: Function 
+  trigger: Function, 
+  parent: Object
 });
 
 const { aX } = toRefs(prop);
+const x = aX
+const y = ref(0);
 
-const handlePositionUpdate = (coord, value) => {
-  if (coord === 'x') {
-    aX.value = value;
-  } else {
-    y.value = value;
-  }
+// const handlePositionUpdate = (coord, value) => {
+//   console.log('coord', coord, 'value', value);
+  
+//   if (coord === 'x') {
+//     aX.value = value;
+//   } else {
+//     y.value = value;
+//   }
+// };
+const handlePositionUpdate = (left, top) => {
+  // console.log('coord', coord, 'value', value);
+  x.value = left;
+  y.value = top;
 };
 
-onMounted(() => {})
+onMounted(() => console.log(prop.parent))
 </script>
 <template>
   <!-- ref="el" -->
@@ -55,11 +64,11 @@ onMounted(() => {})
     <!-- </div> -->
     <!-- :x="aX" 
     :y="0"  -->
+    <!-- @update:x="(val) => handlePositionUpdate('x', val)"
+    @update:y="(val) => handlePositionUpdate('y', val)"  -->
   <Resize 
-      :x="aX" 
+      :x="x" 
       :y="y"
-      @update:x="(val) => handlePositionUpdate('x', val)"
-      @update:y="(val) => handlePositionUpdate('y', val)" 
       :w="300" 
       :h="200" 
       :minWidth="50" 
@@ -75,8 +84,9 @@ onMounted(() => {})
       :handles="['bl']"
       :resizeAxis="'y'" 
       @resizeStop="(left, top, width, height) => console.log('Resize stopped:', left, top, width, height)" 
-      @dragStop="(left, top) => console.log('Drag stopped:', left, top)" 
+      @dragStop="(left, top) => handlePositionUpdate(left, top)" 
     >
+      <!-- @dragStop="(left, top) => console.log('Drag stopped:', left, top)"  -->
     <div class="relative p-3 overflow-y-auto">
     <div class="flex flex-row w-full h-14">
       <button class="h-full basis-1/2 hand-raised">
@@ -86,7 +96,8 @@ onMounted(() => {})
         <DynamicHeroIcon name="power" :size="5" class="mx-auto"  />
       </button>
     </div>
-    {{ aX }}
+    {{ x }}
+    {{ y }}
 
   </div>
     <template #bl>
