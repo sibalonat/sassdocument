@@ -72,10 +72,11 @@ onMounted(() => {})
       @dragStop="(left, top) => console.log('Drag stopped:', left, top)" 
     >
     <template #bl>
+      <!-- -bottom-3 -left-3 -->
         <DynamicHeroIcon 
-        name="arrows-up-down" 
+        name="chevron-left" 
         :size="4" 
-        class="absolute cursor-pointer -bottom-3 -left-3" />
+        class="absolute bottom-0 left-0 -rotate-45 cursor-pointer" />
     </template>
 
   </Resize>
