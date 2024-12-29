@@ -1,55 +1,31 @@
 <script setup>
 import DynamicHeroIcon from '@/Components/General/HeroIcon/DynamicHeroIcon.vue';
-import { useDraggable } from '@vueuse/core'
+// import { useDraggable } from '@vueuse/core'
 // import { useElementSize } from '@vueuse/core'
 import useUiInteractions from '@/Composables/Ui/UiInteractions';
-import { useResizableElement } from '@/Composables/Ui/UseResizable';
 import Resize from '@/Components/VueDragResize/DragResize.vue';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 
 // composables
-const { handleResizeStart } = useUiInteractions();
-const { 
-  isFunction, 
-  snapToGrid, 
-  getSize, 
-  computeWidth, 
-  computeHeight, 
-  restrictToBounds, 
-  matchesSelectorToParentElements, 
-  getComputedSize, 
-  addEvent, 
-  removeEvent 
-} = useGridUtils();
 
 // state
-const element = ref(null)
-const el = ref(null)
-const dragEl = ref(null)  
-const prop = defineProps({ aX: Number, open: Boolean, trigger: Function });
-
-// const { width, height } = useElementSize(el);
-const { initialHW, onMouseDown } = useResizableElement(element, {
-    minH: 100,
-    maxH: 500,
-    minW: 100,
-    maxW: 500,
-    width: false,
-    height: true,
-    initialHW: { width: 300, height: 667 },
-    startHandler: handleResizeStart, // Use the new start handler
+const prop = defineProps({ 
+  aX: Number, 
+  open: Boolean, 
+  trigger: Function 
 });
 
+// const { width, height } = useElementSize(el);
 
 const showCondition = computed(() => { 
   return prop.open && prop.aX !== 0;
 })
 
-const { x, y, style } = useDraggable(element, {
-  initialValue: { x: prop.aX, y: 100 },
-  draggingElement: dragEl,
-  preventDefault: true,
-})
+// const { x, y, style } = useDraggable(element, {
+//   initialValue: { x: prop.aX, y: 100 },
+//   draggingElement: dragEl,
+//   preventDefault: true,
+// })
 
 onMounted(() => {
   nextTick(() => {
