@@ -45,6 +45,24 @@ watch(opened, (val) => console.log(val));
     <div class="absolute top-0 left-0 w-full h-full pointer-events-none" v-if="showCondition">
       <PropertiesSidebar :trigger="trigger" :parent="parent" />
     </div>
+    <!-- <Resize 
+      :x="0" 
+      :y="0" 
+      :w="300" 
+      :h="200" 
+      :minWidth="50" 
+      :minHeight="50" 
+      :maxWidth="500" 
+      :maxHeight="500" 
+      :grid="[10, 10]" 
+      :parent="true" 
+      :active="true" 
+      :className="'bg-white border rounded-lg shadow-md'"
+      :handles="['bl']"
+      :resizeAxis="'y'" 
+      @resizeStop="(left, top, width, height) => console.log('Resize stopped:', left, top, width, height)" 
+      @dragStop="(left, top) => console.log('Drag stopped:', left, top)" 
+    /> -->
   </main>
 </template>
 
