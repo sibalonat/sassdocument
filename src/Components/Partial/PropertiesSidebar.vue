@@ -12,10 +12,6 @@ const prop = defineProps({
   trigger: Function 
 });
 
-const showCondition = computed(() => { 
-  return prop.open && prop.aX !== 0;
-})
-
 // const { x, y, style } = useDraggable(element, {
 //   initialValue: { x: prop.aX, y: 100 },
 //   draggingElement: dragEl,
@@ -66,17 +62,30 @@ onMounted(() => {})
       :active="true" 
       :className="'bg-white border rounded-lg shadow-md'"
       classNameHandle="handle-class"
+      :drag-handle="'.hand-raised'"
       :handles="['bl']"
       :resizeAxis="'y'" 
       @resizeStop="(left, top, width, height) => console.log('Resize stopped:', left, top, width, height)" 
       @dragStop="(left, top) => console.log('Drag stopped:', left, top)" 
     >
+    <div class="relative p-3 overflow-y-auto resize-y w-120 h-7vh">
+    <div class="flex flex-row w-full h-14">
+      <button class="h-full basis-1/2 hand-raised">
+        <DynamicHeroIcon name="hand-raised" :size="5" class="mx-auto"  />
+      </button>
+      <button @click="trigger" class="basis-1/2">
+        <DynamicHeroIcon name="power" :size="5" class="mx-auto"  />
+      </button>
+    </div>
+    sidebar
+
+  </div>
     <template #bl>
       <!-- -bottom-3 -left-3 -->
         <DynamicHeroIcon 
         name="chevron-left" 
         :size="4" 
-        class="absolute bottom-0 left-0 -rotate-45 cursor-pointer" />
+        class="absolute -rotate-45 cursor-pointer -bottom-3 -left-3" />
     </template>
 
   </Resize>

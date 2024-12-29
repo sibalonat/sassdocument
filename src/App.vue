@@ -12,6 +12,10 @@ const { trigger, opened } = useUiInteractions();
 const parent = ref(null);
 const xAxis = ref(0);
 const dragElement = ref(null)
+//computed
+const showCondition = computed(() => { 
+  return prop.open && prop.aX !== 0;
+})
 
 const store = useDynamicSheets();
 const { createRowOnClick } = store;
@@ -31,7 +35,7 @@ watch(opened, (val) => console.log(val));
         <button type="button" class="col-span-4 px-4 text-sm border rounded-md" @click="createRowOnClick()">
           Add Group
         </button>
-        <button type="button" class="px-4 text-sm border rounded-md" @click="trigger()">
+        <button type="button" class="px-4 text-sm border rounded-md cursor-pointer" @click="trigger()">
           Menu
         </button>
       </div>
@@ -39,7 +43,7 @@ watch(opened, (val) => console.log(val));
     <DocumentWrapper />
     <!-- {{ xAxis }} -->
     
-    <div class="absolute top-0 left-0 w-full h-full">
+    <div class="absolute top-0 left-0 w-full h-full" v-if="showCondition">
       <PropertiesSidebar :aX="xAxis" :open="opened" :trigger="trigger" />
       <!-- <Resize 
         :x="0" 
