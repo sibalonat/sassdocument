@@ -260,7 +260,9 @@ const emit = defineEmits([
   'dragging', 
   'resizeStop', 
   'dragStop', 
-  'resizing'
+  'resizing',
+  'update:x', 
+  'update:y'   
 ]);
   
 // data
