@@ -7,14 +7,12 @@ import { computed, nextTick, onMounted, onUnmounted, ref, watch, toRefs } from '
 
 // state
 const prop = defineProps({ 
-  aX: Number, 
   open: Boolean, 
   trigger: Function, 
   parent: Object
 });
 
-const { aX } = toRefs(prop);
-const x = aX
+const x = ref(0);
 const y = ref(0);
 
 // const handlePositionUpdate = (coord, value) => {
@@ -32,7 +30,22 @@ const handlePositionUpdate = (left, top) => {
   y.value = top;
 };
 
-onMounted(() => console.log(prop.parent))
+onMounted(() => {
+  console.log('mounted');
+  if (x.value === 0) {
+    console.log(prop.parent.clientWidth);
+    
+    x.value = prop.parent.clientWidth - 320;
+    console.log('x', x.value);
+    
+  } else {
+    x.value = x.value;
+  }
+  // console.log('parent', parent);
+  // console.log('parent', parent.value.clientWidth);
+  // x.value = parent.value.clientWidth - 320;
+  // console.log('x', x.value);
+});
 </script>
 <template>
   <!-- ref="el" -->
