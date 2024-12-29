@@ -767,6 +767,10 @@ const handleResize = (e) => {
   state.width = width;
   state.height = height;
 
+  // Add position updates
+  emit('update:x', left);
+  emit('update:y', top);
+
   emit('resizing', state.left, state.top, state.width, state.height);
 };
 
