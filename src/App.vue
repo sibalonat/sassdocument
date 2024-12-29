@@ -1,20 +1,19 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch, computed } from 'vue';
 import DocumentWrapper from '@/Components/DocumentWrapper.vue';
 import PropertiesSidebar from '@/Components/Partial/PropertiesSidebar.vue';
 // DragResize
 import useUiInteractions from '@/Composables/Ui/UiInteractions';
 import { useDynamicSheets } from '@/Spreadsheet/DynamicSheets';
-import Resize from '@/Components/VueDragResize/DragResize.vue';
 
 const { trigger, opened } = useUiInteractions();
 
 const parent = ref(null);
 const xAxis = ref(0);
-const dragElement = ref(null)
+
 //computed
 const showCondition = computed(() => { 
-  return prop.open && prop.aX !== 0;
+  return opened.value && xAxis.value !== 0;
 })
 
 const store = useDynamicSheets();
@@ -44,26 +43,26 @@ watch(opened, (val) => console.log(val));
     <!-- {{ xAxis }} -->
     
     <div class="absolute top-0 left-0 w-full h-full" v-if="showCondition">
-      <PropertiesSidebar :aX="xAxis" :open="opened" :trigger="trigger" />
-      <!-- <Resize 
-        :x="0" 
-        :y="0" 
-        :w="300" 
-        :h="200" 
-        :minWidth="50" 
-        :minHeight="50" 
-        :maxWidth="500" 
-        :maxHeight="500" 
-        :grid="[10, 10]" 
-        :parent="true" 
-        :active="true" 
-        :className="'bg-white border rounded-lg shadow-md'"
-        :handles="['bl']"
-        :resizeAxis="'y'" 
-        @resizeStop="(left, top, width, height) => console.log('Resize stopped:', left, top, width, height)" 
-        @dragStop="(left, top) => console.log('Drag stopped:', left, top)" 
-      /> -->
+      <PropertiesSidebar :trigger="trigger" />
     </div>
+    <!-- <Resize 
+      :x="0" 
+      :y="0" 
+      :w="300" 
+      :h="200" 
+      :minWidth="50" 
+      :minHeight="50" 
+      :maxWidth="500" 
+      :maxHeight="500" 
+      :grid="[10, 10]" 
+      :parent="true" 
+      :active="true" 
+      :className="'bg-white border rounded-lg shadow-md'"
+      :handles="['bl']"
+      :resizeAxis="'y'" 
+      @resizeStop="(left, top, width, height) => console.log('Resize stopped:', left, top, width, height)" 
+      @dragStop="(left, top) => console.log('Drag stopped:', left, top)" 
+    /> -->
   </main>
 </template>
 
