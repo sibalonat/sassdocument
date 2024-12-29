@@ -697,6 +697,10 @@ const handleDrag = (e) => {
     state.right = right;
     state.bottom = bottom;
 
+    // Add position updates
+    emit('update:x', left);
+    emit('update:y', top);
+
     emit('dragging', state.left, state.top);
     state.dragging = true;
 };
