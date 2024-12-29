@@ -1,22 +1,27 @@
 <script setup>
 import DynamicHeroIcon from '@/Components/General/HeroIcon/DynamicHeroIcon.vue';
 import Resize from '@/Components/VueDragResize/DragResize.vue';
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch, toRefs } from 'vue'
 
 // composables
 
 // state
+const y = ref(0);
 const prop = defineProps({ 
   aX: Number, 
   open: Boolean, 
   trigger: Function 
 });
 
-// const { x, y, style } = useDraggable(element, {
-//   initialValue: { x: prop.aX, y: 100 },
-//   draggingElement: dragEl,
-//   preventDefault: true,
-// })
+const { aX } = toRefs(prop);
+
+const handlePositionUpdate = (coord, value) => {
+  if (coord === 'x') {
+    aX.value = value;
+  } else {
+    y.value = value;
+  }
+};
 
 onMounted(() => {})
 </script>
@@ -47,10 +52,14 @@ onMounted(() => {})
     </div>
   </div> -->
   <!-- <div class="relative top-0 left-0 w-full h-full p-3"> -->
-  <!-- </div> -->
+    <!-- </div> -->
+    <!-- :x="aX" 
+    :y="0"  -->
   <Resize 
       :x="aX" 
-      :y="0" 
+      :y="y"
+      @update:x="(val) => handlePositionUpdate('x', val)"
+      @update:y="(val) => handlePositionUpdate('y', val)" 
       :w="300" 
       :h="200" 
       :minWidth="50" 
