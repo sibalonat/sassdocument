@@ -38,10 +38,10 @@ watch(opened, (val) => console.log(val));
     </div>
     <DocumentWrapper />
     <!-- {{ xAxis }} -->
-    <!-- <PropertiesSidebar :aX="xAxis" :open="opened" :trigger="trigger" /> -->
-
+    
     <div class="absolute top-0 left-0 w-full h-full">
-      <Resize 
+      <PropertiesSidebar :aX="xAxis" :open="opened" :trigger="trigger" />
+      <!-- <Resize 
         :x="0" 
         :y="0" 
         :w="300" 
@@ -53,12 +53,12 @@ watch(opened, (val) => console.log(val));
         :grid="[10, 10]" 
         :parent="true" 
         :active="true" 
-        :className="'bg-white'"
+        :className="'bg-white border rounded-lg shadow-md'"
         :handles="['bl']"
         :resizeAxis="'y'" 
         @resizeStop="(left, top, width, height) => console.log('Resize stopped:', left, top, width, height)" 
         @dragStop="(left, top) => console.log('Drag stopped:', left, top)" 
-      />
+      /> -->
     </div>
   </main>
 </template>

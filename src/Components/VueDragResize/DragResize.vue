@@ -1,8 +1,13 @@
 <script setup>
 import { useGridUtils } from '@/Composables/Ui/UseGridUtils';
-import { ref } from 'vue';
 // import { reactive } from 'vue';
-import { onBeforeMount, onBeforeUnmount, onMounted, reactive, computed, watch } from 'vue';
+import { 
+  ArrowsPointingInIcon,
+  ArrowsPointingOutIcon,
+  ArrowsRightLeftIcon,
+  ArrowsUpDownIcon
+} from '@heroicons/vue/24/solid'
+import { onBeforeMount, onBeforeUnmount, onMounted, reactive, computed, watch, ref } from 'vue';
 
 const { 
   isFunction, 
@@ -42,6 +47,17 @@ const userSelectAuto = {
   MozUserSelect: 'auto',
   WebkitUserSelect: 'auto',
   MsUserSelect: 'auto'
+}
+
+const handleIcons = {
+  'tl': ArrowsPointingInIcon,
+  'tr': ArrowsPointingInIcon,
+  'bl': ArrowsPointingInIcon,
+  'br': ArrowsPointingInIcon,
+  'ml': ArrowsRightLeftIcon,
+  'mr': ArrowsRightLeftIcon,
+  'tm': ArrowsUpDownIcon,
+  'bm': ArrowsUpDownIcon
 }
 
 let eventsFor = events.mouse
@@ -431,8 +447,6 @@ const updateMousePosition = (e) => {
     width: state.width,
     height: state.height
   };
-  
-  console.log('Mouse position updated:', mousePosition.value);
 };
 
 const elementDown = (e) => {
@@ -806,6 +820,20 @@ const changeHeight = (val) => {
     state.height = height;
 };
 
+const getHandleStyle = (handle) => ({
+  position: 'absolute',
+  width: '16px', 
+  height: '16px',
+  cursor: 'pointer',
+  ...(handle.includes('t') && { top: '-8px' }),
+  ...(handle.includes('b') && { bottom: '-8px' }),
+  ...(handle.includes('l') && { left: '-8px' }),
+  ...(handle.includes('r') && { right: '-8px' }),
+  ...(handle.includes('m') && { 
+    [handle.includes('t') || handle.includes('b') ? 'left' : 'top']: 'calc(50% - 8px)'
+  })
+})
+
 // hooks
 onBeforeMount(() => {
     // eslint-disable-next-line
@@ -817,6 +845,8 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
+  console.log(props.className);
+  
   const el = element.value;
   if (!props.enableNativeDrag) {
     el.ondragstart = () => false;

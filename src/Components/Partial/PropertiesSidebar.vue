@@ -53,25 +53,39 @@ onMounted(() => {})
   <!-- <div class="relative top-0 left-0 w-full h-full p-3"> -->
   <!-- </div> -->
   <Resize 
-        :x="0" 
-        :y="0" 
-        :w="300" 
-        :h="200" 
-        :minWidth="50" 
-        :minHeight="50" 
-        :maxWidth="500" 
-        :maxHeight="500" 
-        :grid="[10, 10]" 
-        :parent="true" 
-        :active="true" 
-        :className="'bg-white'"
-        :handles="['bl']"
-        :resizeAxis="'y'" 
-        @resizeStop="(left, top, width, height) => console.log('Resize stopped:', left, top, width, height)" 
-        @dragStop="(left, top) => console.log('Drag stopped:', left, top)" 
-      />
+      :x="aX" 
+      :y="0" 
+      :w="300" 
+      :h="200" 
+      :minWidth="50" 
+      :minHeight="50" 
+      :maxWidth="500" 
+      :maxHeight="500" 
+      :grid="[10, 10]" 
+      :parent="true" 
+      :active="true" 
+      :className="'bg-white border rounded-lg shadow-md'"
+      classNameHandle="handle-class"
+      :handles="['bl']"
+      :resizeAxis="'y'" 
+      @resizeStop="(left, top, width, height) => console.log('Resize stopped:', left, top, width, height)" 
+      @dragStop="(left, top) => console.log('Drag stopped:', left, top)" 
+    >
+    <template #bl>
+        <DynamicHeroIcon 
+        name="arrows-up-down" 
+        :size="4" 
+        class="absolute cursor-pointer -bottom-3 -left-3" />
+    </template>
+
+  </Resize>
 </template>
 
-<style scoped>
-
+<style>
+/* .resizeClass {
+  @apply bg-white border rounded-lg shadow-md;
+} */
+ .handle-class {
+  @apply bg-transparent;
+ }
 </style>

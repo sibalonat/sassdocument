@@ -20,7 +20,7 @@ const prop = defineProps({
       size: {
         type: Number,
         required: false,
-        default: 6,
+        default: 2,
       },
       color: {
         type: String,
@@ -41,7 +41,7 @@ const icon = computed(() => {
 });
 
 const sizeClasses = computed(() => {
-  const size = prop.size && prop.size >= 3 ? prop.size : 6;
+  const size = prop.size && prop.size >= 2 ? prop.size : 6;
   return [`h-${size} w-${size}`];
 });
 
