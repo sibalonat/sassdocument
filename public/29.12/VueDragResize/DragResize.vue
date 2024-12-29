@@ -1,5 +1,12 @@
 <script setup>
 import { useGridUtils } from '@/Composables/Ui/UseGridUtils';
+// import { reactive } from 'vue';
+import { 
+  ArrowsPointingInIcon,
+  ArrowsPointingOutIcon,
+  ArrowsRightLeftIcon,
+  ArrowsUpDownIcon
+} from '@heroicons/vue/24/solid'
 import { onBeforeMount, onBeforeUnmount, onMounted, reactive, computed, watch, ref } from 'vue';
 
 const { 
@@ -40,6 +47,17 @@ const userSelectAuto = {
   MozUserSelect: 'auto',
   WebkitUserSelect: 'auto',
   MsUserSelect: 'auto'
+}
+
+const handleIcons = {
+  'tl': ArrowsPointingInIcon,
+  'tr': ArrowsPointingInIcon,
+  'bl': ArrowsPointingInIcon,
+  'br': ArrowsPointingInIcon,
+  'ml': ArrowsRightLeftIcon,
+  'mr': ArrowsRightLeftIcon,
+  'tm': ArrowsUpDownIcon,
+  'bm': ArrowsUpDownIcon
 }
 
 let eventsFor = events.mouse
@@ -802,6 +820,20 @@ const changeHeight = (val) => {
     state.height = height;
 };
 
+const getHandleStyle = (handle) => ({
+  position: 'absolute',
+  width: '16px', 
+  height: '16px',
+  cursor: 'pointer',
+  ...(handle.includes('t') && { top: '-8px' }),
+  ...(handle.includes('b') && { bottom: '-8px' }),
+  ...(handle.includes('l') && { left: '-8px' }),
+  ...(handle.includes('r') && { right: '-8px' }),
+  ...(handle.includes('m') && { 
+    [handle.includes('t') || handle.includes('b') ? 'left' : 'top']: 'calc(50% - 8px)'
+  })
+})
+
 // hooks
 onBeforeMount(() => {
     // eslint-disable-next-line
@@ -977,4 +1009,16 @@ watch((
     </div>    
     <slot></slot>
   </div>
+  <!-- <div ref="element" :style="style" :class="[...]">
+    <component
+      v-for="handle in actualHandles"
+      :key="handle" 
+      :is="handleIcons[handle]"
+      :style="getHandleStyle(handle)"
+      :class="[props.classNameHandle, props.classNameHandle + '-' + handle]"
+      @mousedown.stop.prevent="handleDown(handle, $event)"
+      @touchstart.stop.prevent="handleTouchDown(handle, $event)"
+    />
+    <slot></slot>
+  </div> -->
 </template>
