@@ -880,6 +880,7 @@ watch(() => props.z, (val) => {
 });
 
 watch(() => props.x, (val) => {
+    console.log(val)
     if (state.resizing || state.dragging) {
         return;
     }
@@ -976,5 +977,6 @@ watch((
     <slot :name="handle"></slot>
     </div>    
     <slot></slot>
+    {{ state.left }}
   </div>
 </template>

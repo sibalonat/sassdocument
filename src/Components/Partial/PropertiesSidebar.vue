@@ -68,7 +68,7 @@ onMounted(() => {})
       @resizeStop="(left, top, width, height) => console.log('Resize stopped:', left, top, width, height)" 
       @dragStop="(left, top) => console.log('Drag stopped:', left, top)" 
     >
-    <div class="relative p-3 overflow-y-auto resize-y w-120 h-7vh">
+    <div class="relative p-3 overflow-y-auto">
     <div class="flex flex-row w-full h-14">
       <button class="h-full basis-1/2 hand-raised">
         <DynamicHeroIcon name="hand-raised" :size="5" class="mx-auto"  />
@@ -77,7 +77,7 @@ onMounted(() => {})
         <DynamicHeroIcon name="power" :size="5" class="mx-auto"  />
       </button>
     </div>
-    sidebar
+    {{ aX }}
 
   </div>
     <template #bl>
