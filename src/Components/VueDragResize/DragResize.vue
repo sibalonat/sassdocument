@@ -813,8 +813,7 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
-  console.log(props.className);
-  
+ 
   const el = element.value;
   if (!props.enableNativeDrag) {
     el.ondragstart = () => false;
