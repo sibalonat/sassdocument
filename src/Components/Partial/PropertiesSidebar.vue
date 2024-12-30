@@ -1,7 +1,7 @@
 <script setup>
 import DynamicHeroIcon from '@/Components/General/HeroIcon/DynamicHeroIcon.vue';
 import Resize from '@/Components/VueDragResize/DragResize.vue';
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, toRef } from 'vue'
 
 // state
 const prop = defineProps({ 
@@ -10,17 +10,9 @@ const prop = defineProps({
   parent: Object
 });
 
+const open = toRef(props, 'open');
 const x = ref(0);
 const y = ref(0);
-
-// computed
-const showCondition = computed(() => { 
-  console.log(prop.open, x.value);
-  const display = prop.open;
-  const left = x.value;
-  
-  return display && left !== 0;
-})
 
 const handlePositionUpdate = (left, top) => {  
   x.value = left;
@@ -37,8 +29,20 @@ onMounted(() => {
   }
 });
 
+// computed
+const showCondition = computed(() => { 
+  // console.log(prop.open, x.value);
+  const display = prop.open;
+  console.log(display);
+  
+  const left = x.value;
+  
+  return display && left !== 0;
+})
+
 </script>
 <template>
+  {{ showCondition }}
   <Resize
       v-if="showCondition" 
       :x="x" 
