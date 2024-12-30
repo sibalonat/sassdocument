@@ -83,9 +83,6 @@ onMounted(() => {
 </template>
 
 <style>
-/* .resizeClass {
-  @apply bg-white border rounded-lg shadow-md;
-} */
  .handle-class {
   @apply bg-transparent;
  }
