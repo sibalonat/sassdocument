@@ -40,9 +40,12 @@ watch(opened, (val) => console.log(val));
       </div>
     </div>
     <DocumentWrapper />
-    <div class="absolute top-0 left-0 w-full h-full pointer-events-none" v-if="showCondition">
-      <PropertiesSidebar :trigger="trigger" :parent="parent" />
-    </div>
+    <div class="absolute top-0 left-0 w-full h-full pointer-events-none">
+      <PropertiesSidebar :trigger="trigger" :parent="parent" :open="opened" />
+        <!-- <KeepAlive>
+         <component :is="PropertiesSidebar" :trigger="trigger" :parent="parent" />
+        </KeepAlive> -->
+      </div>
   </main>
 </template>
 

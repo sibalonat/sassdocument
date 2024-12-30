@@ -15,32 +15,27 @@ const prop = defineProps({
 const x = ref(0);
 const y = ref(0);
 
-const handlePositionUpdate = (left, top) => {
-  console.log('left', left, 'top', top);
-  
-  // console.log('coord', coord, 'value', value);
+// computed
+const showCondition = computed(() => { 
+  return prop.open && x.value !== 0;
+})
+
+const handlePositionUpdate = (left, top) => {  
   x.value = left;
   y.value = top;
-
-  console.log('x', x.value, 'y', y.value);
-  
 };
 
-onMounted(() => {
-  // console.log('mounted');
-  console.log(x.value);
-  
-  if (x.value === 0) {
-    // console.log(prop.parent.clientWidth);
-    
-    x.value = prop.parent.clientWidth - 320;    
+onMounted(() => { 
+  if (prop.parent) {   
+    x.value = prop.parent.clientWidth - 320; 
   } else {
     x.value = x.value;
   }
 });
 </script>
 <template>
-  <Resize 
+  <Resize
+      v-if="showCondition" 
       :x="x" 
       :y="y"
       :w="300" 
