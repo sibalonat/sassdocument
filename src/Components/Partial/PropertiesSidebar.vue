@@ -30,6 +30,7 @@ onMounted(() => {
     x.value = x.value;
   }
 });
+
 </script>
 <template>
   <Resize
