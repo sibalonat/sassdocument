@@ -164,7 +164,6 @@ export const useDynamicSheets = defineStore('sheets', () => {
 
     function updateColSpan(id, newColSpan) {     
         const item = list.value.find(item => item.id === id);
-        console.log(item);
         
         if (item) {
             item.colSpan = newColSpan;

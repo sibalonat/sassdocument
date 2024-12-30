@@ -12,10 +12,14 @@ export function useDynamicResizeCell() {
     let baseWidth = ref(null);
     let activeRow = ref(null);
 
-    // trck that it doesnt remove the entire row while dragging and resizing one cell
+    // trck that it doesnt remove the entire row while dragging and resizing one 
+    let initialY = ref(null);
+    const VERTICAL_THRESHOLD = 20;
 
     function handleMouseDown(event, element, list) {
         activeRow.value = list;
+        console.log(event.clientY);
+        
         
         event.preventDefault();
         if (element) {
