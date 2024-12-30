@@ -43,12 +43,11 @@ export function useDynamicResizeCell() {
 
         // Check vertical movement
         const boundaries = resizingElement.value.boundaries;
-        const mouseX = event.clientX;
         const mouseY = event.clientY;
-        console.log(verticalMove);
-        // Check if the mouse leaves the cell boundaries
-        if (mouseX < boundaries.left || mouseX > boundaries.right || mouseY < boundaries.top || mouseY > boundaries.bottom) {
-            handleMouseUp(event, true);
+    
+        // Check if the mouse leaves the cell boundaries vertically
+        if (mouseY < boundaries.top || mouseY > boundaries.bottom) {
+            resetWhenMouseExeedsHeight();
             return;
         }
         const element = resizingElement.value;
@@ -64,20 +63,25 @@ export function useDynamicResizeCell() {
         }
     }
 
-    function handleMouseUp(event, heightExceeded = false) {
-        console.log(heightExceeded);
-
+    function handleMouseUp() {
+        cleanUpRow(proxyElement.value, activeRow.value, 'move');
         window.removeEventListener('mousemove', handleMouseMove);
         window.removeEventListener('mouseup', handleMouseUp);
         resizingElement.value = null;
         baseWidth.value = null;
         proxyElement.value = null;
         activeRow.value = null;
-        initialY.value = null;
-               
-        if (heightExceeded) {
-            cleanUpRow(proxyElement.value, activeRow.value, 'move');
-        }
+        initialY.value = null; 
+    }
+
+    function resetWhenMouseExeedsHeight() {
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+        resizingElement.value = null;
+        baseWidth.value = null;
+        proxyElement.value = null;
+        activeRow.value = null;
+        initialY.value = null; 
     }
 
     function getRowFromDraggableElement(evt) {
