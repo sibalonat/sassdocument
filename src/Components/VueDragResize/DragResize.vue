@@ -476,8 +476,7 @@ const calcDragLimits = () => ({
 });
 
 const calcResizeLimits = () => {
-  console.log('minW', minW.value);
-  
+ 
   // let minW = minW.value;
   // let minH = minH.value;
   // let maxW = maxW.value;
