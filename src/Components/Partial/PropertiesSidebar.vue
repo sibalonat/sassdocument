@@ -3,8 +3,6 @@ import DynamicHeroIcon from '@/Components/General/HeroIcon/DynamicHeroIcon.vue';
 import Resize from '@/Components/VueDragResize/DragResize.vue';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch, toRefs } from 'vue'
 
-// composables
-
 // state
 const prop = defineProps({ 
   open: Boolean, 
