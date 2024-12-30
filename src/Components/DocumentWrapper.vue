@@ -85,6 +85,7 @@ onMounted(() => {});
       >
         <template #item="{ element }">
           <div
+            @click="checkOther(element)"
             :id="element.id"
             :class="['list-group-item', getTailwindGridClasses(element), { 'not-draggable': !enabled }]"
             :ref="(el) => { div[element.id] = el }">
