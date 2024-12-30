@@ -48,35 +48,6 @@ onMounted(() => {
 });
 </script>
 <template>
-  <!-- ref="el" -->
-  <!-- w-120 h-7vh -->
-  <!-- v-if="showCondition"  -->
-  <!-- border rounded-l-lg shadow-md -->
-  <!-- :style="style" -->
-   <!-- {{ style }} -->
-   <!-- <div class="fixed top-0 right-0 w-32 h-full overflow-y-auto resize-y bg-slate-400"></div> -->
-   <!-- ref="el"  -->
-   <!-- <div
-    ref="element" 
-    class="fixed bg-white border rounded-l-lg shadow-md"
-    :style="style">
-    <div class="relative p-3 overflow-y-auto resize-y w-120 h-7vh">
-      <div class="flex flex-row w-full h-14">
-        <button ref="dragEl" class="h-full basis-1/2">
-          <DynamicHeroIcon name="hand-raised" :size="5" class="mx-auto"  />
-        </button>
-        <button @click="trigger" class="basis-1/2">
-          <DynamicHeroIcon name="arrow-uturn-right" :size="5" class="mx-auto"  />
-        </button>
-      </div>
-      sidebar
-
-    </div>
-  </div> -->
-  <!-- <div class="relative top-0 left-0 w-full h-full p-3"> -->
-    <!-- </div> -->
-    <!-- :x="aX" 
-    :y="0"  -->
     <!-- @update:x="(val) => handlePositionUpdate('x', val)"
     @update:y="(val) => handlePositionUpdate('y', val)"  -->
   <Resize 
