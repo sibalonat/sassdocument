@@ -84,7 +84,6 @@ export const useDynamicSheets = defineStore('sheets', () => {
         const rowItems = row.filter(item => item.row === element.row);
         if (rowItems.length === 0) return;
         let totalColSpan = rowItems.reduce((acc, item) => acc + item.colSpan, 0);
-        console.log(element);
         
         const itemsToRemove = new Set();
         if (totalColSpan > 16) {
