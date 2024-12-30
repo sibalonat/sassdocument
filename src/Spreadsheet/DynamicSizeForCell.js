@@ -56,13 +56,11 @@ export function useDynamicResizeCell() {
         }
     }
 
-    function handleMouseUp(heightExceeded = false) {
-        console.log(!heightExceeded);
-        
-        if (heightExceeded) {
+    function handleMouseUp(heightExceeded = false) {       
+        if (heightExceeded === true) {
             cleanUpRow(proxyElement.value, activeRow.value, 'move');
         }
-        // cleanUpRow(proxyElement.value, activeRow.value, 'move');
+        
         window.removeEventListener('mousemove', handleMouseMove);
         window.removeEventListener('mouseup', handleMouseUp);
         resizingElement.value = null;
