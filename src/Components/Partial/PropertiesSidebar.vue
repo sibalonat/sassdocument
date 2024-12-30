@@ -14,8 +14,12 @@ const x = ref(0);
 const y = ref(0);
 
 // computed
-const showCondition = computed(() => {   
-  return prop.open && x.value !== 0;
+const showCondition = computed(() => { 
+  console.log(prop.open, x.value);
+  const display = prop.open;
+  const left = x.value;
+  
+  return display && left !== 0;
 })
 
 const handlePositionUpdate = (left, top) => {  
