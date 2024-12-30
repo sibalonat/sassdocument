@@ -29,7 +29,6 @@ export function useDynamicResizeCell() {
 
             // Track cell boundaries
             resizingElement.value.boundaries = element.getBoundingClientRect();
-            console.log(resizingElement.value.boundaries);
             
             window.addEventListener('mousemove', handleMouseMove);
             window.addEventListener('mouseup', handleMouseUp);
