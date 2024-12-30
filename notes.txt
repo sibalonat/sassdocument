@@ -9,3 +9,24 @@ D:\Laragon Rujtme\brenneroserver\2\resources\js\Pages\Admin\ProcessTemplates
 
 
 https://github.com/SortableJS/vue.draggable.next
+
+<!-- Child.vue -->
+<script setup>
+const props = defineProps(['modelValue'])
+const emit = defineEmits(['update:modelValue'])
+</script>
+
+<template>
+  <input
+    :value="props.modelValue"
+    @input="emit('update:modelValue', $event.target.value)"
+  />
+</template>
+Then, v-model="foo" in the parent component will be compiled to:
+
+template
+<!-- Parent.vue -->
+<Child
+  :modelValue="foo"
+  @update:modelValue="$event => (foo = $event)"
+/>
