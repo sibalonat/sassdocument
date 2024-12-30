@@ -40,9 +40,7 @@ watch(opened, (val) => console.log(val));
       </div>
     </div>
     <DocumentWrapper />
-    {{ xAxis }}
-    
-    <div class="absolute top-0 left-0 w-full h-full pointer-events-none" v-if="showCondition">
+    <div class="absolute top-0 left-0 w-full h-full pointer-events-none" v-show="showCondition">
       <PropertiesSidebar :trigger="trigger" :parent="parent" />
     </div>
   </main>

@@ -16,20 +16,25 @@ const x = ref(0);
 const y = ref(0);
 
 const handlePositionUpdate = (left, top) => {
+  console.log('left', left, 'top', top);
+  
   // console.log('coord', coord, 'value', value);
   x.value = left;
   y.value = top;
+
+  console.log('x', x.value, 'y', y.value);
+  
 };
 
 onMounted(() => {
-  console.log('mounted');
+  // console.log('mounted');
   console.log(x.value);
   
   if (x.value === 0) {
-    console.log(prop.parent.clientWidth);
+    // console.log(prop.parent.clientWidth);
     
     x.value = prop.parent.clientWidth - 320;
-    console.log('x', x.value);
+    // console.log('x', x.value);
     
   } else {
     x.value = x.value;
