@@ -41,10 +41,6 @@ onMounted(() => {
   } else {
     x.value = x.value;
   }
-  // console.log('parent', parent);
-  // console.log('parent', parent.value.clientWidth);
-  // x.value = parent.value.clientWidth - 320;
-  // console.log('x', x.value);
 });
 </script>
 <template>
