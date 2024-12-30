@@ -1,6 +1,8 @@
 <script setup>
 import DynamicHeroIcon from '@/Components/General/HeroIcon/DynamicHeroIcon.vue';
 import Resize from '@/Components/VueDragResize/DragResize.vue';
+import { onBeforeMount } from 'vue';
+import { onActivated } from 'vue';
 import { computed, onMounted, ref, toRef } from 'vue'
 
 // state
@@ -19,6 +21,15 @@ const handlePositionUpdate = (left, top) => {
   y.value = top;
 };
 
+// lifecycle
+onBeforeMount(() => {
+  console.log(prop.parent);
+  if (prop.parent) {   
+    x.value = prop.parent.clientWidth - 320; 
+  } else {
+    x.value = x.value;
+  }
+});
 onMounted(() => { 
   console.log(prop.parent);
   
