@@ -40,8 +40,6 @@ onMounted(() => {
 });
 </script>
 <template>
-    <!-- @update:x="(val) => handlePositionUpdate('x', val)"
-    @update:y="(val) => handlePositionUpdate('y', val)"  -->
   <Resize 
       :x="x" 
       :y="y"
