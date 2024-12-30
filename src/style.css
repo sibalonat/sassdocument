@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* ---- START V-DRG-RES ---- */
-/* @import './vue-draggable-resizable.css'; */
+@import './vue-draggable-resizable.css';
 /* ---- END V-DRG-RES ---- */
 @keyframes animateBackground {
     0% {
