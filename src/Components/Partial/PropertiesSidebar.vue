@@ -15,15 +15,6 @@ const prop = defineProps({
 const x = ref(0);
 const y = ref(0);
 
-// const handlePositionUpdate = (coord, value) => {
-//   console.log('coord', coord, 'value', value);
-  
-//   if (coord === 'x') {
-//     aX.value = value;
-//   } else {
-//     y.value = value;
-//   }
-// };
 const handlePositionUpdate = (left, top) => {
   // console.log('coord', coord, 'value', value);
   x.value = left;
