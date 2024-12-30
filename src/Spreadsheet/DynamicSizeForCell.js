@@ -28,6 +28,11 @@ export function useDynamicResizeCell() {
             const container = document.querySelector('.grid');
             const rect = container.getBoundingClientRect();
             baseWidth.value = rect.width / 16; // Calculate base width per column
+
+            // Track cell boundaries
+            resizingElement.value.boundaries = element.getBoundingClientRect();
+            console.log(resizingElement.value.boundaries);
+            
             window.addEventListener('mousemove', handleMouseMove);
             window.addEventListener('mouseup', handleMouseUp);
         }
@@ -37,9 +42,12 @@ export function useDynamicResizeCell() {
         if (!resizingElement.value) return;
 
         // Check vertical movement
-        const verticalMove = Math.abs(event.clientY - initialY.value);
+        const boundaries = resizingElement.value.boundaries;
+        const mouseX = event.clientX;
+        const mouseY = event.clientY;
         console.log(verticalMove);
-        if (verticalMove > VERTICAL_THRESHOLD) {
+        // Check if the mouse leaves the cell boundaries
+        if (mouseX < boundaries.left || mouseX > boundaries.right || mouseY < boundaries.top || mouseY > boundaries.bottom) {
             handleMouseUp(event, true);
             return;
         }
@@ -56,11 +64,9 @@ export function useDynamicResizeCell() {
         }
     }
 
-    function handleMouseUp(heightExceeded = false) {       
-        if (heightExceeded === true) {
-            cleanUpRow(proxyElement.value, activeRow.value, 'move');
-        }
-        
+    function handleMouseUp(event, heightExceeded = false) {
+        console.log(heightExceeded);
+
         window.removeEventListener('mousemove', handleMouseMove);
         window.removeEventListener('mouseup', handleMouseUp);
         resizingElement.value = null;
@@ -68,6 +74,10 @@ export function useDynamicResizeCell() {
         proxyElement.value = null;
         activeRow.value = null;
         initialY.value = null;
+               
+        if (heightExceeded) {
+            cleanUpRow(proxyElement.value, activeRow.value, 'move');
+        }
     }
 
     function getRowFromDraggableElement(evt) {
