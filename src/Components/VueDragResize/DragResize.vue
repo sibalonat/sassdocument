@@ -260,9 +260,7 @@ const emit = defineEmits([
   'dragging', 
   'resizeStop', 
   'dragStop', 
-  'resizing',
-  'update:x', 
-  'update:y'   
+  'resizing'
 ]);
   
 // data
@@ -697,10 +695,6 @@ const handleDrag = (e) => {
     state.right = right;
     state.bottom = bottom;
 
-    // Add position updates
-    emit('update:x', left);
-    emit('update:y', top);
-
     emit('dragging', state.left, state.top);
     state.dragging = true;
 };
@@ -766,10 +760,6 @@ const handleResize = (e) => {
   state.bottom = bottom;
   state.width = width;
   state.height = height;
-
-  // Add position updates
-  emit('update:x', left);
-  emit('update:y', top);
 
   emit('resizing', state.left, state.top, state.width, state.height);
 };
