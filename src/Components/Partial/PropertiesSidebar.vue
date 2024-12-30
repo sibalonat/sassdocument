@@ -1,7 +1,7 @@
 <script setup>
 import DynamicHeroIcon from '@/Components/General/HeroIcon/DynamicHeroIcon.vue';
 import Resize from '@/Components/VueDragResize/DragResize.vue';
-import { computed, onMounted, ref, toRefs } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 // state
 const prop = defineProps({ 
