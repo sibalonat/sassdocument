@@ -10,7 +10,7 @@ const prop = defineProps({
   parent: Object
 });
 
-const open = toRef(props, 'open');
+const display = toRef(prop, 'open');
 const x = ref(0);
 const y = ref(0);
 
@@ -31,13 +31,15 @@ onMounted(() => {
 
 // computed
 const showCondition = computed(() => { 
-  // console.log(prop.open, x.value);
-  const display = prop.open;
-  console.log(display);
+  console.log(prop.open, x.value);
+  // const display = prop.open;
+  // console.log(display.value);
   
   const left = x.value;
+  console.log(left);
   
-  return display && left !== 0;
+  
+  return display.value && left !== 0;
 })
 
 </script>
