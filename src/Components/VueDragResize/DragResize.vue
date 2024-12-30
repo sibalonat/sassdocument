@@ -431,9 +431,7 @@ const updateMousePosition = (e) => {
   };
 };
 
-const elementDown = (e) => {
-  console.log('Element down:', e); // Debug
-  
+const elementDown = (e) => { 
   if (e instanceof MouseEvent && e.button !== 0) {
     return;
   }
