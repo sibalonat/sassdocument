@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ---- START V-DRG-RES ---- */
+/* @import './vue-draggable-resizable.css'; */
+/* ---- END V-DRG-RES ---- */
 @keyframes animateBackground {
     0% {
         transform: translate3d(0,0,0);

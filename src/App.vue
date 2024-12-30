@@ -42,9 +42,6 @@ watch(opened, (val) => console.log(val));
     <DocumentWrapper />
     <div class="absolute top-0 left-0 w-full h-full pointer-events-none">
       <PropertiesSidebar :trigger="trigger" :parent="parent" :open="opened" />
-        <!-- <KeepAlive>
-         <component :is="PropertiesSidebar" :trigger="trigger" :parent="parent" />
-        </KeepAlive> -->
       </div>
   </main>
 </template>
