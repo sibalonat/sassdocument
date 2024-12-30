@@ -23,6 +23,8 @@ const handlePositionUpdate = (left, top) => {
 
 onMounted(() => {
   console.log('mounted');
+  console.log(x.value);
+  
   if (x.value === 0) {
     console.log(prop.parent.clientWidth);
     
