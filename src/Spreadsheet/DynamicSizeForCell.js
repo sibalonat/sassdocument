@@ -19,7 +19,7 @@ export function useDynamicResizeCell() {
     function handleMouseDown(event, element, list) {
         activeRow.value = list;
         console.log(event.clientY);
-        
+        initialY.value = event.clientY;
         
         event.preventDefault();
         if (element) {
@@ -34,6 +34,15 @@ export function useDynamicResizeCell() {
     }
 
     function handleMouseMove(event) {
+        if (!resizingElement.value) return;
+
+        // Check vertical movement
+        const verticalMove = Math.abs(event.clientY - initialY.value);
+        console.log(verticalMove);
+        if (verticalMove > VERTICAL_THRESHOLD) {
+            handleMouseUp(event, true);
+            return;
+        }
         const element = resizingElement.value;
 
         if (element) {
@@ -47,14 +56,20 @@ export function useDynamicResizeCell() {
         }
     }
 
-    function handleMouseUp() {
-        cleanUpRow(proxyElement.value, activeRow.value, 'move');
+    function handleMouseUp(heightExceeded = false) {
+        console.log(!heightExceeded);
+        
+        if (heightExceeded) {
+            cleanUpRow(proxyElement.value, activeRow.value, 'move');
+        }
+        // cleanUpRow(proxyElement.value, activeRow.value, 'move');
         window.removeEventListener('mousemove', handleMouseMove);
         window.removeEventListener('mouseup', handleMouseUp);
         resizingElement.value = null;
         baseWidth.value = null;
         proxyElement.value = null;
         activeRow.value = null;
+        initialY.value = null;
     }
 
     function getRowFromDraggableElement(evt) {
