@@ -40,9 +40,9 @@ watch(opened, (val) => console.log(val));
       </div>
     </div>
     <DocumentWrapper />
-    <!-- <div class="absolute top-0 left-0 w-full h-full pointer-events-none" v-show="showCondition">
+    <div class="absolute top-0 left-0 w-full h-full pointer-events-none" v-if="showCondition">
       <PropertiesSidebar :trigger="trigger" :parent="parent" />
-    </div> -->
+    </div>
   </main>
 </template>
 
