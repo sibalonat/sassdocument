@@ -14,7 +14,7 @@ const x = ref(0);
 const y = ref(0);
 
 // computed
-const showCondition = computed(() => { 
+const showCondition = computed(() => {   
   return prop.open && x.value !== 0;
 })
 
@@ -24,6 +24,8 @@ const handlePositionUpdate = (left, top) => {
 };
 
 onMounted(() => { 
+  console.log(prop.parent);
+  
   if (prop.parent) {   
     x.value = prop.parent.clientWidth - 320; 
   } else {
