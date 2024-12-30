@@ -967,6 +967,5 @@ watch((
     <slot :name="handle"></slot>
     </div>    
     <slot></slot>
-    <!-- {{ state.left }} -->
   </div>
 </template>
