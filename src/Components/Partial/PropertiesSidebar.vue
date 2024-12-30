@@ -1,6 +1,7 @@
 <script setup>
 import DynamicHeroIcon from '@/Components/General/HeroIcon/DynamicHeroIcon.vue';
 import Resize from '@/Components/VueDragResize/DragResize.vue';
+import { nextTick } from 'vue';
 import { onBeforeMount } from 'vue';
 import { onActivated } from 'vue';
 import { computed, onMounted, ref, toRef } from 'vue'
@@ -16,48 +17,37 @@ const display = toRef(prop, 'open');
 const x = ref(0);
 const y = ref(0);
 
+// computed
+const showCondition = computed(() => { 
+  return display.value && x.value !== 0;
+});
+
+// methods
 const handlePositionUpdate = (left, top) => {  
   x.value = left;
   y.value = top;
 };
 
-// lifecycle
-onBeforeMount(() => {
-  console.log(prop.parent);
-  if (prop.parent) {   
-    x.value = prop.parent.clientWidth - 320; 
-  } else {
-    x.value = x.value;
-  }
-});
-onMounted(() => { 
-  console.log(prop.parent);
-  
-  if (prop.parent) {   
-    x.value = prop.parent.clientWidth - 320; 
-  } else {
-    x.value = x.value;
-  }
-});
+function displaySidebar() { 
+  return showCondition.value;
+}
 
-// computed
-const showCondition = computed(() => { 
-  console.log(prop.open, x.value);
-  // const display = prop.open;
-  // console.log(display.value);
-  
-  const left = x.value;
-  console.log(left);
-  
-  
-  return display.value && left !== 0;
-})
+// lifecycle
+onMounted(() => {   
+  nextTick(() => {
+    if (prop.parent) {      
+      x.value = prop.parent.clientWidth - 320; 
+    } else {
+      x.value = x.value;
+    }
+  });
+});
 
 </script>
 <template>
   {{ showCondition }}
   <Resize
-      v-if="showCondition" 
+      v-if="displaySidebar()" 
       :x="x" 
       :y="y"
       :w="300" 
