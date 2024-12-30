@@ -476,11 +476,6 @@ const calcDragLimits = () => ({
 });
 
 const calcResizeLimits = () => {
- 
-  // let minW = minW.value;
-  // let minH = minH.value;
-  // let maxW = maxW.value;
-  // let maxH = maxH.value;
   const aspectFactor = state.aspectFactor;
   const [gridX, gridY] = props.grid;
   const width = state.width;
