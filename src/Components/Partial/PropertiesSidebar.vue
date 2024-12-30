@@ -33,9 +33,7 @@ onMounted(() => {
   if (x.value === 0) {
     // console.log(prop.parent.clientWidth);
     
-    x.value = prop.parent.clientWidth - 320;
-    // console.log('x', x.value);
-    
+    x.value = prop.parent.clientWidth - 320;    
   } else {
     x.value = x.value;
   }
