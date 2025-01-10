@@ -12,7 +12,7 @@ const prop = defineProps({
 
 const display = toRef(prop, 'open');
 const x = ref(0);
-const y = ref(0);
+const y = ref(150);
 
 // computed
 const showCondition = computed(() => { 
@@ -42,17 +42,16 @@ onMounted(() => {
 
 </script>
 <template>
-  {{ showCondition }}
+  <!-- :minWidth="50" 
+  :minHeight="500"  -->
   <Resize
       v-if="displaySidebar()" 
       :x="x" 
       :y="y"
       :w="300" 
-      :h="200" 
-      :minWidth="50" 
-      :minHeight="50" 
+      :h="500" 
       :maxWidth="500" 
-      :maxHeight="500" 
+      :maxHeight="700" 
       :grid="[10, 10]" 
       :parent="true" 
       :active="true" 
