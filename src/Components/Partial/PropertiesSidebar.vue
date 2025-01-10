@@ -12,7 +12,7 @@ const prop = defineProps({
 
 const display = toRef(prop, 'open');
 const x = ref(0);
-const y = ref(150);
+const y = ref(80);
 
 // computed
 const showCondition = computed(() => { 
