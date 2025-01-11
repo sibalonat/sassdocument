@@ -19,6 +19,7 @@ const { data, list, alphabet } = storeToRefs(store);
 const cell = useDynamicResizeCell(list);
 const { 
   div,
+  activeElement,
   handleMouseDown,
   getRowFromDraggableElement,
 } = cell;
@@ -30,13 +31,13 @@ function checkMove(e) {
   console.log(e);
 }
 
-function checkOther(e) {
-  console.log(e);
-}
-
-function selectInputForCell(e) {
-  checkOther(e);
-  console.log(e);
+function selectInputForCell(e, event) {
+  console.log(event);
+  if (activeElement.value) {
+    activeElement.value.active = false;
+  }
+  activeElement.value = e;
+  e.active = true;
 }
 
 
@@ -90,7 +91,7 @@ onMounted(() => {});
       >
         <template #item="{ element }">
           <div
-            @click="selectInputForCell(element)"
+            @click="selectInputForCell(element, $event)"
             :id="element.id"
             :class="['list-group-item', getTailwindGridClasses(element), { 'not-draggable': !enabled }]"
             :ref="(el) => { div[element.id] = el }">

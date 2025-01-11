@@ -6,6 +6,7 @@ export function useDynamicResizeCell() {
     const store = useDynamicSheets();
     const { updateColSpan, cleanUpRow } = store;
     const div = ref([]);
+    const activeElement = ref(null);
     // state
     let resizingElement = ref(null);
     let proxyElement = ref(null);
@@ -114,6 +115,7 @@ export function useDynamicResizeCell() {
 
     return {
         div,
+        activeElement,
         handleMouseDown,
         getRowFromDraggableElement,
     };
