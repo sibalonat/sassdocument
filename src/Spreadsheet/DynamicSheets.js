@@ -1,3 +1,4 @@
+import { data } from 'autoprefixer';
 import { defineStore } from 'pinia'
 import { computed, reactive, ref } from 'vue'
 
@@ -44,6 +45,8 @@ export const useDynamicSheets = defineStore('sheets', () => {
                   col: i + 1, // Set the column number
                   row: newRowNumber,
                   colSpan: 1,
+                  data: [],
+                  active: false,
               };
               newRow.push(data);
           }
@@ -64,6 +67,8 @@ export const useDynamicSheets = defineStore('sheets', () => {
               col: i + 1, // Set the column number
               row: list.value.length + 1,
               colSpan: 1,
+              data: [],
+              active: false,
           };
           newRow.push(data);
       }

@@ -92,6 +92,7 @@ onMounted(() => {});
             <div class="relative border">
               <DynamicHeroIcon name="equals" :size="3" class="absolute cursor-pointer top-1/3 handler" />
               {{ element.name }}
+              {{ element.data }}
               <DynamicHeroIcon
                 name="chevron-right"
                 :size="3"
