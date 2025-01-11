@@ -34,6 +34,11 @@ function checkOther(e) {
   console.log(e);
 }
 
+function selectInputForCell(e) {
+  checkOther(e);
+  console.log(e);
+}
+
 
 function handleDragStart(evt) {
   const element = evt.item;
@@ -85,14 +90,15 @@ onMounted(() => {});
       >
         <template #item="{ element }">
           <div
-            @click="checkOther(element)"
+            @click="selectInputForCell(element)"
             :id="element.id"
             :class="['list-group-item', getTailwindGridClasses(element), { 'not-draggable': !enabled }]"
             :ref="(el) => { div[element.id] = el }">
-            <div class="relative border">
+            <div class="relative border" :class="element.active ? 'border-blue-500 bg-white' : 'bg-gray-300'">
               <DynamicHeroIcon name="equals" :size="3" class="absolute cursor-pointer top-1/3 handler" />
               {{ element.name }}
               {{ element.data }}
+              {{ element.active }}
               <DynamicHeroIcon
                 name="chevron-right"
                 :size="3"
