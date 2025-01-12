@@ -39,7 +39,7 @@ watch(opened, (val) => console.log(val));
         </button>
       </div>
     </div>
-    <DocumentWrapper />
+    <DocumentWrapper :trigger="trigger" :open="opened" />
     <div class="absolute top-0 left-0 w-full h-full pointer-events-none">
       <PropertiesSidebar :trigger="trigger" :parent="parent" :open="opened" />
     </div>

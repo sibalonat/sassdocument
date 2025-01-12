@@ -45,7 +45,7 @@ export const useDynamicSheets = defineStore('sheets', () => {
                   col: i + 1, // Set the column number
                   row: newRowNumber,
                   colSpan: 1,
-                  data: [],
+                  data: null,
                   active: false,
               };
               newRow.push(data);
@@ -67,7 +67,7 @@ export const useDynamicSheets = defineStore('sheets', () => {
               col: i + 1, // Set the column number
               row: list.value.length + 1,
               colSpan: 1,
-              data: [],
+              data: null,
               active: false,
           };
           newRow.push(data);
@@ -155,6 +155,8 @@ export const useDynamicSheets = defineStore('sheets', () => {
                     col: rowItems.length + i + 1,
                     row: rowNumber,
                     colSpan: 1,
+                    data: null,
+                    active: false,
                 };
                 list.push(data);
             }

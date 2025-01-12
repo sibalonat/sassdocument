@@ -1,5 +1,5 @@
 <script setup>
-import { nextTick, onBeforeMount, onMounted, reactive, ref } from 'vue';
+import { onBeforeMount, onMounted, ref, toRef } from 'vue';
 import { useDynamicSheets } from '@/Spreadsheet/DynamicSheets';
 import { storeToRefs } from 'pinia';
 import Draggable from '@/Components/VueDraggable/Draggable';
@@ -7,8 +7,19 @@ import AlphabetHeader from '@/Components/Header/AlphabetHeader.vue';
 import { watch } from 'vue';
 import DynamicHeroIcon from '@/Components/General/HeroIcon/DynamicHeroIcon.vue';
 import { useDynamicResizeCell } from '@/Spreadsheet/DynamicSizeForCell';
+import useUiInteractions from '@/Composables/Ui/UiInteractions';
 import { get } from 'lodash';
 
+const prop = defineProps({ 
+  open: Boolean, 
+  trigger: Function
+});
+
+const display = toRef(prop, 'open');
+const trigger = prop.trigger;
+// const trigger = toRef(prop, 'trigger');
+
+// dynamic sheets
 const store = useDynamicSheets();
 const {  
   getTailwindGridClasses, 
@@ -16,6 +27,8 @@ const {
   cleanUpOnDragEnd,
 } = store;
 const { data, list, alphabet } = storeToRefs(store);
+
+// dynamic resize cell
 const cell = useDynamicResizeCell(list);
 const { 
   div,
@@ -36,6 +49,12 @@ function selectInputForCell(e, event) {
   if (activeElement.value) {
     activeElement.value.active = false;
   }
+  console.log(display.value);
+  
+  if (!display.value) {
+    trigger();
+  }
+  console.log(display.value);
   activeElement.value = e;
   e.active = true;
 }
