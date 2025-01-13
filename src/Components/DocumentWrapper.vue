@@ -38,6 +38,7 @@ const {
   div,
   activeElement,
   handleMouseDown,
+  setActiveElement,
   getRowFromDraggableElement,
 } = cell;
 const enabled = ref(true);
@@ -59,8 +60,9 @@ function selectInputForCell(e, event) {
   }
 
   emit('cellSelected', e.id);
-  activeElement.value = e;
-  e.active = true;
+  // activeElement.value = e;
+  // e.active = true;
+  setActiveElement(e);
 }
 
 
@@ -90,6 +92,10 @@ function handleDragEnd(evt) {
 
 onBeforeMount(() => {
   initialIfListEmpty()
+});
+
+watch(activeElement, (val) => {
+  console.log(val);
 });
 
 onMounted(() => {});
@@ -123,6 +129,7 @@ onMounted(() => {});
               {{ element.name }}
               {{ element.data }}
               {{ element.active }}
+              <!-- {{ activeElement.active }} -->
               <DynamicHeroIcon
                 name="chevron-right"
                 :size="3"

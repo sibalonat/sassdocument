@@ -10,7 +10,7 @@ const { trigger, opened } = useUiInteractions();
 
 const parent = ref(null);
 const xAxis = ref(0);
-const refresh = ref(0);
+const refresh = ref('');
 //computed
 const showCondition = computed(() => { 
   return opened.value && xAxis.value !== 0;

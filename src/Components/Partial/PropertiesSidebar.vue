@@ -3,14 +3,15 @@ import DynamicHeroIcon from '@/Components/General/HeroIcon/DynamicHeroIcon.vue';
 import Resize from '@/Components/VueDragResize/DragResize.vue';
 import { computed, onMounted, ref, toRef, nextTick } from 'vue'
 
-// state
+// props
 const prop = defineProps({ 
   open: Boolean, 
   trigger: Function, 
   parent: Object,
-  refresh: Number
+  refresh: String
 });
 
+// state
 const display = toRef(prop, 'open');
 const x = ref(0);
 const y = ref(80);

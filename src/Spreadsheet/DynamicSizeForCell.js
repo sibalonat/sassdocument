@@ -113,10 +113,29 @@ export function useDynamicResizeCell() {
         return null;
     }
 
+    function resetActiveElement(list) {
+        console.log(activeElement.value);
+        
+        let element = list.value.find(el => el.id == activeElement.value.id);
+        console.log(element);
+        
+        if (element) {
+            element.active = false;  
+        }
+        activeElement.value = null;
+    }
+
+    function setActiveElement(element) {
+        activeElement.value = element;
+        element.active = true;
+    }
+
     return {
         div,
         activeElement,
         handleMouseDown,
+        setActiveElement,
+        resetActiveElement,
         getRowFromDraggableElement,
     };
 }
