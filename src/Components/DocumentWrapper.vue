@@ -10,10 +10,14 @@ import { useDynamicResizeCell } from '@/Spreadsheet/DynamicSizeForCell';
 import useUiInteractions from '@/Composables/Ui/UiInteractions';
 import { get } from 'lodash';
 
+// props
 const prop = defineProps({ 
   open: Boolean, 
   trigger: Function
 });
+
+// emits
+const emit = defineEmits(['cellSelected']);
 
 const display = toRef(prop, 'open');
 const trigger = prop.trigger;
@@ -45,16 +49,16 @@ function checkMove(e) {
 }
 
 function selectInputForCell(e, event) {
-  console.log(event);
+
   if (activeElement.value) {
     activeElement.value.active = false;
   }
-  console.log(display.value);
   
   if (!display.value) {
     trigger();
   }
-  console.log(display.value);
+
+  emit('cellSelected', e.id);
   activeElement.value = e;
   e.active = true;
 }

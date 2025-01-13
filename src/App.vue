@@ -10,7 +10,7 @@ const { trigger, opened } = useUiInteractions();
 
 const parent = ref(null);
 const xAxis = ref(0);
-
+const refresh = ref(0);
 //computed
 const showCondition = computed(() => { 
   return opened.value && xAxis.value !== 0;
@@ -18,6 +18,13 @@ const showCondition = computed(() => {
 
 const store = useDynamicSheets();
 const { createRowOnClick } = store;
+
+// methods
+const displayFullSidebar = (event) => {
+  refresh.value = event;
+  console.log(refresh.value);
+  
+};
 onMounted(() => xAxis.value = parent.value.clientWidth - 320);
 watch(opened, (val) => console.log(val));
 </script>
@@ -39,9 +46,9 @@ watch(opened, (val) => console.log(val));
         </button>
       </div>
     </div>
-    <DocumentWrapper :trigger="trigger" :open="opened" />
+    <DocumentWrapper :trigger="trigger" :open="opened" @cell-selected="displayFullSidebar($event)" />
     <div class="absolute top-0 left-0 w-full h-full pointer-events-none">
-      <PropertiesSidebar :trigger="trigger" :parent="parent" :open="opened" />
+      <PropertiesSidebar :trigger="trigger" :parent="parent" :open="opened" :refresh="refresh" />
     </div>
   </main>
 </template>

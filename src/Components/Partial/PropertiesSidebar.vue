@@ -7,17 +7,28 @@ import { computed, onMounted, ref, toRef, nextTick } from 'vue'
 const prop = defineProps({ 
   open: Boolean, 
   trigger: Function, 
-  parent: Object
+  parent: Object,
+  refresh: Number
 });
 
 const display = toRef(prop, 'open');
 const x = ref(0);
 const y = ref(80);
+// const refresh = ref(0)
 
 // computed
 const showCondition = computed(() => { 
   return display.value && x.value !== 0;
 });
+
+// const active = computed(() => {
+//   // refresh.value++;
+//   if (!prop.open) {
+//     return
+//   }
+//   return refresh.value++;
+//   // return prop.open;
+// });
 
 // methods
 const handlePositionUpdate = (left, top) => {  
@@ -28,6 +39,13 @@ const handlePositionUpdate = (left, top) => {
 function displaySidebar() { 
   return showCondition.value;
 }
+
+// function setActive() {
+//   if (prop.open) {
+//     ;
+//   }
+//   active.value = !active.value;
+// }
 
 // lifecycle
 onMounted(() => {   
@@ -44,7 +62,9 @@ onMounted(() => {
 <template>
   <!-- :minWidth="50" 
   :minHeight="500"  -->
+  {{ refresh }}
   <Resize
+      :key="refresh"
       v-if="displaySidebar()" 
       :x="x" 
       :y="y"

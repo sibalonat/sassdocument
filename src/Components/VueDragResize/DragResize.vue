@@ -856,6 +856,8 @@ onBeforeUnmount(() => {
 // watch
 watch(() => props.active, (val) => {
     state.enabled = val;
+    console.log('active', val);
+    
 
     if (val) {
         emit('activated');
