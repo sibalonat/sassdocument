@@ -98,7 +98,6 @@ onMounted(() => {
 
   </div>
     <template #bl>
-      here
         <DynamicHeroIcon 
         name="chevron-left" 
         :size="4" 
