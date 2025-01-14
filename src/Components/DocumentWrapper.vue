@@ -36,6 +36,7 @@ const { data, list, alphabet } = storeToRefs(store);
 const cell = useDynamicResizeCell(list);
 const { 
   div,
+  findRows,
   activeElement,
   handleMouseDown,
   setActiveElement,
@@ -83,8 +84,13 @@ function handleDragEnd(evt) {
     item.row = Number(toRow);
   }
 
-  const rowStart = list.value.find(row => row.some(item => item.row == fromRow));
-  const rowEnd = list.value.find(row => row.some(item => item.row == toRow));
+  const { rowStart, rowEnd } = findRows(list, fromRow, toRow);
+
+  // const rowStart = list.value.find(
+  //   row => row.some(item => item.row == fromRow)
+  // );
+
+  // const rowEnd = list.value.find(row => row.some(item => item.row == toRow));
 
   if (fromRow !== toRow) {
     cleanUpOnDragEnd(fromRow, toRow, rowStart, rowEnd);

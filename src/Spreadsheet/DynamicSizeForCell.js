@@ -131,9 +131,22 @@ export function useDynamicResizeCell() {
         element.active = true;
     }
 
+    function findRows(list, fromRow, toRow) {
+        const rowStart = list.value.find(
+          row => row.some(item => item.row == fromRow)
+        );
+        
+        const rowEnd = list.value.find(
+            row => row.some(item => item.row == toRow)
+        );
+      
+        return { rowStart, rowEnd };
+    }
+
     return {
         div,
         activeElement,
+        findRows,
         handleMouseDown,
         setActiveElement,
         resetActiveElement,
