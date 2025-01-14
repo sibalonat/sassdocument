@@ -8,7 +8,6 @@ export function useDynamicResizeCell() {
     const { updateColSpan, cleanUpRow } = store;
     const { actel } = storeToRefs(store);
     const div = ref([]);
-    const activeElement = ref(null);
     // state
     let resizingElement = ref(null);
     let proxyElement = ref(null);
@@ -120,17 +119,16 @@ export function useDynamicResizeCell() {
     function resetActiveElement(list) {
         const element = list.value
         .flatMap(row => row)
-        .find(el => el.id == activeElement.value.id);
+        .find(el => el.id == actel.value.id);
         
         if (element) {
             element.active = false;  
         }
-        activeElement.value = null;
+        actel.value = null;
         
     }
 
     function setActiveElement(element) {
-        activeElement.value = element;
         actel.value = element;        
         element.active = true;
     }
@@ -149,7 +147,6 @@ export function useDynamicResizeCell() {
 
     return {
         div,
-        activeElement,
         findRows,
         handleMouseDown,
         setActiveElement,

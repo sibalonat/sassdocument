@@ -31,14 +31,13 @@ const {
   initialIfListEmpty,  
   cleanUpOnDragEnd,
 } = store;
-const { data, list, alphabet } = storeToRefs(store);
+const { data, list, alphabet, actel } = storeToRefs(store);
 
 // dynamic resize cell
 const cell = useDynamicResizeCell(list);
 const { 
   div,
   findRows,
-  activeElement,
   handleMouseDown,
   setActiveElement,
   resetActiveElement,
@@ -53,9 +52,8 @@ function checkMove(e) {
 }
 
 function selectInputForCell(e) {
-
-  if (activeElement.value) {
-    activeElement.value.active = false;
+  if (actel.value) {
+    actel.value.active = false;
   }
   
   if (!display.value) {
