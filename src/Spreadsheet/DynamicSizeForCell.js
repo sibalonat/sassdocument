@@ -114,10 +114,9 @@ export function useDynamicResizeCell() {
     }
 
     function resetActiveElement(list) {
-        console.log(activeElement.value);
-        
-        let element = list.value.find(el => el.id == activeElement.value.id);
-        console.log(element);
+        const element = list.value
+        .flatMap(row => row)
+        .find(el => el.id == activeElement.value.id);
         
         if (element) {
             element.active = false;  
