@@ -2,6 +2,8 @@
 import DynamicHeroIcon from '@/Components/General/HeroIcon/DynamicHeroIcon.vue';
 import Resize from '@/Components/VueDragResize/DragResize.vue';
 import { computed, onMounted, ref, toRef, nextTick } from 'vue'
+import TitleInput from '@/Components/Partial/FormInputs/TitleInput.vue';
+
 
 // props
 const prop = defineProps({ 
@@ -92,6 +94,9 @@ onMounted(() => {
       <button @click="trigger" class="basis-1/2">
         <DynamicHeroIcon name="power" :size="5" class="mx-auto"  />
       </button>
+    </div>
+    <div class="flex flex-col w-full">
+      <TitleInput />
     </div>
     {{ x }}
     {{ y }}

@@ -6,25 +6,20 @@ import PropertiesSidebar from '@/Components/Partial/PropertiesSidebar.vue';
 import useUiInteractions from '@/Composables/Ui/UiInteractions';
 import { useDynamicSheets } from '@/Spreadsheet/DynamicSheets';
 
+// composables
 const { trigger, opened } = useUiInteractions();
-
+const store = useDynamicSheets();
+const { createRowOnClick } = store;
+// state
 const parent = ref(null);
 const xAxis = ref(0);
 const refresh = ref('');
 //computed
-const showCondition = computed(() => { 
-  return opened.value && xAxis.value !== 0;
-})
-
-const store = useDynamicSheets();
-const { createRowOnClick } = store;
-
 // methods
 const displayFullSidebar = (event) => {
   refresh.value = event;
-  console.log(refresh.value);
-  
 };
+// hooks
 onMounted(() => xAxis.value = parent.value.clientWidth - 320);
 watch(opened, (val) => console.log(val));
 </script>
