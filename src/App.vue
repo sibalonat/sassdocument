@@ -5,10 +5,12 @@ import PropertiesSidebar from '@/Components/Partial/PropertiesSidebar.vue';
 // DragResize
 import useUiInteractions from '@/Composables/Ui/UiInteractions';
 import { useDynamicSheets } from '@/Spreadsheet/DynamicSheets';
+import { storeToRefs } from 'pinia';
 
 // composables
 const { trigger, opened } = useUiInteractions();
 const store = useDynamicSheets();
+const { actel } = storeToRefs(store);
 const { createRowOnClick } = store;
 // state
 const parent = ref(null);
@@ -50,6 +52,7 @@ watch(opened, (val) => console.log(val));
       :trigger="trigger" 
       :parent="parent" 
       :open="opened" 
+      :active="actel"
       :refresh="refresh" />
     </div>
   </main>

@@ -1,10 +1,12 @@
 import { computed, reactive, ref, getCurrentInstance } from 'vue'
 import { useDynamicSheets } from './DynamicSheets';
 import { head } from 'lodash';
+import { storeToRefs } from 'pinia';
 
 export function useDynamicResizeCell() {
     const store = useDynamicSheets();
     const { updateColSpan, cleanUpRow } = store;
+    const { actel } = storeToRefs(store);
     const div = ref([]);
     const activeElement = ref(null);
     // state
@@ -124,10 +126,12 @@ export function useDynamicResizeCell() {
             element.active = false;  
         }
         activeElement.value = null;
+        
     }
 
     function setActiveElement(element) {
         activeElement.value = element;
+        actel.value = element;        
         element.active = true;
     }
 

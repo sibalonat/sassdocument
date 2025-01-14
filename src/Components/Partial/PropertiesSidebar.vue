@@ -10,7 +10,9 @@ const prop = defineProps({
   open: Boolean, 
   trigger: Function, 
   parent: Object,
-  refresh: String
+  refresh: String,
+  list: Array,
+  active: Object
 });
 
 
@@ -79,7 +81,7 @@ onMounted(() => {
       </button>
     </div>
     <div class="flex flex-col w-full">
-      <TitleInput />
+      <TitleInput :title="active" />
     </div>
     {{ x }}
     {{ y }}

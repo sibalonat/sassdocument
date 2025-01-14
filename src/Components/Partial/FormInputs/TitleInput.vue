@@ -1,9 +1,19 @@
 <script setup>
-import { useDynamicResizeCell } from '@/Spreadsheet/DynamicSizeForCell';
+import { onMounted } from 'vue';
 //composables
-const { activeElement } = useDynamicResizeCell(list);
+// props
+defineProps({
+    title: Object
+});
+// hooks
+onMounted(() => {});
 </script>
 
 <template>
-    <input type="text" class="w-full px-2 py-1 border rounded-md" placeholder="Title" :value="activeElement.name" />
+    <input 
+    v-if="title" 
+    type="text" 
+    class="w-full px-2 py-1 border rounded-md" 
+    placeholder="Title" 
+    :value="title.name" />
 </template>
