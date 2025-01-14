@@ -39,6 +39,7 @@ const {
   activeElement,
   handleMouseDown,
   setActiveElement,
+  resetActiveElement,
   getRowFromDraggableElement,
 } = cell;
 const enabled = ref(true);
@@ -94,8 +95,10 @@ onBeforeMount(() => {
   initialIfListEmpty()
 });
 
-watch(activeElement, (val) => {
-  console.log(val);
+watch(display, (val) => {
+  if (!val) {
+    resetActiveElement(list);
+  }
 });
 
 onMounted(() => {});
