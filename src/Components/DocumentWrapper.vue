@@ -62,7 +62,7 @@ function selectInputForCell(e) {
     trigger();
   }
 
-  emit('cellSelected', e.id);
+  emit('cellSelected', e);
   setActiveElement(e);
 }
 
@@ -90,6 +90,14 @@ function handleDragEnd(evt) {
   }
 }
 
+function truncateText(text, length) {
+  if (text.length <= length) {
+    return text;
+  }
+  return text.substring(0, length) + '...';
+}
+
+// hooks
 onBeforeMount(() => {
   initialIfListEmpty()
 });
@@ -132,10 +140,8 @@ onMounted(() => {});
             :ref="(el) => { div[element.id] = el }">
             <div class="relative border" :class="element.active ? 'border-blue-500 bg-white' : 'bg-gray-300'">
               <DynamicHeroIcon name="equals" :size="3" class="absolute cursor-pointer top-1/3 handler" />
-              {{ element.name }}
-              {{ element.data }}
-              {{ element.active }}
-              <!-- {{ activeElement.active }} -->
+              <span v-html="truncateText(element.name, 12)"></span>
+              <!-- {{ element.name }} -->
               <DynamicHeroIcon
                 name="chevron-right"
                 :size="3"

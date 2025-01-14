@@ -17,7 +17,7 @@ const refresh = ref('');
 //computed
 // methods
 const displayFullSidebar = (event) => {
-  refresh.value = event;
+  refresh.value = event.id;
 };
 // hooks
 onMounted(() => xAxis.value = parent.value.clientWidth - 320);
@@ -41,9 +41,16 @@ watch(opened, (val) => console.log(val));
         </button>
       </div>
     </div>
-    <DocumentWrapper :trigger="trigger" :open="opened" @cell-selected="displayFullSidebar($event)" />
+    <DocumentWrapper 
+    :trigger="trigger" 
+    :open="opened" 
+    @cell-selected="displayFullSidebar($event)" />
     <div class="absolute top-0 left-0 w-full h-full pointer-events-none">
-      <PropertiesSidebar :trigger="trigger" :parent="parent" :open="opened" :refresh="refresh" />
+      <PropertiesSidebar 
+      :trigger="trigger" 
+      :parent="parent" 
+      :open="opened" 
+      :refresh="refresh" />
     </div>
   </main>
 </template>

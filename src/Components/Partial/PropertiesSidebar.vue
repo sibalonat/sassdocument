@@ -13,25 +13,15 @@ const prop = defineProps({
   refresh: String
 });
 
+
 // state
 const display = toRef(prop, 'open');
 const x = ref(0);
 const y = ref(80);
-// const refresh = ref(0)
-
 // computed
 const showCondition = computed(() => { 
   return display.value && x.value !== 0;
 });
-
-// const active = computed(() => {
-//   // refresh.value++;
-//   if (!prop.open) {
-//     return
-//   }
-//   return refresh.value++;
-//   // return prop.open;
-// });
 
 // methods
 const handlePositionUpdate = (left, top) => {  
@@ -42,13 +32,6 @@ const handlePositionUpdate = (left, top) => {
 function displaySidebar() { 
   return showCondition.value;
 }
-
-// function setActive() {
-//   if (prop.open) {
-//     ;
-//   }
-//   active.value = !active.value;
-// }
 
 // lifecycle
 onMounted(() => {   
