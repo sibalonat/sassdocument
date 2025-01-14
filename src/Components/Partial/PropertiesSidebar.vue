@@ -63,7 +63,6 @@ onMounted(() => {
 <template>
   <!-- :minWidth="50" 
   :minHeight="500"  -->
-  {{ refresh }}
   <Resize
       :key="refresh"
       v-if="displaySidebar()" 

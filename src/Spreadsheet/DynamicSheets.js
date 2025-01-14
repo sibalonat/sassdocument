@@ -181,6 +181,17 @@ export const useDynamicSheets = defineStore('sheets', () => {
         return `col-span-${String(element.colSpan)}`;
     }
 
+    // TODO: Create a function to initialize the list with 10 rows and save it to the store
+    // function initialIfListEmpty() {
+    //     const storedData = localStorage.getItem('spreadsheetData');
+    //     if (storedData) {
+    //         list.value = JSON.parse(storedData);
+    //     } else if (list.value.length === 0) {
+    //         const rows = createRow(10);
+    //         list.value.push(...rows);
+    //         localStorage.setItem('spreadsheetData', JSON.stringify(list.value));
+    //     }
+    // }
     function initialIfListEmpty() {
         if (list.value.length === 0) {
           const rows = createRow(10);

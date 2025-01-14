@@ -9,6 +9,7 @@ import DynamicHeroIcon from '@/Components/General/HeroIcon/DynamicHeroIcon.vue';
 import { useDynamicResizeCell } from '@/Spreadsheet/DynamicSizeForCell';
 import useUiInteractions from '@/Composables/Ui/UiInteractions';
 import { get } from 'lodash';
+import { onBeforeUnmount } from 'vue';
 
 // props
 const prop = defineProps({ 
@@ -51,7 +52,7 @@ function checkMove(e) {
   console.log(e);
 }
 
-function selectInputForCell(e, event) {
+function selectInputForCell(e) {
 
   if (activeElement.value) {
     activeElement.value.active = false;
@@ -62,8 +63,6 @@ function selectInputForCell(e, event) {
   }
 
   emit('cellSelected', e.id);
-  // activeElement.value = e;
-  // e.active = true;
   setActiveElement(e);
 }
 
@@ -86,12 +85,6 @@ function handleDragEnd(evt) {
 
   const { rowStart, rowEnd } = findRows(list, fromRow, toRow);
 
-  // const rowStart = list.value.find(
-  //   row => row.some(item => item.row == fromRow)
-  // );
-
-  // const rowEnd = list.value.find(row => row.some(item => item.row == toRow));
-
   if (fromRow !== toRow) {
     cleanUpOnDragEnd(fromRow, toRow, rowStart, rowEnd);
   }
@@ -99,6 +92,10 @@ function handleDragEnd(evt) {
 
 onBeforeMount(() => {
   initialIfListEmpty()
+});
+
+onBeforeUnmount(() => {
+  localStorage.setItem('spreadsheetData', JSON.stringify(list.value));
 });
 
 watch(display, (val) => {
@@ -129,7 +126,7 @@ onMounted(() => {});
       >
         <template #item="{ element }">
           <div
-            @click="selectInputForCell(element, $event)"
+            @click="selectInputForCell(element)"
             :id="element.id"
             :class="['list-group-item', getTailwindGridClasses(element), { 'not-draggable': !enabled }]"
             :ref="(el) => { div[element.id] = el }">
