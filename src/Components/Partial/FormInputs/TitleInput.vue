@@ -1,19 +1,68 @@
 <script setup>
-import { onMounted } from 'vue';
-//composables
+import { ref, watch, onMounted } from 'vue';
+
 // props
-defineProps({
-    title: Object
+const props = defineProps({
+  title: Object
 });
-// hooks
-onMounted(() => {});
+
+const inputValue = ref(props.title?.name || '');
+const isFocused = ref(false);
+
+const handleFocus = () => {
+  isFocused.value = true;
+};
+
+const handleBlur = () => {
+  if (!inputValue.value || inputValue.value.trim() === '') {
+    isFocused.value = false;
+  }
+};
+
+watch(() => props.title?.name, (newVal) => {
+  inputValue.value = newVal;
+});
+onMounted(() => {
+  if (inputValue.value && inputValue.value.trim() !== '') {
+      isFocused.value = true;
+  } else {
+    isFocused.value = false;
+  }
+});
 </script>
 
 <template>
+  <div class="relative w-full">
+    <label :class="['floating-label', { 'floating-label-active': isFocused }]">
+      Title
+    </label>
     <input 
-    v-if="title" 
-    type="text" 
-    class="w-full px-2 py-1 border rounded-md" 
-    placeholder="Title" 
-    :value="title.name" />
+      type="text" 
+      class="w-full px-2 py-1 border rounded-md" 
+      placeholder="Title" 
+      v-model="inputValue"
+      @focus="handleFocus"
+      @blur="handleBlur"
+    />
+  </div>
 </template>
+
+<style scoped>
+.floating-label {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: all 0.2s ease;
+  pointer-events: none;
+  font-size: 16px;
+  color: #aaa;
+}
+
+.floating-label-active {
+  top: -10px;
+  left: 10px;
+  font-size: 12px;
+  color: #333;
+}
+</style>
