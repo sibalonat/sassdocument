@@ -1,12 +1,16 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue';
-
+import { useDynamicSheets } from '@/Spreadsheet/DynamicSheets';
+import { storeToRefs } from 'pinia';
 // props
-const props = defineProps({
-  title: Object
-});
-
-const inputValue = ref(props.title?.name || '');
+// const props = defineProps({
+//   title: Object
+// });
+// piniastore    
+const store = useDynamicSheets();
+const { actel } = storeToRefs(store);
+//state
+const inputValue = ref(actel.value?.name || '');
 const isFocused = ref(false);
 
 const handleFocus = () => {
@@ -19,9 +23,22 @@ const handleBlur = () => {
   }
 };
 
-watch(() => props.title?.name, (newVal) => {
-  inputValue.value = newVal;
+// watch(() => props.title?.name, (newVal) => {   
+//   inputValue.value = newVal;
+// });
+
+// watch(() => inputValue.value, (newVal) => {
+//   emit('update:title', newVal);
+// });
+
+watch(inputValue, (newVal) => {
+    console.log(newVal);
+    actel.value.name = newVal;
+    
+
+//   emit('update:title', newVal);
 });
+
 onMounted(() => {
   if (inputValue.value && inputValue.value.trim() !== '') {
       isFocused.value = true;

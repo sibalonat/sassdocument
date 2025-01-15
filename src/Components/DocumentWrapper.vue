@@ -137,9 +137,8 @@ onMounted(() => {});
             :class="['list-group-item', getTailwindGridClasses(element), { 'not-draggable': !enabled }]"
             :ref="(el) => { div[element.id] = el }">
             <div class="relative border" :class="element.active ? 'border-blue-500 bg-white' : 'bg-gray-300'">
-              <DynamicHeroIcon name="equals" :size="3" class="absolute cursor-pointer top-1/3 handler" />
-              <span v-html="truncateText(element.name, 12)"></span>
-              <!-- {{ element.name }} -->
+              <DynamicHeroIcon name="equals" :size="3" class="absolute mr-2 cursor-pointer top-1/3 handler" />
+              <span class="ml-3 text-xs" v-html="truncateText(element.name, 12)"></span>
               <DynamicHeroIcon
                 name="chevron-right"
                 :size="3"
