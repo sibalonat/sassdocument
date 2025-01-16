@@ -23,20 +23,8 @@ const handleBlur = () => {
   }
 };
 
-// watch(() => props.title?.name, (newVal) => {   
-//   inputValue.value = newVal;
-// });
-
-// watch(() => inputValue.value, (newVal) => {
-//   emit('update:title', newVal);
-// });
-
 watch(inputValue, (newVal) => {
-    console.log(newVal);
     actel.value.name = newVal;
-    
-
-//   emit('update:title', newVal);
 });
 
 onMounted(() => {
