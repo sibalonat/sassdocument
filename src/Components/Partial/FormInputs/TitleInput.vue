@@ -3,9 +3,6 @@ import { ref, watch, onMounted } from 'vue';
 import { useDynamicSheets } from '@/Spreadsheet/DynamicSheets';
 import { storeToRefs } from 'pinia';
 // props
-// const props = defineProps({
-//   title: Object
-// });
 // piniastore    
 const store = useDynamicSheets();
 const { actel } = storeToRefs(store);
