@@ -88,23 +88,59 @@ onMounted(() => {
     <div class="flex flex-col w-full">
       <TitleInput />
     </div>
-    <div class="flex flex-col w-full">
-      <div class="flex flex-row w-full">
-        <div class="basis-1/2">
+    <div class="flex flex-col w-full mt-10 gap-y-2">
+      <div class="flex flex-row w-full p-2 border rounded-md gap-x-4">
+        <div class="basis-2/12">
+          <Boolean />
+        </div>
+        <div class="my-auto basis-9/12">
+          <!-- TEXT INPUT -->
+          <p class="text-3xl font-semibold uppercase text-neutral-300">boolean</p>
+        </div>
+      </div>
+      <div class="flex flex-row w-full p-2 border rounded-md gap-x-4">
+        <div class="basis-2/12">
+          <DateTime />
+        </div>
+        <div class="my-auto basis-9/12">
+          <!-- TEXT INPUT -->
+          <p class="text-3xl font-semibold uppercase text-neutral-300">datetime</p>
+        </div>
+      </div>
+      <div class="flex flex-row w-full p-2 border rounded-md gap-x-4">
+        <div class="basis-2/12">
+          <Integer />
+        </div>
+        <div class="my-auto basis-9/12">
+          <!-- TEXT INPUT -->
+          <p class="text-3xl font-semibold uppercase text-neutral-300">integer</p>
+        </div>
+      </div>
+      <div class="flex flex-row w-full p-2 border rounded-md gap-x-4">
+        <div class="basis-2/12">
+          <Text />
+        </div>
+        <div class="my-auto basis-9/12">
+          <!-- TEXT INPUT -->
+          <p class="text-3xl font-semibold uppercase text-neutral-300">Text</p>
+        </div>
+      </div>
+      <!-- <div class="flex flex-row w-full">
+        <div class="basis-3/12">
           <Boolean />
         </div>
         <div class="basis-1/2">
           <Text />
         </div>
-      </div>
-      <div class="flex flex-row w-full">
+      </div> -->
+      <!-- <div class="flex flex-row w-full">
         <div class="basis-1/2">
           <Integer />
         </div>
         <div class="basis-1/2">
           <DateTime />
         </div>
-      </div>
+      </div> -->
     </div>
 
 
