@@ -4,13 +4,6 @@
 <template>
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 560 560" style="enable-background:new 0 0 560 560;" xml:space="preserve">
-<style type="text/css">
-	.st0{fill:#EB6300;}
-	.st1{fill:#FDC100;}
-	.st2{fill:#FFC000;}
-	.st3{fill:none;stroke:#FDC100;stroke-miterlimit:10;}
-	.st4{fill:#EB6300;stroke:#FDC100;stroke-miterlimit:10;}
-</style>
 <path d="M498.51,550.63H61.1c-29.44,0-53.31-23.87-53.31-53.31V59.91c0-29.44,23.87-53.31,53.31-53.31h437.41
 	c29.44,0,53.31,23.87,53.31,53.31v437.41C551.82,526.77,527.95,550.63,498.51,550.63z"/>
 <g>
@@ -40,3 +33,10 @@
 </g>
 </svg>
 </template>
+<style scoped>
+	.st0{fill:#EB6300;}
+	.st1{fill:#FDC100;}
+	.st2{fill:#FFC000;}
+	.st3{fill:none;stroke:#FDC100;stroke-miterlimit:10;}
+	.st4{fill:#EB6300;stroke:#FDC100;stroke-miterlimit:10;}
+</style>

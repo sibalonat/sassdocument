@@ -3,6 +3,11 @@ import DynamicHeroIcon from '@/Components/General/HeroIcon/DynamicHeroIcon.vue';
 import Resize from '@/Components/VueDragResize/DragResize.vue';
 import { computed, onMounted, ref, toRef, nextTick } from 'vue'
 import TitleInput from '@/Components/Partial/FormInputs/TitleInput.vue';
+// import Boolean from '../Icons/Boolean.vue';
+import Boolean from '@/Components/Icons/Boolean.vue';
+import Text from '@/Components/Icons/Text.vue';
+import Integer from '@/Components/Icons/Integer.vue';
+import DateTime from '@/Components/Icons/DateTime.vue';
 
 
 // props
@@ -45,6 +50,7 @@ onMounted(() => {
   });
 });
 
+
 </script>
 <template>
   <!-- :minWidth="50" 
@@ -82,8 +88,25 @@ onMounted(() => {
     <div class="flex flex-col w-full">
       <TitleInput />
     </div>
-    {{ x }}
-    {{ y }}
+    <div class="flex flex-col w-full">
+      <div class="flex flex-row w-full">
+        <div class="basis-1/2">
+          <Boolean />
+        </div>
+        <div class="basis-1/2">
+          <Text />
+        </div>
+      </div>
+      <div class="flex flex-row w-full">
+        <div class="basis-1/2">
+          <Integer />
+        </div>
+        <div class="basis-1/2">
+          <DateTime />
+        </div>
+      </div>
+    </div>
+
 
   </div>
     <template #bl>
