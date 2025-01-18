@@ -77,7 +77,7 @@ onMounted(() => {
     >
       <!-- @dragStop="(left, top) => console.log('Drag stopped:', left, top)"  -->
     <div class="relative p-3 overflow-y-auto">
-    <div class="flex flex-row w-full h-14">
+    <div class="flex flex-row w-full h-12">
       <button class="h-full basis-1/2 hand-raised">
         <DynamicHeroIcon name="hand-raised" :size="5" class="mx-auto"  />
       </button>
@@ -85,16 +85,19 @@ onMounted(() => {
         <DynamicHeroIcon name="power" :size="5" class="mx-auto"  />
       </button>
     </div>
-    <div class="flex flex-col w-full">
+    <div class="flex flex-col w-full mt-8">
       <TitleInput />
     </div>
-    <div class="flex flex-col w-full mt-10 gap-y-2">
+    <div class="flex flex-col w-full mt-8 gap-y-2">
+      <p class="mb-1 text-lg font-medium uppercase text-neutral-800">
+        data types
+      </p>
       <div class="flex flex-row w-full p-2 border rounded-md cursor-pointer opacity-30 gap-x-4 hover:opacity-100">
         <div class="basis-2/12">
           <Boolean />
         </div>
         <div class="my-auto basis-9/12">
-          <p class="text-3xl font-semibold uppercase text-neutral-800">boolean</p>
+          <p class="text-3xl font-semibold uppercase text-neutral-950">boolean</p>
         </div>
       </div>
       <div class="flex flex-row w-full p-2 border rounded-md cursor-pointer opacity-30 gap-x-4 hover:opacity-100">
@@ -102,7 +105,7 @@ onMounted(() => {
           <DateTime />
         </div>
         <div class="my-auto basis-9/12">
-          <p class="text-3xl font-semibold uppercase text-neutral-800">datetime</p>
+          <p class="text-3xl font-semibold uppercase text-neutral-950">datetime</p>
         </div>
       </div>
       <div class="flex flex-row w-full p-2 border rounded-md cursor-pointer opacity-30 gap-x-4 hover:opacity-100">
@@ -110,7 +113,7 @@ onMounted(() => {
           <Integer />
         </div>
         <div class="my-auto basis-9/12">
-          <p class="text-3xl font-semibold uppercase text-neutral-800">integer</p>
+          <p class="text-3xl font-semibold uppercase text-neutral-950">integer</p>
         </div>
       </div>
       <div class="flex flex-row w-full p-2 border rounded-md cursor-pointer opacity-30 gap-x-4 hover:opacity-100">
@@ -118,7 +121,7 @@ onMounted(() => {
           <Text />
         </div>
         <div class="my-auto basis-9/12">
-          <p class="text-3xl font-semibold uppercase text-neutral-800">Text</p>
+          <p class="text-3xl font-semibold uppercase text-neutral-950">Text</p>
         </div>
       </div>
     </div>
