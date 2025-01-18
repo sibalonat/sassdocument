@@ -89,58 +89,38 @@ onMounted(() => {
       <TitleInput />
     </div>
     <div class="flex flex-col w-full mt-10 gap-y-2">
-      <div class="flex flex-row w-full p-2 border rounded-md gap-x-4">
+      <div class="flex flex-row w-full p-2 border rounded-md cursor-pointer opacity-30 gap-x-4 hover:opacity-100">
         <div class="basis-2/12">
           <Boolean />
         </div>
         <div class="my-auto basis-9/12">
-          <!-- TEXT INPUT -->
-          <p class="text-3xl font-semibold uppercase text-neutral-300">boolean</p>
+          <p class="text-3xl font-semibold uppercase text-neutral-800">boolean</p>
         </div>
       </div>
-      <div class="flex flex-row w-full p-2 border rounded-md gap-x-4">
+      <div class="flex flex-row w-full p-2 border rounded-md cursor-pointer opacity-30 gap-x-4 hover:opacity-100">
         <div class="basis-2/12">
           <DateTime />
         </div>
         <div class="my-auto basis-9/12">
-          <!-- TEXT INPUT -->
-          <p class="text-3xl font-semibold uppercase text-neutral-300">datetime</p>
+          <p class="text-3xl font-semibold uppercase text-neutral-800">datetime</p>
         </div>
       </div>
-      <div class="flex flex-row w-full p-2 border rounded-md gap-x-4">
+      <div class="flex flex-row w-full p-2 border rounded-md cursor-pointer opacity-30 gap-x-4 hover:opacity-100">
         <div class="basis-2/12">
           <Integer />
         </div>
         <div class="my-auto basis-9/12">
-          <!-- TEXT INPUT -->
-          <p class="text-3xl font-semibold uppercase text-neutral-300">integer</p>
+          <p class="text-3xl font-semibold uppercase text-neutral-800">integer</p>
         </div>
       </div>
-      <div class="flex flex-row w-full p-2 border rounded-md gap-x-4">
+      <div class="flex flex-row w-full p-2 border rounded-md cursor-pointer opacity-30 gap-x-4 hover:opacity-100">
         <div class="basis-2/12">
           <Text />
         </div>
         <div class="my-auto basis-9/12">
-          <!-- TEXT INPUT -->
-          <p class="text-3xl font-semibold uppercase text-neutral-300">Text</p>
+          <p class="text-3xl font-semibold uppercase text-neutral-800">Text</p>
         </div>
       </div>
-      <!-- <div class="flex flex-row w-full">
-        <div class="basis-3/12">
-          <Boolean />
-        </div>
-        <div class="basis-1/2">
-          <Text />
-        </div>
-      </div> -->
-      <!-- <div class="flex flex-row w-full">
-        <div class="basis-1/2">
-          <Integer />
-        </div>
-        <div class="basis-1/2">
-          <DateTime />
-        </div>
-      </div> -->
     </div>
 
 
