@@ -8,23 +8,23 @@ import TextType from '@/Components/Partial/Sidebar/SelectedType/TextType.vue';
 import IntegerType from '@/Components/Partial/Sidebar/SelectedType/IntegerType.vue';
 import DateTimeType from '@/Components/Partial/Sidebar/SelectedType/DateTimeType.vue';
 
+
 // props
 const prop = defineProps({ 
   open: Boolean, 
   trigger: Function, 
   parent: Object,
-  sidebar: Object,
   refresh: String,
   list: Array
 });
 
 // BooleanType = 'boolean';
-
 // state
 const display = toRef(prop, 'open');
 const x = ref(0);
 const y = ref(80);
 const dataType = ref('');
+const dynamHeight = ref(0);
 const component_types = {
   boolean: BooleanType,
   text: TextType,
@@ -56,15 +56,18 @@ function displaySidebar() {
   return showCondition.value;
 }
 
-function handleDataTypeChange(value) {
-  console.log(value);
-  
+function handleDataTypeChange(value) {  
   selectedDataType.value = value;
 }
 
+function getHeightOfSidebar(left, top, width, height) {  
+  return dynamHeight.value = height;
+}
+
 // lifecycle
-onMounted(() => {   
+onMounted(() => { 
   nextTick(() => {
+    dynamHeight.value = 500;
     if (prop.parent) {      
       x.value = prop.parent.clientWidth - 320; 
     } else {
@@ -78,27 +81,28 @@ onMounted(() => {
 <template>
   <!-- :minWidth="50" 
   :minHeight="500"  -->
+  <!-- @resizeStop="(left, top, width, height) => console.log('Resize stopped:', left, top, width, height)"  -->
+  <!-- @dragStop="(left, top) => console.log('Drag stopped:', left, top)"  -->
   <Resize
       :key="refresh"
       v-if="displaySidebar()" 
       :x="x" 
       :y="y"
       :w="300" 
-      :h="500" 
+      :h="dynamHeight" 
       :maxWidth="500" 
       :maxHeight="700" 
       :grid="[10, 10]" 
       :parent="true" 
       :active="true" 
-      :className="'bg-white border rounded-lg shadow-md absolute pointer-events-auto'"
+      :className="'bg-white border rounded-lg shadow-md absolute pointer-events-auto sidebar'"
       classNameHandle="handle-class"
       :drag-handle="'.hand-raised'"
       :handles="['bl']"
       :resizeAxis="'y'" 
-      @resizeStop="(left, top, width, height) => console.log('Resize stopped:', left, top, width, height)" 
+      @resizeStop="getHeightOfSidebar"
       @dragStop="(left, top) => handlePositionUpdate(left, top)" 
     >
-      <!-- @dragStop="(left, top) => console.log('Drag stopped:', left, top)"  -->
     <div class="relative p-3 overflow-y-auto">
     <div class="flex flex-row w-full h-12">
       <button class="h-full basis-1/2 hand-raised">
@@ -112,6 +116,7 @@ onMounted(() => {
     v-if="!selectedDataType" 
     @type="handleDataTypeChange($event)" />
     <component 
+    :height="dynamHeight"
     :is="component_types[selectedDataType]" 
     v-else />
   </div>

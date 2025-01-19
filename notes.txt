@@ -30,3 +30,6 @@ template
   :modelValue="foo"
   @update:modelValue="$event => (foo = $event)"
 />
+https://mauricius.github.io/vue-draggable-resizable/#/story/stories-styling-component-story-vue?variantId=_default
+
+https://github.com/mauricius/vue-draggable-resizable

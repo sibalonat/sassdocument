@@ -12,7 +12,6 @@ const store = useDynamicSheets();
 const { createRowOnClick } = store;
 // state
 const parent = ref(null);
-const sidebar = ref(null);
 const xAxis = ref(0);
 const refresh = ref('');
 //computed
@@ -46,11 +45,10 @@ watch(opened, (val) => console.log(val));
     :trigger="trigger" 
     :open="opened" 
     @cell-selected="displayFullSidebar($event)" />
-    <div class="absolute top-0 left-0 w-full h-full pointer-events-none" ref="sidebar">
+    <div class="absolute top-0 left-0 w-full h-full pointer-events-none">
       <PropertiesSidebar 
       :trigger="trigger" 
       :parent="parent"
-      :sidebar="sidebar" 
       :open="opened" 
       :refresh="refresh" />
     </div>

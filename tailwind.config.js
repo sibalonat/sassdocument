@@ -38,7 +38,7 @@ export default {
     },
     {
       pattern: /w-\d+/,
-    },
+    }
   ],
   plugins: [],
 }

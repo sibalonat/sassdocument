@@ -260,7 +260,8 @@ const emit = defineEmits([
   'dragging', 
   'resizeStop', 
   'dragStop', 
-  'resizing'
+  'resizing',
+  'load'
 ]);
   
 // data
@@ -830,6 +831,9 @@ onMounted(() => {
   if (props.active) {
     emit('activated');
   }
+  console.log('load', state.width, state.height);
+  
+  emit('load', state.width, state.height);
 
   addEvent(
     document.documentElement, 'mousedown', deselect
@@ -855,9 +859,7 @@ onBeforeUnmount(() => {
 
 // watch
 watch(() => props.active, (val) => {
-    state.enabled = val;
-    console.log('active', val);
-    
+    state.enabled = val;   
 
     if (val) {
         emit('activated');
