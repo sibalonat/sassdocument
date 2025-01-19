@@ -87,14 +87,29 @@ onMounted(() => {
 });
 
 onUpdated(() => {
+  // console.log();
   console.log(header.value);
   if (header.value) {
     console.log(header.value.clientHeight);
+    
   }
+  
+
 });
+
+// watch(x, (value) => {
+//   console.log(value);
+  
+
+// });
+
 
 </script>
 <template>
+  <!-- :minWidth="50" 
+  :minHeight="500"  -->
+  <!-- @resizeStop="(left, top, width, height) => console.log('Resize stopped:', left, top, width, height)"  -->
+  <!-- @dragStop="(left, top) => console.log('Drag stopped:', left, top)"  -->
   <Resize
       :key="refresh"
       v-if="displaySidebar()" 
