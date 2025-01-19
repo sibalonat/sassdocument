@@ -2,13 +2,11 @@
 import DynamicHeroIcon from '@/Components/General/HeroIcon/DynamicHeroIcon.vue';
 import Resize from '@/Components/VueDragResize/DragResize.vue';
 import { computed, onMounted, ref, toRef, nextTick } from 'vue'
-import TitleInput from '@/Components/Partial/FormInputs/TitleInput.vue';
-// import Boolean from '../Icons/Boolean.vue';
-import Boolean from '@/Components/Icons/Boolean.vue';
-import Text from '@/Components/Icons/Text.vue';
-import Integer from '@/Components/Icons/Integer.vue';
-import DateTime from '@/Components/Icons/DateTime.vue';
-
+import General from '@/Components/Partial/Sidebar/General.vue';
+import BooleanType from '@/Components/Partial/Sidebar/SelectedType/BooleanType.vue';
+import TextType from '@/Components/Partial/Sidebar/SelectedType/TextType.vue';
+import IntegerType from '@/Components/Partial/Sidebar/SelectedType/IntegerType.vue';
+import DateTimeType from '@/Components/Partial/Sidebar/SelectedType/DateTimeType.vue';
 
 // props
 const prop = defineProps({ 
@@ -19,15 +17,33 @@ const prop = defineProps({
   list: Array
 });
 
+// BooleanType = 'boolean';
 
 // state
 const display = toRef(prop, 'open');
 const x = ref(0);
 const y = ref(80);
+const dataType = ref('');
+const component_types = {
+  boolean: BooleanType,
+  text: TextType,
+  integer: IntegerType,
+  datetime: DateTimeType	
+};
 // computed
 const showCondition = computed(() => { 
   return display.value && x.value !== 0;
 });
+
+const selectedDataType = computed({
+  get: () => {
+    return dataType.value;
+  },
+  set: (value) => {
+    console.log(value);
+    dataType.value = value;
+  }
+})
 
 // methods
 const handlePositionUpdate = (left, top) => {  
@@ -37,6 +53,12 @@ const handlePositionUpdate = (left, top) => {
 
 function displaySidebar() { 
   return showCondition.value;
+}
+
+function handleDataTypeChange(value) {
+  console.log(value);
+  
+  selectedDataType.value = value;
 }
 
 // lifecycle
@@ -85,46 +107,9 @@ onMounted(() => {
         <DynamicHeroIcon name="power" :size="5" class="mx-auto"  />
       </button>
     </div>
-    <div class="flex flex-col w-full mt-8">
-      <TitleInput />
-    </div>
-    <div class="flex flex-col w-full mt-8 gap-y-2">
-      <p class="mb-1 text-lg font-medium uppercase text-neutral-800">
-        data types
-      </p>
-      <div class="flex flex-row w-full p-2 border rounded-md cursor-pointer group gap-x-4">
-        <div class="basis-2/12 opacity-30 group-hover:opacity-100">
-          <Boolean />
-        </div>
-        <div class="my-auto basis-9/12">
-          <p class="text-3xl font-semibold uppercase text-neutral-500 group-hover:text-neutral-950">boolean</p>
-        </div>
-      </div>
-      <div class="flex flex-row w-full p-2 border rounded-md cursor-pointer group gap-x-4">
-        <div class="basis-2/12 opacity-30 group-hover:opacity-100">
-          <DateTime />
-        </div>
-        <div class="my-auto basis-9/12">
-          <p class="text-3xl font-semibold uppercase text-neutral-500 group-hover:text-neutral-950">datetime</p>
-        </div>
-      </div>
-      <div class="flex flex-row w-full p-2 border rounded-md cursor-pointer group gap-x-4">
-        <div class="basis-2/12 opacity-30 group-hover:opacity-100">
-          <Integer />
-        </div>
-        <div class="my-auto basis-9/12">
-          <p class="text-3xl font-semibold uppercase text-neutral-500 group-hover:text-neutral-950">integer</p>
-        </div>
-      </div>
-      <div class="flex flex-row w-full p-2 border rounded-md cursor-pointer group gap-x-4">
-        <div class="basis-2/12 opacity-30 group-hover:opacity-100">
-          <Text />
-        </div>
-        <div class="my-auto basis-9/12">
-          <p class="text-3xl font-semibold uppercase text-neutral-500 group-hover:text-neutral-950">Text</p>
-        </div>
-      </div>
-    </div>
+    <General v-if="!selectedDataType" @type="handleDataTypeChange($event)" />
+    <component :is="component_types[selectedDataType]" v-else />
+    {{ selectedDataType }}
 
 
   </div>
