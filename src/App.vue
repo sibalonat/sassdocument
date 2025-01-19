@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref, watch, computed } from 'vue';
 import DocumentWrapper from '@/Components/DocumentWrapper.vue';
-import PropertiesSidebar from '@/Components/Partial/PropertiesSidebar.vue';
+import PropertiesSidebar from '@/Components/Partial/Sidebar/PropertiesSidebar.vue';
 // DragResize
 import useUiInteractions from '@/Composables/Ui/UiInteractions';
 import { useDynamicSheets } from '@/Spreadsheet/DynamicSheets';

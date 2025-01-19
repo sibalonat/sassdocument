@@ -92,36 +92,36 @@ onMounted(() => {
       <p class="mb-1 text-lg font-medium uppercase text-neutral-800">
         data types
       </p>
-      <div class="flex flex-row w-full p-2 border rounded-md cursor-pointer opacity-30 gap-x-4 hover:opacity-100">
-        <div class="basis-2/12">
+      <div class="flex flex-row w-full p-2 border rounded-md cursor-pointer group gap-x-4">
+        <div class="basis-2/12 opacity-30 group-hover:opacity-100">
           <Boolean />
         </div>
         <div class="my-auto basis-9/12">
-          <p class="text-3xl font-semibold uppercase text-neutral-950">boolean</p>
+          <p class="text-3xl font-semibold uppercase text-neutral-500 group-hover:text-neutral-950">boolean</p>
         </div>
       </div>
-      <div class="flex flex-row w-full p-2 border rounded-md cursor-pointer opacity-30 gap-x-4 hover:opacity-100">
-        <div class="basis-2/12">
+      <div class="flex flex-row w-full p-2 border rounded-md cursor-pointer group gap-x-4">
+        <div class="basis-2/12 opacity-30 group-hover:opacity-100">
           <DateTime />
         </div>
         <div class="my-auto basis-9/12">
-          <p class="text-3xl font-semibold uppercase text-neutral-950">datetime</p>
+          <p class="text-3xl font-semibold uppercase text-neutral-500 group-hover:text-neutral-950">datetime</p>
         </div>
       </div>
-      <div class="flex flex-row w-full p-2 border rounded-md cursor-pointer opacity-30 gap-x-4 hover:opacity-100">
-        <div class="basis-2/12">
+      <div class="flex flex-row w-full p-2 border rounded-md cursor-pointer group gap-x-4">
+        <div class="basis-2/12 opacity-30 group-hover:opacity-100">
           <Integer />
         </div>
         <div class="my-auto basis-9/12">
-          <p class="text-3xl font-semibold uppercase text-neutral-950">integer</p>
+          <p class="text-3xl font-semibold uppercase text-neutral-500 group-hover:text-neutral-950">integer</p>
         </div>
       </div>
-      <div class="flex flex-row w-full p-2 border rounded-md cursor-pointer opacity-30 gap-x-4 hover:opacity-100">
-        <div class="basis-2/12">
+      <div class="flex flex-row w-full p-2 border rounded-md cursor-pointer group gap-x-4">
+        <div class="basis-2/12 opacity-30 group-hover:opacity-100">
           <Text />
         </div>
         <div class="my-auto basis-9/12">
-          <p class="text-3xl font-semibold uppercase text-neutral-950">Text</p>
+          <p class="text-3xl font-semibold uppercase text-neutral-500 group-hover:text-neutral-950">Text</p>
         </div>
       </div>
     </div>
