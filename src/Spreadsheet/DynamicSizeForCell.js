@@ -117,6 +117,7 @@ export function useDynamicResizeCell() {
     }
 
     function resetActiveElement(list) {
+        if (!actel.value) return;
         const element = list.value
         .flatMap(row => row)
         .find(el => el.id == actel.value.id);
@@ -124,8 +125,7 @@ export function useDynamicResizeCell() {
         if (element) {
             element.active = false;  
         }
-        actel.value = null;
-        
+        actel.value = null;      
     }
 
     function setActiveElement(element) {
