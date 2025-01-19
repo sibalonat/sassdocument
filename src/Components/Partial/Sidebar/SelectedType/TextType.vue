@@ -20,7 +20,6 @@ const calculateHeight = () => {
     const booleanElement = image.value;
     if (booleanElement) {
         // const { height } = booleanElement.$el.getBoundingClientRect();
-        // console.log(height);
         
         optionsHeight.value = `${parentHeight - header - 40}px`;
         // optionsHeight.value = `${parentHeight - height}px`;
