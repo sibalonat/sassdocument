@@ -1,7 +1,7 @@
 <script setup>
 import DynamicHeroIcon from '@/Components/General/HeroIcon/DynamicHeroIcon.vue';
 import Resize from '@/Components/VueDragResize/DragResize.vue';
-import { computed, onMounted, ref, toRef, nextTick } from 'vue'
+import { computed, onMounted, ref, toRef, nextTick, onUpdated, watch } from 'vue'
 import General from '@/Components/Partial/Sidebar/General.vue';
 import BooleanType from '@/Components/Partial/Sidebar/SelectedType/BooleanType.vue';
 import TextType from '@/Components/Partial/Sidebar/SelectedType/TextType.vue';
@@ -42,8 +42,16 @@ const selectedDataType = computed({
     return dataType.value;
   },
   set: (value) => {
-    console.log(value);
     dataType.value = value;
+  }
+})
+
+const allHeight = computed({
+  get: () => {
+    return dynamHeight.value;
+  },
+  set: (value) => {
+    dynamHeight.value = value;
   }
 })
 
@@ -68,7 +76,6 @@ function getHeightOfSidebar(left, top, width, height) {
 // lifecycle
 onMounted(() => { 
   nextTick(() => {
-    console.log(header.value);
     dynamHeight.value = 500;
     
     if (prop.parent) {      
@@ -78,6 +85,23 @@ onMounted(() => {
     }
   });
 });
+
+onUpdated(() => {
+  // console.log();
+  console.log(header.value);
+  if (header.value) {
+    console.log(header.value.clientHeight);
+    
+  }
+  
+
+});
+
+// watch(x, (value) => {
+//   console.log(value);
+  
+
+// });
 
 
 </script>
@@ -120,6 +144,7 @@ onMounted(() => {
       @type="handleDataTypeChange($event)" />
       <component 
       :height="dynamHeight"
+      :header="header"
       :is="component_types[selectedDataType]" 
       v-else />
   </div>

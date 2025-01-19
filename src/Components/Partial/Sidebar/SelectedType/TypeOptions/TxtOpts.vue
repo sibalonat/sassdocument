@@ -2,7 +2,7 @@
 
 </script>
 <template>
-    <div class="p-4 bg-white rounded-lg shadow-md">
+    <div class="p-4 mt-auto overflow-y-auto bg-white rounded-lg h-5/6">
         <div class="flex items">
             <!-- <div class="w-1/2">
                 <label for="name" class="block text-sm font-medium text-gray-700">Name</label>

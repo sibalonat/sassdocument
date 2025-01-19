@@ -6,6 +6,7 @@ import { ref, onMounted, onBeforeUnmount } from 'vue';
 //props
 const props = defineProps({
     height: Number,
+    header: Object
 });
 //data
 const image = ref(null);
@@ -14,22 +15,20 @@ const optionsHeight = ref('0px');
 //methods
 const calculateHeight = () => {
     const parentHeight = props.height;
-    console.log(parentHeight);
+    const header = props.header.offsetHeight;
     
     const booleanElement = image.value;
     if (booleanElement) {
-        const { height } = booleanElement.$el.getBoundingClientRect();
-        optionsHeight.value = `${parentHeight - height}px`;
+        // const { height } = booleanElement.$el.getBoundingClientRect();
+        // console.log(height);
+        
+        optionsHeight.value = `${parentHeight - header - 40}px`;
+        // optionsHeight.value = `${parentHeight - height}px`;
         // optionsHeight.value = `${parentHeight}px`;
     }
 }
 // hooks
 onMounted(() => {
-    console.log(props.height);
-    
-
-    
-    
     calculateHeight();
     window.addEventListener('resize', calculateHeight);
 });
@@ -40,9 +39,7 @@ onBeforeUnmount(() => {
 </script>
 <template>
     <div class="relative w-full" :style="{ height: optionsHeight }" ref="parent" >
-        <Text class="h-full opacity-10" ref="image" />
-        <Options class="absolute" />
-        <!-- <img src="" alt=""> -->
-
+        <Text class="object-contain opacity-10" ref="image" />
+        <Options class="absolute bottom-0 w-full" />
     </div>
 </template>
