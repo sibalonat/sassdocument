@@ -25,6 +25,7 @@ const x = ref(0);
 const y = ref(80);
 const dataType = ref('');
 const dynamHeight = ref(0);
+const header = ref(null)
 const component_types = {
   boolean: BooleanType,
   text: TextType,
@@ -67,7 +68,9 @@ function getHeightOfSidebar(left, top, width, height) {
 // lifecycle
 onMounted(() => { 
   nextTick(() => {
+    console.log(header.value);
     dynamHeight.value = 500;
+    
     if (prop.parent) {      
       x.value = prop.parent.clientWidth - 320; 
     } else {
@@ -95,7 +98,7 @@ onMounted(() => {
       :grid="[10, 10]" 
       :parent="true" 
       :active="true" 
-      :className="'bg-white border rounded-lg shadow-md absolute pointer-events-auto sidebar'"
+      :className="'bg-white border rounded-lg shadow-md absolute pointer-events-auto'"
       classNameHandle="handle-class"
       :drag-handle="'.hand-raised'"
       :handles="['bl']"
@@ -103,22 +106,22 @@ onMounted(() => {
       @resizeStop="getHeightOfSidebar"
       @dragStop="(left, top) => handlePositionUpdate(left, top)" 
     >
-    <div class="relative p-3 overflow-y-auto">
-    <div class="flex flex-row w-full h-12">
-      <button class="h-full basis-1/2 hand-raised">
-        <DynamicHeroIcon name="hand-raised" :size="5" class="mx-auto"  />
-      </button>
-      <button @click="trigger" class="basis-1/2">
-        <DynamicHeroIcon name="power" :size="5" class="mx-auto"  />
-      </button>
-    </div>
-    <General 
-    v-if="!selectedDataType" 
-    @type="handleDataTypeChange($event)" />
-    <component 
-    :height="dynamHeight"
-    :is="component_types[selectedDataType]" 
-    v-else />
+    <div class="relative p-3 overflow-y-auto" >
+      <div class="flex flex-row w-full h-12" ref="header">
+        <button class="h-full basis-1/2 hand-raised">
+          <DynamicHeroIcon name="hand-raised" :size="5" class="mx-auto"  />
+        </button>
+        <button @click="trigger" class="basis-1/2">
+          <DynamicHeroIcon name="power" :size="5" class="mx-auto"  />
+        </button>
+      </div>
+      <General 
+      v-if="!selectedDataType" 
+      @type="handleDataTypeChange($event)" />
+      <component 
+      :height="dynamHeight"
+      :is="component_types[selectedDataType]" 
+      v-else />
   </div>
     <template #bl>
         <DynamicHeroIcon 
