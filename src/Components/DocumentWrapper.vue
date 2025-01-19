@@ -100,9 +100,9 @@ onBeforeMount(() => {
   initialIfListEmpty()
 });
 
-onBeforeUnmount(() => {
-  localStorage.setItem('spreadsheetData', JSON.stringify(list.value));
-});
+// onBeforeUnmount(() => {
+//   localStorage.setItem('spreadsheetData', JSON.stringify(list.value));
+// });
 
 watch(display, (val) => {
   if (!val) {

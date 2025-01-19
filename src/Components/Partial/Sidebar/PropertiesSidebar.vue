@@ -13,6 +13,7 @@ const prop = defineProps({
   open: Boolean, 
   trigger: Function, 
   parent: Object,
+  sidebar: Object,
   refresh: String,
   list: Array
 });
@@ -61,9 +62,21 @@ function handleDataTypeChange(value) {
   selectedDataType.value = value;
 }
 
+// const calculateHeight = () => {
+//   const parentHeight = prop.parent.clientHeight;
+//   const booleanElement = document.querySelector('.boolean-element');
+//   const booleanHeight = booleanElement ? booleanElement.offsetHeight : 0;
+//   optionsHeight.value = `${parentHeight - booleanHeight}px`;
+// };
+
 // lifecycle
 onMounted(() => {   
+  // console.log(baseEl);
+  console.log(prop.sidebar);
+  
+  
   nextTick(() => {
+    // console.log(baseEl.value);
     if (prop.parent) {      
       x.value = prop.parent.clientWidth - 320; 
     } else {
@@ -78,6 +91,7 @@ onMounted(() => {
   <!-- :minWidth="50" 
   :minHeight="500"  -->
   <Resize
+      ref="baseEl"
       :key="refresh"
       v-if="displaySidebar()" 
       :x="x" 
