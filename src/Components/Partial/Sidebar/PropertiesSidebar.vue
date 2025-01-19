@@ -107,11 +107,12 @@ onMounted(() => {
         <DynamicHeroIcon name="power" :size="5" class="mx-auto"  />
       </button>
     </div>
-    <General v-if="!selectedDataType" @type="handleDataTypeChange($event)" />
-    <component :is="component_types[selectedDataType]" v-else />
-    {{ selectedDataType }}
-
-
+    <General 
+    v-if="!selectedDataType" 
+    @type="handleDataTypeChange($event)" />
+    <component 
+    :is="component_types[selectedDataType]" 
+    v-else />
   </div>
     <template #bl>
         <DynamicHeroIcon 
