@@ -21,9 +21,8 @@ const prop = defineProps({
 // BooleanType = 'boolean';
 // state
 const x = ref(0);
-const y = ref(80);
+const y = ref(0);
 const width = ref(0);
-const height = ref(100);
 const dataType = ref('');
 const dynamHeight = ref(70);
 const header = ref(null)
@@ -43,13 +42,8 @@ const selectedDataType = computed({
   }
 })
 
-const allHeight = computed({
-  get: () => {
-    return dynamHeight.value;
-  },
-  set: (value) => {
-    dynamHeight.value = value;
-  }
+const loadComponent = computed(() => {
+  return width.value && dynamHeight.value;
 })
 
 // methods
@@ -83,7 +77,7 @@ onUpdated(() => {
 </script>
 <template>
   <Resize
-      v-if="width"
+      v-if="loadComponent"
       :key="refresh"
       :x="x" 
       :y="y"
@@ -93,7 +87,7 @@ onUpdated(() => {
       :grid="[10, 10]" 
       :parent="true" 
       :active="true" 
-      :className="'bg-white border rounded-lg shadow-md absolute pointer-events-auto'"
+      :className="'bg-white border rounded-lg shadow-md pointer-events-auto'"
       classNameHandle="handle-class"
       :drag-handle="'.hand-raised'"
       @dragStop="(left, top) => handlePositionUpdate(left, top)" 

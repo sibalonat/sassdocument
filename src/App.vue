@@ -43,18 +43,17 @@ watch(opened, (val) => console.log(val));
     </div>
     <!-- <div class="w-full pointer-events-none">
     </div> -->
-    <DocumentWrapper 
-    :trigger="trigger" 
-    :open="opened" 
-    @cell-selected="displayFullSidebar($event)" />
-    <div class="w-full pointer-events-none">
-      hello
+    <div class="relative z-30 w-full pointer-events-none">
       <Horizontal 
       :trigger="trigger" 
       :parent="parent"
       :open="opened" 
       :refresh="refresh" />
     </div>
+    <DocumentWrapper 
+    :trigger="trigger" 
+    :open="opened" 
+    @cell-selected="displayFullSidebar($event)" />
   </main>
 </template>
 
