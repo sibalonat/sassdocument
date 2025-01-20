@@ -41,8 +41,6 @@ watch(opened, (val) => console.log(val));
         </button>
       </div>
     </div>
-    <!-- <div class="w-full pointer-events-none">
-    </div> -->
     <div class="relative z-30 w-full pointer-events-none">
       <Horizontal 
       :trigger="trigger" 
