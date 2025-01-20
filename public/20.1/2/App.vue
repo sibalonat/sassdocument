@@ -12,6 +12,7 @@ const store = useDynamicSheets();
 const { createRowOnClick } = store;
 // state
 const parent = ref(null);
+const xAxis = ref(0);
 const refresh = ref('');
 //computed
 // methods
@@ -19,6 +20,7 @@ const displayFullSidebar = (event) => {
   refresh.value = event.id;
 };
 // hooks
+onMounted(() => xAxis.value = parent.value.clientWidth - 320);
 watch(opened, (val) => console.log(val));
 </script>
 

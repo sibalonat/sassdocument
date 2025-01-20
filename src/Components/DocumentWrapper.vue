@@ -7,9 +7,11 @@ import AlphabetHeader from '@/Components/Header/AlphabetHeader.vue';
 import { watch } from 'vue';
 import DynamicHeroIcon from '@/Components/General/HeroIcon/DynamicHeroIcon.vue';
 import { useDynamicResizeCell } from '@/Spreadsheet/DynamicSizeForCell';
-import useUiInteractions from '@/Composables/Ui/UiInteractions';
-import { get } from 'lodash';
-import { onBeforeUnmount } from 'vue';
+import Horizontal from '@/Components/Partial/Toolbar/Horizontal.vue';
+// import useUiInteractions from '@/Composables/Ui/UiInteractions';
+// import { get } from 'lodash';
+// import { onBeforeUnmount } from 'vue';
+// Horizontal
 
 // props
 const prop = defineProps({ 
