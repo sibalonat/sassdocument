@@ -7,7 +7,7 @@ import BooleanType from '@/Components/Partial/Sidebar/SelectedType/BooleanType.v
 import TextType from '@/Components/Partial/Sidebar/SelectedType/TextType.vue';
 import IntegerType from '@/Components/Partial/Sidebar/SelectedType/IntegerType.vue';
 import DateTimeType from '@/Components/Partial/Sidebar/SelectedType/DateTimeType.vue';
-
+import TopBar from '@/Components/Partial/Toolbar/Sections/Top/TopBar.vue';
 
 // props
 const prop = defineProps({ 
@@ -41,6 +41,8 @@ const selectedDataType = computed({
     dataType.value = value;
   }
 })
+
+
 
 const loadComponent = computed(() => {
   return width.value && dynamHeight.value;
@@ -87,20 +89,21 @@ onUpdated(() => {
       :grid="[10, 10]" 
       :parent="true" 
       :active="true" 
-      :className="'bg-white border rounded-lg shadow-md pointer-events-auto'"
+      :className="'bg-white border rounded-md my-2 shadow-md pointer-events-auto'"
       classNameHandle="handle-class"
       :drag-handle="'.hand-raised'"
       @dragStop="(left, top) => handlePositionUpdate(left, top)" 
     >
-    <div class="relative p-3 overflow-y-auto" >
-      <div class="flex flex-row w-full h-12" ref="header">
+    <div class="relative p-3" >
+        <TopBar />
+      <!-- <div class="flex flex-row w-full h-12" ref="header">
         <button class="h-full basis-1/2 hand-raised">
           <DynamicHeroIcon name="hand-raised" :size="5" class="mx-auto"  />
         </button>
         <button @click="trigger" class="basis-1/2">
           <DynamicHeroIcon name="power" :size="5" class="mx-auto"  />
         </button>
-      </div>
+      </div> -->
       hey
       <!-- <General 
       v-if="!selectedDataType" 
