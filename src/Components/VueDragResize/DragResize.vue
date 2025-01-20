@@ -133,7 +133,7 @@ const props = defineProps({
   h: {
       type: [Number, String],
       default: 200,
-      validator: (val) => {
+      validator: (val) => {        
           if (typeof val === 'number') {
               return val > 0
           }
@@ -765,7 +765,7 @@ const changeWidth = (val) => {
     if (props.lockAspectRatio) {
         bottom = state.bottom - (state.right - right) / state.aspectFactor;
     }
-
+    
     const width = computedWidth(state.parentWidth, state.left, right);
     const height = computedHeight(state.parentHeight, state.top, bottom);
 

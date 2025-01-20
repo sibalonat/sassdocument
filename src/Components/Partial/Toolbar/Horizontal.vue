@@ -20,11 +20,12 @@ const prop = defineProps({
 
 // BooleanType = 'boolean';
 // state
-const display = toRef(prop, 'open');
 const x = ref(0);
 const y = ref(80);
+const width = ref(0);
+const height = ref(100);
 const dataType = ref('');
-const dynamHeight = ref(0);
+const dynamHeight = ref(70);
 const header = ref(null)
 const component_types = {
   boolean: BooleanType,
@@ -33,10 +34,6 @@ const component_types = {
   datetime: DateTimeType	
 };
 // computed
-const showCondition = computed(() => { 
-  return display.value && x.value !== 0;
-});
-
 const selectedDataType = computed({
   get: () => {
     return dataType.value;
@@ -61,25 +58,15 @@ const handlePositionUpdate = (left, top) => {
   y.value = top;
 };
 
-function displaySidebar() { 
-  return showCondition.value;
-}
-
-function handleDataTypeChange(value) {  
-  selectedDataType.value = value;
-}
-
-function getHeightOfSidebar(left, top, width, height) {  
-  return dynamHeight.value = height;
-}
-
 // lifecycle
 onMounted(() => { 
   nextTick(() => {
-    dynamHeight.value = 500;
+    dynamHeight.value = 70;
     
     if (prop.parent) {      
-      x.value = prop.parent.clientWidth - 320; 
+    //   x.value = prop.parent.clientWidth - 320; 
+      x.value = 0; 
+      width.value = prop.parent.clientWidth;
     } else {
       x.value = x.value;
     }
@@ -96,23 +83,19 @@ onUpdated(() => {
 </script>
 <template>
   <Resize
+      v-if="width"
       :key="refresh"
-      v-if="displaySidebar()" 
       :x="x" 
       :y="y"
-      :w="300" 
+      :w="width" 
       :h="dynamHeight" 
-      :maxWidth="500" 
-      :maxHeight="700" 
+      :resizable="false"
       :grid="[10, 10]" 
       :parent="true" 
       :active="true" 
       :className="'bg-white border rounded-lg shadow-md absolute pointer-events-auto'"
       classNameHandle="handle-class"
       :drag-handle="'.hand-raised'"
-      :handles="['bl']"
-      :resizeAxis="'y'" 
-      @resizeStop="getHeightOfSidebar"
       @dragStop="(left, top) => handlePositionUpdate(left, top)" 
     >
     <div class="relative p-3 overflow-y-auto" >
@@ -124,14 +107,15 @@ onUpdated(() => {
           <DynamicHeroIcon name="power" :size="5" class="mx-auto"  />
         </button>
       </div>
-      <General 
+      hey
+      <!-- <General 
       v-if="!selectedDataType" 
-      @type="handleDataTypeChange($event)" />
-      <component 
+      @type="handleDataTypeChange($event)" /> -->
+      <!-- <component 
       :height="dynamHeight"
       :header="header"
       :is="component_types[selectedDataType]" 
-      v-else />
+      v-else /> -->
   </div>
     <template #bl>
         <DynamicHeroIcon 

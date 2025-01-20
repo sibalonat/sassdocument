@@ -5,6 +5,8 @@ import PropertiesSidebar from '@/Components/Partial/Sidebar/PropertiesSidebar.vu
 // DragResize
 import useUiInteractions from '@/Composables/Ui/UiInteractions';
 import { useDynamicSheets } from '@/Spreadsheet/DynamicSheets';
+import Horizontal from '@/Components/Partial/Toolbar/Horizontal.vue';
+// Horizontal
 
 // composables
 const { trigger, opened } = useUiInteractions();
@@ -39,12 +41,15 @@ watch(opened, (val) => console.log(val));
         </button>
       </div>
     </div>
+    <!-- <div class="w-full pointer-events-none">
+    </div> -->
     <DocumentWrapper 
     :trigger="trigger" 
     :open="opened" 
     @cell-selected="displayFullSidebar($event)" />
-    <div class="absolute top-0 left-0 w-full h-full pointer-events-none">
-      <PropertiesSidebar 
+    <div class="w-full pointer-events-none">
+      hello
+      <Horizontal 
       :trigger="trigger" 
       :parent="parent"
       :open="opened" 
