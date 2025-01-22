@@ -8,8 +8,8 @@ import Decrease from '@/Components/Icons/Spreadsheet/Integers/Decimal/Decrease.v
 <template>
     <div class="grid grid-cols-12 gap-x-1">
        <div class="grid grid-cols-5 col-span-2 gap-x-2">
-        <Dollar class="h-4" />
-        <Percent class="h-4" />
+        <Dollar />
+        <Percent />
         <Decrease />
         <Increase />
         <More class="mb-auto" />
