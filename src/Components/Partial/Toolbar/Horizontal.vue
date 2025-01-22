@@ -104,7 +104,7 @@ onUpdated(() => {
           <DynamicHeroIcon name="power" :size="5" class="mx-auto"  />
         </button>
       </div> -->
-      hey
+      <!-- hey -->
       <!-- <General 
       v-if="!selectedDataType" 
       @type="handleDataTypeChange($event)" /> -->
