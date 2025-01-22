@@ -27,13 +27,11 @@ import StrikeThrough from '@/Components/Icons/Spreadsheet/General/FontStyle/Stri
         <input type="text" class="w-full h-8 text-center border rounded-md" />
         <TextIncrease class="m-auto" />
        </div>
-       <div class="grid grid-cols-4 px-3 gap-x-2">
+       <div class="grid grid-cols-5 px-3 gap-x-2">
         <Bold />
         <Italic />
         <StrikeThrough />
         <Color />
-       </div>
-       <div class="px-3">
         <Fill />
        </div>
     </div>
