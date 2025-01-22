@@ -6,6 +6,7 @@ import Increase from '@/Components/Icons/Spreadsheet/Integers/Decimal/Increase.v
 import Decrease from '@/Components/Icons/Spreadsheet/Integers/Decimal/Decrease.vue';
 import TextIncrease from '@/Components/Icons/Spreadsheet/General/Increase.vue';
 import TextDecrease from '@/Components/Icons/Spreadsheet/General/Decrease.vue';
+import Fill from '@/Components/Icons/Spreadsheet/General/FillColor.vue';
 import Bold from '@/Components/Icons/Spreadsheet/General/FontStyle/Bold.vue';
 import Italic from '@/Components/Icons/Spreadsheet/General/FontStyle/Italic.vue';
 import Color from '@/Components/Icons/Spreadsheet/General/FontStyle/Color.vue';
@@ -31,6 +32,9 @@ import StrikeThrough from '@/Components/Icons/Spreadsheet/General/FontStyle/Stri
         <Italic />
         <StrikeThrough />
         <Color />
+       </div>
+       <div class="px-3">
+        <Fill />
        </div>
     </div>
 </template>
