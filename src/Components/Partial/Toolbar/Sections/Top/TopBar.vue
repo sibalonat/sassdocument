@@ -7,7 +7,7 @@ import Decrease from '@/Components/Icons/Spreadsheet/Integers/Decimal/Decrease.v
 </script>
 <template>
     <div class="grid grid-cols-12 gap-x-1">
-       <div class="grid grid-cols-5 col-span-2 gap-x-2">
+       <div class="grid grid-cols-5 gap-x-2">
         <Dollar />
         <Percent />
         <Decrease />
